@@ -3,6 +3,7 @@ A [Giter8][g8] template for creating Kalix projects with sbt-kalix-improving!
 Template license
 ----------------
 Written in 2023 by Reid Spencer <reid.spencer@improving.com>
+Written in 2023 by Alex Weinstein <alex.weinstein@improving.com>
 [other author/contributor lines as appropriate]
 
 To the extent possible under law, the author(s) have dedicated all 

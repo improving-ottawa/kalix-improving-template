@@ -1,7 +1,4 @@
-# sbt-kalix-improving
-sbt plugin for handling a project with several kalix services.
-
-## Template 
+## sbt-kalix-improving Template 
 In src/main/g8 there is a giter8 template for creating new
 multiple Kalix service projects that use the sbt plugin with `sbt new`.
 

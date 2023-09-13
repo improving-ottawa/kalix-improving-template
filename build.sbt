@@ -1,8 +1,8 @@
 
-name := "sbt-kalix-improving"
-organization := "improving-ottawa"
-version := "0.1-SNAPSHOT"
-sbtPlugin := true
+val toolkitV = "q"
+val toolkit = "org.scala-lang" %% "toolkit" % toolkitV
+val toolkitTest = "org.scala-lang" %% "toolkit-test" % toolkitV
 
-startYear := Some(2023)
-
+ThisBuild / scalaVersion := "2.13.10"
+libraryDependencies += toolkit
+libraryDependencies += (toolkitTest % Test)
