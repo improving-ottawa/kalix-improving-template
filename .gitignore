@@ -1,6 +1,7 @@
 .idea/
 .bsp/
 **/target/
+project/project
 *.log
 *.out
 *.class

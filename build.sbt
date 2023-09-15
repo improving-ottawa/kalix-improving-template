@@ -13,3 +13,5 @@ lazy val kalixImprovingTemplate = (project in file(".")).settings(
     url("https://repo.typesafe.com/typesafe/ivy-releases/")
   )(Resolver.ivyStylePatterns)
 )
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
