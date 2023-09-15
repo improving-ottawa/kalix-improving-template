@@ -4,6 +4,12 @@ multiple Kalix service projects that use the sbt plugin with `sbt new`.
 
 Usage:
 ```shell
-> sbt new improving-ottawa/sbt-kalix-improving 
+sbt new improving-ottawa/kalix-improving-template 
+```
+
+or
+
+```shell
+sbt new file://sbt-kalix-improving-template
 ```
 License: [src/main/g8/README.markdown](src/main/g8/README.markdown)

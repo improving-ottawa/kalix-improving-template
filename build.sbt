@@ -1,8 +1,15 @@
-
-val toolkitV = "q"
-val toolkit = "org.scala-lang" %% "toolkit" % toolkitV
-val toolkitTest = "org.scala-lang" %% "toolkit-test" % toolkitV
-
-ThisBuild / scalaVersion := "2.13.10"
-libraryDependencies += toolkit
-libraryDependencies += (toolkitTest % Test)
+lazy val kalixImprovingTemplate = (project in file(".")).settings(
+  Test / test := {
+    val _ = (Test / g8Test).toTask("").value
+  },
+  scriptedLaunchOpts ++= List(
+    "-Xms1024m",
+    "-Xmx1024m",
+    "-Xss2m",
+    "-Dfile.encoding=UTF-8"
+  ),
+  resolvers += Resolver.url(
+    "typesafe",
+    url("https://repo.typesafe.com/typesafe/ivy-releases/")
+  )(Resolver.ivyStylePatterns)
+)
