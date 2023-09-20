@@ -44,7 +44,7 @@ object Dependencies {
   )
 
   val utilityDependencies: Seq[ModuleID] = Seq(
-    //"org.scala-lang.modules" %% "scala-xml" % scalaxml,
+    // "org.scala-lang.modules" %% "scala-xml" % scalaxml,
     // "io.scalaland" %% "chimney" % chimney,
     "com.github.pureconfig" %% "pureconfig" % pureconfig,
     "org.scalacheck" %% "scalacheck" % scalacheck
@@ -88,7 +88,6 @@ object Dependencies {
 
   val scalaPbDependencies: Seq[ModuleID] = Seq(
     "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
-    //"io.kalix" % "kalix-sdk-protocol" % KalixProtocolVersion % "protobuf-src",
     "com.google.protobuf" % "protobuf-java" % "3.22.2" % "protobuf"
   )
 
