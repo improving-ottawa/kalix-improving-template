@@ -1,7 +1,7 @@
 ThisBuild / organization := "com.improving"
 ThisBuild / scalaVersion := "2.13.10"
 
-name := "kalix-improving"
+name := "kalix-improving-template"
 
 organization := "improving"
 organizationHomepage := Some(url("https://www.improving.com/"))
@@ -41,6 +41,3 @@ lazy val root = project
     service1,
     service2
   )
-//product - nulls
-//order - nulls
-//store - nulls
