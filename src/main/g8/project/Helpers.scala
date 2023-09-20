@@ -2,6 +2,7 @@ import Dependencies._
 import com.typesafe.sbt.packager.Keys._
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
+import kalix.sbt.KalixPlugin
 import sbt.Keys._
 import sbt._
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
