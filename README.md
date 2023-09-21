@@ -28,4 +28,4 @@ Integration tests for Kalix services
 
 ## UI
 
-The front-end client application (typescript)
+The front-end client PWA (typescript)
