@@ -42,7 +42,5 @@ lazy val root = project
     publishTo := Some(Resolver.defaultLocal)
   )
   .aggregate(
-    service1,
-    service2,
     gateway
   )
