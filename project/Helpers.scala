@@ -1,4 +1,4 @@
-import Dependencies._
+import Dependencies.{utilityDependencies, _}
 import com.typesafe.sbt.packager.Keys._
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
@@ -7,7 +7,7 @@ import sbt.Keys._
 import sbt._
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtprotoc.ProtocPlugin.autoImport.PB
-import sbt.Keys.{libraryDependencies, _}
+import sbt.Keys.libraryDependencies
 import scalapb.GeneratorOption.{FlatPackage, RetainSourceCodeInfo, SingleLineToProtoString}
 
 object Compilation {
@@ -134,7 +134,7 @@ object Kalix {
       )
   }
 
-  def dependsOn(dependency: Project, name: String)(
+  def dependsOn(dependency: Project)(
       project: Project
   ): Project = {
     project

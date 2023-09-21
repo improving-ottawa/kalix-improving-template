@@ -21,14 +21,20 @@ lazy val utils: Project = project
 lazy val service1 = project
   .in(file("service1"))
   .configure(Kalix.service("service2"))
-  .configure(Kalix.dependsOn(common, "common"))
-  .configure(Kalix.dependsOn(utils, "utils"))
+  .configure(Kalix.dependsOn(common))
+  .configure(Kalix.dependsOn(utils))
 
 lazy val service2 = project
   .in(file("service2"))
   .configure(Kalix.service("service2"))
-  .configure(Kalix.dependsOn(common, "common"))
-  .configure(Kalix.dependsOn(utils, "utils"))
+  .configure(Kalix.dependsOn(common))
+  .configure(Kalix.dependsOn(utils))
+
+lazy val gateway = project
+  .in(file("gateway"))
+  .configure(Kalix.service("ui"))
+  .configure(Kalix.dependsOn(service1))
+  .configure(Kalix.dependsOn(service2))
 
 lazy val root = project
   .in(file("."))
@@ -39,5 +45,6 @@ lazy val root = project
   )
   .aggregate(
     service1,
-    service2
+    service2,
+    gateway
   )
