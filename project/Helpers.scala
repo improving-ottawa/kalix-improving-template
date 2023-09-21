@@ -2,10 +2,12 @@ import Dependencies._
 import com.typesafe.sbt.packager.Keys._
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
+import kalix.sbt.KalixPlugin
 import sbt.Keys._
 import sbt._
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtprotoc.ProtocPlugin.autoImport.PB
+import sbt.Keys.{libraryDependencies, _}
 import scalapb.GeneratorOption.{FlatPackage, RetainSourceCodeInfo, SingleLineToProtoString}
 
 object Compilation {
@@ -15,14 +17,13 @@ object Compilation {
       ThisBuild / dynverSeparator := "-",
       run / fork := true,
       run / envVars += ("HOST", "0.0.0.0"),
-      Compile / run := {
-        // needed for the proxy to access the user function on all platforms
-        sys.props += "kalix.user-function-interface" -> "0.0.0.0"
-        (Compile / run).evaluated
-      },
-      scalaVersion := "2.13",
+      run / javaOptions ++= Seq(
+        "-Dkalix.user-function-interface=0.0.0.0",
+        "-Dlogback.configurationFile=logback-dev-mode.xml"
+      ),
+      scalaVersion := "2.13.10",
       Compile / scalacOptions ++= Seq(
-        "-release:11",
+        "-target:11",
         "-deprecation",
         "-feature",
         "-unchecked",
@@ -92,28 +93,6 @@ object Packaging {
     )
   }
 
-//  def dockerConfiguration(project: Project): Project = {
-//    project.settings(
-//      dockerBaseImage := "docker.io/library/eclipse-temurin:17",
-//      dockerUsername := sys.props.get("docker.username"),
-//      dockerRepository := sys.props.get("docker.registry"),
-//      dockerUpdateLatest := true,
-//      // dockerAlias := dockerAlias.value.withTag(Some("latest"))
-//      dockerExposedPorts ++= Seq(8080),
-//      dockerBuildCommand := {
-//        if (sys.props("os.arch") != "amd64") {
-//          // use buildx with platform to build supported amd64 images on other CPU architectures
-//          // this may require that you have first run 'docker buildx create' to set docker buildx up
-//          dockerExecCommand.value ++ Seq(
-//            "buildx",
-//            "build",
-//            "--platform=linux/amd64",
-//            "--load"
-//          ) ++ dockerBuildOptions.value :+ "."
-//        } else dockerBuildCommand.value
-//      }
-//    )
-//  }
 }
 
 object Kalix {
@@ -122,7 +101,7 @@ object Kalix {
       project: Project
   ): Project = {
     project
-      //.enablePlugins(KalixPlugin, JavaAppPackaging, DockerPlugin)
+      .enablePlugins(KalixPlugin, JavaAppPackaging, DockerPlugin)
       .configure(Compilation.scala)
       .configure(Testing.scalaTest)
       .configure(Packaging.docker)
@@ -133,8 +112,9 @@ object Kalix {
         libraryDependencies ++= utilityDependencies ++ loggingDependencies ++ scalaPbDependencies ++ scalaPbValidationDependencies,
         Compile / managedSourceDirectories ++= Seq(
           target.value / "scala-2.13" / "akka-grpc",
-          target.value / "scala-2.13" / "src_managed"
-        )
+          target.value / "scala-2.13" / "src_managed",
+        ),
+        Global / cancelable := false
       )
   }
 
