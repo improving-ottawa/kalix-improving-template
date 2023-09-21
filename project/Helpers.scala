@@ -102,6 +102,7 @@ object Kalix {
   ): Project = {
     project
       .enablePlugins(KalixPlugin, JavaAppPackaging, DockerPlugin)
+      .configure(Config.Kalix.library)
       .configure(Compilation.scala)
       .configure(Testing.scalaTest)
       .configure(Packaging.docker)
@@ -120,6 +121,7 @@ object Kalix {
 
   def library(componentName: String)(project: Project): Project = {
     project
+      .disablePlugins(KalixPlugin)
       .configure(Compilation.scala)
       .configure(Compilation.scalapbCodeGen)
       .configure(Testing.scalaTest)

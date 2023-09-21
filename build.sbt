@@ -9,12 +9,10 @@ organizationHomepage := Some(url("https://www.improving.com/"))
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 lazy val common: Project = project
-  .configure(Config.Kalix.library)
   .in(file("common"))
   .configure(Kalix.library("common"))
 
 lazy val utils: Project = project
-  .disablePlugins(KalixPlugin)
   .in(file("utils"))
   .configure(Kalix.library("utils"))
 
