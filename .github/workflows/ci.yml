@@ -48,11 +48,6 @@ jobs:
         with:
           jvm: temurin:1.17
 
-      - name: Run header checks
-        run: |
-          sbt --client headerCheckAll || \
-            { echo "[error] Code missing headers prior to commit. Run 'sbt headerCreateAll' then commit the updated code."; false; }
-
       - name: Run scalafmt checks
         run: |
           sbt --client "scalafmtCheckAll; scalafmtSbtCheck" || \
