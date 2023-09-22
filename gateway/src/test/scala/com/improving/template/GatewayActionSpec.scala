@@ -12,9 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class GatewayActionSpec
-    extends AnyWordSpec
-    with Matchers {
+class GatewayActionSpec extends AnyWordSpec with Matchers {
 
   "GatewayAction" must {
 
@@ -30,7 +28,7 @@ class GatewayActionSpec
 
     "handle command DoNothingTwice" in {
       val service = GatewayActionTestKit(new GatewayAction(_))
-          pending
+      pending
       // val result = service.doNothingTwice(DoNothingTwiceCommand(...))
     }
 
