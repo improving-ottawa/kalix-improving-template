@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package com.improving.template;
+
+import "com/improving/template/domain/gatewayCommands.proto";
+import "com/improving/template/domain/gatewayEvents.proto";
+import "kalix/annotations.proto";
+
+service Gateway {
+    option (kalix.codegen) = {
+        action: {}
+    };
+
+    rpc DoNothingTwice (domain.DoNothingTwiceCommand) returns (domain.DoNothingTwiceEvent) {}
+}

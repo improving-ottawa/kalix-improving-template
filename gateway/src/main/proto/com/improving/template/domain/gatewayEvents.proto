@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package com.improving.template.domain;
+
+import "com/improving/template/domain/gatewayDomainObjects.proto";
+
+message DoNothingTwiceEvent {
+    DoNothingTwice value = 1;
+}
