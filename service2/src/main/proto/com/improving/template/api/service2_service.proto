@@ -3,13 +3,13 @@ syntax = "proto3";
 package com.improving.template;
 
 import "com/improving/template/domain/service2Commands.proto";
-import "com/improving/template/domain/service2Events.proto";
+import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
 service Service2 {
     option (kalix.codegen) = {
         event_sourced_entity: {
-            name: "com.improving.template.domain.service2"
+            name: "com.improving.template.domain.Service2"
             entity_type: "service2"
             state: "com.improving.template.domain.NoState"
             events: [
@@ -18,5 +18,5 @@ service Service2 {
         }
     };
 
-    rpc DoNothing (domain.DoNothingCommand) returns (domain.DoNothingEvent) {}
+    rpc DoNothing (domain.DoNothingCommand) returns (google.protobuf.Empty) {}
 }

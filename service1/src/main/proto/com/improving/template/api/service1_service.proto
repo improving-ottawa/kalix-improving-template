@@ -3,7 +3,7 @@ syntax = "proto3";
 package com.improving.template;
 
 import "com/improving/template/domain/service1Commands.proto";
-import "com/improving/template/domain/service1Events.proto";
+import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
 service Service1 {
@@ -18,5 +18,5 @@ service Service1 {
         }
     };
 
-    rpc DoNothing (domain.DoNothingCommand) returns (domain.DoNothingEvent) {}
+    rpc DoNothing (domain.DoNothingCommand) returns (google.protobuf.Empty) {}
 }

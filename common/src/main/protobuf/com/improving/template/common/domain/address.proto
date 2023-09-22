@@ -36,7 +36,7 @@ message Address {
 }
 
 message EditableAddress {
-    option (scalapb.message).extends = "com.improving.app.common.serialize.PBMsgSerializable";
+    option (scalapb.message).extends = "com.improving.template.common.serialize.PBMsgSerializable";
     optional string line1 = 1 [(validate.rules).string.min_len = 1];
     optional string line2 = 2 [(validate.rules).string.min_len = 1];
     optional string city = 3 [(validate.rules).string.min_len = 1];
