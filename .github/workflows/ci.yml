@@ -62,8 +62,8 @@ jobs:
         run: |
           sbt --client shutdown
 
-  publish-local:
-    name: Build and publish artifacts and plugins locally
+  build-publish-test:
+    name: Build, publish locally, test
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
