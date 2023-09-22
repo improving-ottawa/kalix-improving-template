@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package com.improving.template.common.api.nothing_service;
+
+import "kalix/annotations.proto";
+
+service Nothing {
+    option (kalix.service) = {
+        type: SERVICE_TYPE_ACTION;
+        component: "nothing";
+    };
+}

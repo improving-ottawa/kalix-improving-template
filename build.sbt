@@ -10,29 +10,29 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 lazy val common: Project = project
   .in(file("common"))
-  .configure(Kalix.library("common"))
+  .configure(Config.Kalix.library)
 
 lazy val utils: Project = project
   .in(file("utils"))
-  .configure(Kalix.library("utils"))
+  .configure(Config.Kalix.library)
 
 lazy val service1 = project
   .in(file("service1"))
-  .configure(Kalix.service("service2"))
-  .configure(Kalix.dependsOn(common))
-  .configure(Kalix.dependsOn(utils))
+  .configure(Config.Kalix.service)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.Kalix.dependsOn(utils))
 
 lazy val service2 = project
   .in(file("service2"))
-  .configure(Kalix.service("service2"))
-  .configure(Kalix.dependsOn(common))
-  .configure(Kalix.dependsOn(utils))
+  .configure(Config.Kalix.service)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.Kalix.dependsOn(utils))
 
 lazy val gateway = project
   .in(file("gateway"))
-  .configure(Kalix.service("ui"))
-  .configure(Kalix.dependsOn(service1))
-  .configure(Kalix.dependsOn(service2))
+  .configure(Config.Kalix.service)
+  .configure(Config.Kalix.dependsOn(service1))
+  .configure(Config.Kalix.dependsOn(service2))
 
 lazy val root = project
   .in(file("."))

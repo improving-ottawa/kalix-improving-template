@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package com.improving.template.domain;
+
+import "com/improving/template/domain/service1DomainObjects.proto";
+
+message DoNothingEvent {
+    DoNothing value = 1;
+}

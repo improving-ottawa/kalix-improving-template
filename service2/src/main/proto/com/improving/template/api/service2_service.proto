@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.improving.template;
+
+import "com/improving/template/domain/service2Commands.proto";
+import "com/improving/template/domain/service2Events.proto";
+import "kalix/annotations.proto";
+
+service Service2 {
+    option (kalix.codegen) = {
+        event_sourced_entity: {
+            name: "com.improving.template.domain.service2"
+            entity_type: "service2"
+            state: "com.improving.template.domain.NoState"
+            events: [
+                "com.improving.template.domain.DoNothingEvent"
+            ]
+        }
+    };
+
+    rpc DoNothing (domain.DoNothingCommand) returns (domain.DoNothingEvent) {}
+}

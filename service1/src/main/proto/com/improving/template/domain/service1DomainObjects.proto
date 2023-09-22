@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package com.improving.template.domain;
+
+message DoNothing {}
+
+message NoState {}
