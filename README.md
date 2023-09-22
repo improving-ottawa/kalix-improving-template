@@ -21,10 +21,7 @@ This template includes 2 Kalix services - service1 & service2 - to be customized
 ## Gateway
 
 The Kalix Gateway will serve as the interface between the client & the microservices
-
-## IT
-
-Integration tests for Kalix services
+The Gateway contains integration tests for all services
 
 ## UI
 
