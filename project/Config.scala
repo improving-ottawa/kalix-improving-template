@@ -1,16 +1,17 @@
-import Dependencies._
+import Dependencies.*
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
-import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
 import com.typesafe.sbt.SbtNativePackager.autoImport.maintainer
-import sbt.Keys._
-import sbt.{Compile, _}
-import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
+import sbt.Keys.*
+import sbt.{Compile, *}
+import scoverage.ScoverageKeys.{coverageFailOnMinimum, *}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
-import wartremover.WartRemover.autoImport._
+import wartremover.WartRemover.autoImport.*
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
@@ -27,8 +28,10 @@ import sbtbuildinfo.BuildInfoOption.ToMap
 import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
-import scalapb.GeneratorOption.{FlatPackage, _}
-
+import scalapb.GeneratorOption.{FlatPackage, *}
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport._
+import java.net.URI
 import java.util.Calendar
 
 object Config {
@@ -36,14 +39,13 @@ object Config {
     p.settings(
       ThisBuild / maintainer := "reid@ossum.biz",
       ThisBuild / organization := "com.ossum.amenities",
-      ThisBuild / organizationHomepage :=
-        Some(new URL("https://reactific.com/")),
+      ThisBuild / organizationHomepage := Some(URI.create("https://reactific.com/").toURL),
       ThisBuild / organizationName := "Ossum Inc.",
       ThisBuild / startYear := Some(2019),
       ThisBuild / licenses +=
         (
           "Apache-2.0",
-          new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")
+          new URI("https://www.apache.org/licenses/LICENSE-2.0.txt").toURL
         ),
       ThisBuild / versionScheme := Option("early-semver"),
       ThisBuild / dynverVTagPrefix := false,
@@ -293,6 +295,15 @@ object Config {
         .dependsOn(dependency)
         .dependsOn(dependency % "protobuf;compile->compile;test->test")
     }
+
+  }
+  def riddl(appName: String)(proj: Project): Project = {
+    proj
+      .enablePlugins(RiddlSbtPlugin)
+      .settings(
+        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
+        riddlcMinVersion := "0.25.0",
+      )
 
   }
 }

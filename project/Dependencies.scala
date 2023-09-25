@@ -32,6 +32,7 @@ object Dependencies {
     val lang3 = "3.13.0"
     val scopt = "4.1.0"
     val slf4j = "2.0.5"
+
   }
 
   import Versions._
@@ -125,4 +126,5 @@ object Dependencies {
     "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
     "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
   )
+
 }
