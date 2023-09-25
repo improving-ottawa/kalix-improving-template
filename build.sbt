@@ -1,12 +1,42 @@
-ThisBuild / organization := "com.improving"
-ThisBuild / scalaVersion := "2.13.10"
+
+lazy val appName: String = "example"
+ThisBuild / organization := s"com.$appName"
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
 
 name := "kalix-improving-template"
 
 organization := "improving"
 organizationHomepage := Some(url("https://www.improving.com/"))
 
-Global / onChangedBuildSource := ReloadOnSourceChanges
+lazy val root = project
+  .in(file("."))
+  .settings(
+    publish := {},
+    publishLocal := {},
+    publishTo := Some(Resolver.defaultLocal)
+  )
+  .aggregate(
+    design,
+    common,
+    utils,
+    service1,
+    service2,
+    gateway
+  )
+
+lazy val design: Project = project
+  .in(file("design"))
+  .configure(Config.Scala.withScala2)
+  .configure(Config.riddl(appName))
+  .settings(
+    riddlcPath := file(
+      // NOTE: Set this to your local path which will always have this portion
+      // NOTE: of the path as a constant: riddl/riddlc/target/universal/stage/bin/riddlc
+      // NOTE: You must "sbt stage" in the riddl/riddlc directory for this to work
+      "/Users/reid/Code/reactific/riddl/riddlc/target/universal/stage/bin/riddlc"
+    )
+  )
 
 lazy val common: Project = project
   .in(file("common"))
@@ -34,13 +64,3 @@ lazy val gateway = project
   .configure(Config.Kalix.dependsOn(service1))
   .configure(Config.Kalix.dependsOn(service2))
 
-lazy val root = project
-  .in(file("."))
-  .settings(
-    publish := {},
-    publishLocal := {},
-    publishTo := Some(Resolver.defaultLocal)
-  )
-  .aggregate(
-    gateway
-  )
