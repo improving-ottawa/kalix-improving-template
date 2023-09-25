@@ -1,12 +1,28 @@
 # sbt-kalix-improving
-sbt plugin for handling a project with several kalix services.
 
-## Template 
-In src/main/g8 there is a giter8 template for creating new
-multiple Kalix service projects that use the sbt plugin with `sbt new`.
+sbt and typescript based multiproject as a template for frontend with microservices backend
 
-Usage:
-```shell
-> sbt new improving-ottawa/sbt-kalix-improving 
-```
-License: [src/main/g8/README.markdown](src/main/g8/README.markdown)
+## riddl
+
+Domain documentation that will (eventually) generate code for services
+
+## Common
+
+Includes common objects used for creating protobuf messages
+
+## Utils
+
+A library for common Scala functions
+
+## Services
+
+This template includes 2 Kalix services - service1 & service2 - to be customized as desired to create microservices
+
+## Gateway
+
+The Kalix Gateway will serve as the interface between the client & the microservices
+The Gateway contains integration tests for all services
+
+## UI
+
+The front-end client PWA (typescript)

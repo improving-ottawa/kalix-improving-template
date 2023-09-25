@@ -16,7 +16,7 @@ addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.1.4")
 // For ScalaPB 0.11.x:
 libraryDependencies ++= Seq(
   "com.thesamet.scalapb" %% "compilerplugin" % "0.11.13",
-  "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.4"
+  "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.4",
 )
 
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
