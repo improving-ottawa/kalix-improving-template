@@ -1,4 +1,3 @@
-
 lazy val appName: String = "example"
 ThisBuild / organization := s"com.$appName"
 
@@ -18,10 +17,6 @@ lazy val root = project
   )
   .aggregate(
     design,
-    common,
-    utils,
-    service1,
-    service2,
     gateway
   )
 
@@ -63,4 +58,3 @@ lazy val gateway = project
   .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(service1))
   .configure(Config.Kalix.dependsOn(service2))
-
