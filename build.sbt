@@ -16,22 +16,23 @@ lazy val root = project
     publishTo := Some(Resolver.defaultLocal)
   )
   .aggregate(
-    design,
+    //  design,
     gateway
   )
 
-lazy val design: Project = project
-  .in(file("design"))
-  .configure(Config.Scala.withScala2)
-  .configure(Config.riddl(appName))
-  .settings(
-    riddlcPath := file(
-      // NOTE: Set this to your local path which will always have this portion
-      // NOTE: of the path as a constant: riddl/riddlc/target/universal/stage/bin/riddlc
-      // NOTE: You must "sbt stage" in the riddl/riddlc directory for this to work
-      "/Users/reid/Code/reactific/riddl/riddlc/target/universal/stage/bin/riddlc"
-    )
-  )
+// TODO: re-enable when sbt-riddl is ready
+// lazy val design: Project = project
+//   .in(file("design"))
+//   .configure(Config.Scala.withScala2)
+//   .configure(Config.riddl(appName))
+//   .settings(
+//     riddlcPath := file(
+//       // NOTE: Set this to your local path which will always have this portion
+//       // NOTE: of the path as a constant: riddl/riddlc/target/universal/stage/bin/riddlc
+//       // NOTE: You must "sbt stage" in the riddl/riddlc directory for this to work
+//       "/Users/reid/Code/reactific/riddl/riddlc/target/universal/stage/bin/riddlc"
+//     )
+//   )
 
 lazy val common: Project = project
   .in(file("common"))
