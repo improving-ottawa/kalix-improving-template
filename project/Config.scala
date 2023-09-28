@@ -301,7 +301,7 @@ object Config {
     proj
       .enablePlugins(RiddlSbtPlugin)
       .settings(
-        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
+        // riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
         riddlcMinVersion := "0.25.0",
       )
 

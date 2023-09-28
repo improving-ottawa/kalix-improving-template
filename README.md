@@ -2,7 +2,7 @@
 
 sbt and typescript based multiproject as a template for frontend with microservices backend
 
-## riddl
+## Design
 
 Domain documentation that will (eventually) generate code for services
 
