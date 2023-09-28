@@ -13,7 +13,7 @@ addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.1.4")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.0")
-//addSbtPlugin("com.reactific" %% "sbt-riddl" % "0.25.+")
+addSbtPlugin("com.reactific" %% "sbt-riddl" % "0.24.1")
 
 // For ScalaPB 0.11.x:
 libraryDependencies ++= Seq(
