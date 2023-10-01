@@ -297,15 +297,6 @@ object Config {
     }
 
   }
-  def riddl(appName: String)(proj: Project): Project = {
-    proj
-      .enablePlugins(RiddlSbtPlugin)
-      .settings(
-        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
-        riddlcMinVersion := "0.25.0",
-      )
-
-  }
 }
 
 object Testing {
