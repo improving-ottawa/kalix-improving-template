@@ -1,5 +1,5 @@
-
 lazy val appName: String = "example"
+
 ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -33,6 +33,7 @@ lazy val design: Project = project
     riddlcConf := file(s"design/src/main/riddl/exampl.conf"),
     riddlcOptions := Seq("--show-times", "--hide-style-warnings")
   )
+
 
 lazy val common: Project = project
   .in(file("common"))
