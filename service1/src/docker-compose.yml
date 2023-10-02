@@ -1,0 +1,17 @@
+# See link for GooglePub/Sub, logback config
+# https://github.com/lightbend/kalix-jvm-sdk/blob/main/samples/scala-protobuf-customer-registry-quickstart/docker-compose.yml
+
+version: "3"
+services:
+  kalix-proxy:
+    image: gcr.io/kalix-public/kalix-proxy:1.1.18
+    ports:
+      - "9000:9000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      JAVA_TOOL_OPTIONS: >
+        -Dconfig.resource=dev-mode.conf
+        -Dlogback.configurationFile=logback-dev-mode.xml
+      USER_FUNCTION_HOST: ${USER_FUNCTION_HOST:-host.docker.internal}
+      USER_FUNCTION_PORT: ${USER_FUNCTION_PORT:-8080}

@@ -1,5 +1,5 @@
-
 lazy val appName: String = "example"
+
 ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -27,16 +27,13 @@ lazy val root = project
 
 lazy val design: Project = project
   .in(file("design"))
+  .enablePlugins(RiddlSbtPlugin)
   .configure(Config.Scala.withScala2)
-  .configure(Config.riddl(appName))
   .settings(
-    riddlcPath := file(
-      // NOTE: Set this to your local path which will always have this portion
-      // NOTE: of the path as a constant: riddl/riddlc/target/universal/stage/bin/riddlc
-      // NOTE: You must "sbt stage" in the riddl/riddlc directory for this to work
-      "/Users/reid/Code/reactific/riddl/riddlc/target/universal/stage/bin/riddlc"
-    )
+    riddlcConf := file(s"design/src/main/riddl/exampl.conf"),
+    riddlcOptions := Seq("--show-times", "--hide-style-warnings")
   )
+
 
 lazy val common: Project = project
   .in(file("common"))
@@ -63,4 +60,3 @@ lazy val gateway = project
   .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(service1))
   .configure(Config.Kalix.dependsOn(service2))
-

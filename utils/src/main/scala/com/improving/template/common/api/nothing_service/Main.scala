@@ -1,4 +1,4 @@
-package com.improving.template
+package com.improving.template.common.api.nothing_service
 
 import kalix.scalasdk.Kalix
 import org.slf4j.LoggerFactory
@@ -10,14 +10,15 @@ import org.slf4j.LoggerFactory
 
 object Main {
 
-  private val log = LoggerFactory.getLogger("com.improving.template.Main")
+  private val log = LoggerFactory.getLogger("com.improving.template.common.api.nothing_service.Main")
 
   def createKalix(): Kalix = {
     // The KalixFactory automatically registers any generated Actions, Views or Entities,
     // and is kept up-to-date with any changes in your protobuf definitions.
     // If you prefer, you may remove this and manually register these components in a
     // `Kalix()` instance.
-    KalixFactory.withComponents(new GatewayAction(_))
+    KalixFactory.withComponents(
+      new NothingAction(_))
   }
 
   def main(args: Array[String]): Unit = {
