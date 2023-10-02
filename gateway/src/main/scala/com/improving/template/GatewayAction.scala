@@ -20,23 +20,23 @@ class GatewayAction(creationContext: ActionCreationContext) extends AbstractGate
   val service1: Service1Client = creationContext.getGrpcClient(
     classOf[Service1Client],
     config.getString(
-      "com.improving.template.service1.grpc-client-name"
+      "com.improving.template.gateway.service1.grpc-client-name"
     )
   )
 
   val service2: Service2Client = creationContext.getGrpcClient(
     classOf[Service2Client],
     config.getString(
-      "com.improving.template.service2.grpc-client-name"
+      "com.improving.template.gateway.service2.grpc-client-name"
     )
   )
 
   override def doNothingTwice(doNothingTwiceCommand: DoNothingTwiceCommand): Action.Effect[DoNothingTwiceEvent] = {
-    for {
-      _ <- service1.doNothing().invoke(DoNothingCommand())
-      _ <- service2.doNothing().invoke(DoNothingCommand())
-    } yield ()
-
-    effects.reply(DoNothingTwiceEvent())
+    effects.asyncReply {
+      for {
+        _ <- service1.doNothing().invoke(DoNothingCommand())
+        _ <- service2.doNothing().invoke(DoNothingCommand())
+      } yield DoNothingTwiceEvent()
+    }
   }
 }

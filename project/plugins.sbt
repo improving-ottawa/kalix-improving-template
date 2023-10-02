@@ -15,6 +15,7 @@ addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.1.4")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.0")
 addSbtPlugin("com.reactific" %% "sbt-riddl" % "0.27.+")
 
+
 // For ScalaPB 0.11.x:
 libraryDependencies ++= Seq(
   "com.thesamet.scalapb" %% "compilerplugin" % "0.11.13",
@@ -22,5 +23,3 @@ libraryDependencies ++= Seq(
 )
 
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
-
-
