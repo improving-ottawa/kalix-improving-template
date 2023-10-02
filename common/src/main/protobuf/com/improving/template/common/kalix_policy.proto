@@ -1,7 +1,7 @@
 // This is the default Access Control List (ACL) for all components of this Kalix Service
 syntax = "proto3";
 
-package com.improving.template.common.domain;
+package com.example.common.domain;
 
 import "kalix/annotations.proto";
 

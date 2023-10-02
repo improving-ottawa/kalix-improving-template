@@ -7,8 +7,8 @@ import com.typesafe.sbt.packager.docker.DockerPlugin
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
 import com.typesafe.sbt.SbtNativePackager.autoImport.maintainer
 import sbt.Keys.*
-import sbt.{Compile, _}
-import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
+import sbt.{Compile, *}
+import scoverage.ScoverageKeys.{coverageFailOnMinimum, *}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
 import wartremover.WartRemover.autoImport.*
@@ -28,9 +28,10 @@ import sbtbuildinfo.BuildInfoOption.ToMap
 import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
-import scalapb.GeneratorOption.{FlatPackage, _}
+import scalapb.GeneratorOption.{FlatPackage, *}
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
+
 import java.net.URI
 import java.util.Calendar
 
@@ -94,6 +95,43 @@ object Config {
           Test / logBuffered := false,
           libraryDependencies ++= Dependencies.basicTestingDependencies ++ Dependencies.jsonDependencies
         )
+    }
+
+    lazy val scala_3_options: Seq[String] =
+      Seq(
+        "-deprecation",
+        "-feature",
+        "-new-syntax",
+        "-explain",
+        "-explain-types",
+        "-Werror",
+        "-pagewidth",
+        "120"
+      )
+
+    def scala_3_doc_options(version: String): Seq[String] = {
+      Seq(
+        "-deprecation",
+        "-feature",
+        "-groups",
+        "-project:RIDDL",
+        "-comment-syntax:wiki",
+        s"-project-version:$version",
+        "-siteroot:doc/src/hugo/static/apidoc",
+        "-author",
+        "-doc-canonical-base-url:https://riddl.tech/apidoc"
+      )
+    }
+
+    def withScala3(p: Project): Project = {
+      p.configure(withInfo)
+        .settings(
+          scalaVersion := "3.3.1",
+          scalacOptions := scala_3_options,
+          Compile / doc / scalacOptions := scala_3_doc_options((compile / scalaVersion).value),
+          autoAPIMappings := true
+        )
+        .configure(withWartRemover)
     }
 
     def scalapbCodeGen(project: Project): Project = {
@@ -215,6 +253,18 @@ object Config {
       )
   }
 
+  def withRiddl(appName: String)(proj: Project): Project = {
+    proj
+      .enablePlugins(RiddlSbtPlugin)
+      .configure(Config.Scala.withScala3)
+      .settings(
+        scalaVersion := "3.3.1",
+        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
+        riddlcMinVersion := "0.27.0",
+        riddlcOptions := Seq("--show-times", "--verbose"),
+      )
+  }
+
   object ScalaPB {
 
     private val generator_options: Seq[GeneratorOption] = Seq(
@@ -297,6 +347,8 @@ object Config {
     }
 
   }
+
+
   def riddl(appName: String)(proj: Project): Project = {
     proj
       .enablePlugins(RiddlSbtPlugin)

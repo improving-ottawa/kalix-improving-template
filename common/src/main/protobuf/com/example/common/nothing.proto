@@ -5,7 +5,7 @@
 
 syntax = "proto3";
 
-package com.ossum.amenities.account;
+package com.example.common;
 
 import "kalix/annotations.proto";
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.improving.template.common.api.nothing_service;
+package com.example.common.api;
 
 import "kalix/annotations.proto";
 
