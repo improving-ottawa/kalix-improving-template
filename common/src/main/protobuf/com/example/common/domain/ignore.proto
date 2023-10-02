@@ -9,9 +9,13 @@ package com.example.common;
 
 import "kalix/annotations.proto";
 
-service Nothing {
+/** This do-nothing service implementation is just here so that this directory is not empty
+  * When it is empty, you will get an `IllegalArgumentException: Nothing to generate!` error
+  * from kalix.codegen. When you create your first common things, you can remove this.
+ */
+service Ignore {
   option (kalix.service) = {
     type : SERVICE_TYPE_ACTION;
-    component: "nothing";
+    component: "ignore";
   };
 }
