@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.exmaple.common.api;
+package com.example.common.api;
 
 import "kalix/annotations.proto";
 

@@ -1,7 +1,7 @@
 // This is the default Access Control List (ACL) for all components of this Kalix Service
 syntax = "proto3";
 
-package com.exmaple.common;
+package com.example.common;
 
 import "kalix/annotations.proto";
 
@@ -10,5 +10,5 @@ import "kalix/annotations.proto";
 // per component or method using annotations.
 // Documentation at https://docs.kalix.io/services/using-acls.html
 option (kalix.file).acl = {
-  allow: { service: "*" }
+    allow: {service: "*"}
 };
