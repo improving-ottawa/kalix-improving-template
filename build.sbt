@@ -27,13 +27,7 @@ lazy val root = project
 
 lazy val design: Project = project
   .in(file("design"))
-  .enablePlugins(RiddlSbtPlugin)
-  .configure(Config.Scala.withScala2)
-  .settings(
-    riddlcConf := file(s"design/src/main/riddl/exampl.conf"),
-    riddlcOptions := Seq("--show-times", "--hide-style-warnings")
-  )
-
+  .configure(Config.withRiddl(appName))
 
 lazy val common: Project = project
   .in(file("common"))

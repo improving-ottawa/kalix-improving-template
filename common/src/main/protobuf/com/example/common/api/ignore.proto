@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package com.exmaple.common.api;
+
+import "kalix/annotations.proto";
+
+// An example message
+message SendMessage {
+    string cart_id = 1 [(kalix.field).entity_key = true];
+}
