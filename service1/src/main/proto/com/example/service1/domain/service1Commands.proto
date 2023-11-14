@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package com.example.service1.domain;
+
+import "com/example/service1/domain/service1DomainObjects.proto";
+
+
+message DoNothingCommand {
+    DoNothing nothing = 1;
+}

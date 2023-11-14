@@ -5,7 +5,7 @@
 
 syntax = "proto3";
 
-package com.example.common;
+package com.example.common.common.domain;
 
 import "kalix/annotations.proto";
 
@@ -14,8 +14,8 @@ import "kalix/annotations.proto";
   * from kalix.codegen. When you create your first common things, you can remove this.
  */
 service Ignore {
-  option (kalix.service) = {
-    type : SERVICE_TYPE_ACTION;
-    component: "ignore";
-  };
+    option (kalix.service) = {
+        type: SERVICE_TYPE_ACTION;
+        component: "ignore";
+    };
 }

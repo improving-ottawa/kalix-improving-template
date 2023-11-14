@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package common;
+
+import "scalapb/scalapb.proto";
+
+option java_package = "com.example.common";
+
+option (scalapb.options) = {
+    scope: FILE
+    flat_package: true
+    single_file: true
+    java_conversions: false
+};
+
+/** An enumeration for units of time (matches `scala.concurrent.duration.TimeUnit`). */
+enum TimeUnit {
+    option (scalapb.enum_options).type = "java.util.concurrent.TimeUnit";
+    option (scalapb.enum_options).companion_extends = "com.example.common.TimeUnitCompanion";
+
+    TIME_UNIT_NANOSECONDS = 0;
+    TIME_UNIT_MICROSECONDS = 1;
+    TIME_UNIT_MILLISECONDS = 2;
+    TIME_UNIT_SECONDS = 3;
+    TIME_UNIT_MINUTES = 4;
+    TIME_UNIT_HOURS = 5;
+    TIME_UNIT_DAYS = 6;
+    TIME_UNIT_UNSPECIFIED = 7;
+}
+
+/** A finite duration of time, represented in Scala as a `scala.concurrent.duration.FiniteDuration`. */
+message FiniteDuration {
+    option (scalapb.message).type = "scala.concurrent.duration.FiniteDuration";
+    option (scalapb.message).companion_extends = "com.example.common.FiniteDurationCompanion";
+
+    // The length of this duration, in the specified [[TimeUnit time-units]].
+    int64 length = 1;
+
+    // The unit of time of this duration.
+    TimeUnit unit = 2;
+}

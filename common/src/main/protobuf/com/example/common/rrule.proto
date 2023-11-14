@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package common;
+
+
+import "com/example/common/frequency.proto";
+import "com/example/common/weekday_num.proto";
+import "google/type/date.proto";
+import "google/type/month.proto";
+import "scalapb/scalapb.proto";
+import "scalapb/validate.proto";
+import "validate/validate.proto";
+
+option java_package = "com.example.common.protobuf";
+
+option (scalapb.options) = {
+  scope: FILE
+  flat_package: true
+  single_file: true
+  java_conversions: false
+
+  [scalapb.validate.file] { skip: true }
+};
+
+message MonthOfYear {
+  oneof value {
+    uint32 month_number = 1 [
+      (validate.rules).uint32.gte = 1,
+      (validate.rules).uint32.lte = 12
+    ];
+    google.type.Month month = 2;
+  }
+}
+
+// Note: Timezone is *ALWAYS* UTC
+message RRule {
+  option (scalapb.message).type = "com.example.common.RecurrentRule";
+  option (scalapb.message).companion_extends = "com.example.common.RecurrentRule.RRuleCompanion";
+
+  // freq
+  rrule.Frequency frequency = 1 [(validate.rules).enum.defined_only = true];
+
+  // interval
+  uint32 interval = 2 [(validate.rules).uint32.gte = 1];
+
+  // count
+  optional uint32 count = 3 [(validate.rules).uint32.gte = 1];
+
+  // until
+  optional google.type.Date until = 4;
+
+  // dtstart
+  optional google.type.Date start_date = 5;
+
+  // wkst
+  optional rrule.Weekday week_start = 6;
+
+  // bysetpos
+  repeated sint32 by_position = 7;
+
+  // bymonth
+  repeated MonthOfYear by_month = 8;
+
+  // bymonthday
+  repeated uint32 by_month_day = 9 [
+    (validate.rules).uint32.gte = 1,
+    (validate.rules).uint32.lte = 31
+  ];
+
+  // byyearday
+  repeated uint32 by_year_day = 10 [
+    (validate.rules).uint32.gte = 1,
+    (validate.rules).uint32.lte = 366
+  ];
+
+  // byweekno
+  repeated uint32 by_week_number = 11 [
+    (validate.rules).uint32.gte = 1,
+    (validate.rules).uint32.lte = 53
+  ];
+
+  // byday (or byweekday)
+  repeated rrule.WeekdayNum by_weekday = 12;
+
+  // reserved for time portion of RRule
+
+  // byhour
+  reserved 13;
+
+  // byminute
+  reserved 14;
+
+  // bysecond
+  reserved 15;
+
+  // exdate / exclusions
+  repeated google.type.Date exclusions = 16;
+}
