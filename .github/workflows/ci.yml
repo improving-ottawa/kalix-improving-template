@@ -59,7 +59,7 @@ jobs:
 
       - name: Validate design
         run: |
-          riddlc from "design/src/main/riddl/offTheTop.conf" validate
+          riddlc from "design/src/main/riddl/example.conf" validate
 
       - name: Running unit tests
         run: sbt test
