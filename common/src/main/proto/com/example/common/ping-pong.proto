@@ -1,16 +1,19 @@
 syntax = "proto3";
 
-package utils;
+package common;
 
 import "com/example/common/domain/uniqueid.proto";
+import "com/example/common/timestamp.proto";
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";
-import "com/example/common/timestamp.proto";
 
-option java_package = "com.example.utils";
+option java_package = "com.example.common";
 
 option (scalapb.options) = {
   scope: FILE
+  flat_package: true
+  single_file: true
+  java_conversions: false
 
   // This transformation makes all fields marked with `(validate.rules).message.required = true`
   // as "unboxed" (no `Option[_]` wrapper)

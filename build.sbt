@@ -37,20 +37,20 @@ lazy val design: Project = project
   .in(file("design"))
   .configure(Config.riddl(appName))
 
-lazy val common: Project = project
-  .in(file("common"))
-  .configure(Config.Kalix.baseLibrary)
-  .configure(Config.withDeps(Dependencies.javaLibRecur))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
-  .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
-
 lazy val utils: Project = project
   .in(file("utils"))
   .configure(Config.Kalix.baseLibrary)
-  .configure(Config.Kalix.dependsOn(common))
   .configure(Config.withDeps(Dependencies.kalixScalaSdk))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
   .configure(Config.withDepsPackage(Dependencies.httpDepsPackage))
+
+lazy val common: Project = project
+  .in(file("common"))
+  .configure(Config.Kalix.baseLibrary)
+  .configure(Config.Kalix.dependsOn(utils))
+  .configure(Config.withDeps(Dependencies.javaLibRecur))
+  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
+  .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
 lazy val service1 = project
   .in(file("service1"))
