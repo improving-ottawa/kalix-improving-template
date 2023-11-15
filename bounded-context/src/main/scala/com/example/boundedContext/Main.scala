@@ -1,6 +1,7 @@
-package com.example.gateway
+package com.example.boundedContext
 
-import com.example.gateway.api.{GatewayProxy, KalixFactory, LoginTokenService}
+import com.example.boundedContext.api._
+import com.example.boundedContext.entity._
 import kalix.scalasdk.Kalix
 import org.slf4j.LoggerFactory
 
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory
 
 object Main {
 
-  private val log = LoggerFactory.getLogger("com.example.template.Main")
+  private val log = LoggerFactory.getLogger("com.example.boundedContext.Main")
 
   def createKalix(): Kalix = {
     // The KalixFactory automatically registers any generated Actions, Views or Entities,
@@ -19,8 +20,10 @@ object Main {
     // If you prefer, you may remove this and manually register these components in a
     // `Kalix()` instance.
     KalixFactory.withComponents(
-      new LoginTokenService(_),
-      new GatewayProxy(_)
+      new Service1Entity(_),
+      new PingPong(_),
+      new Service1Impl(_),
+      new Service2Impl(_)
     )
   }
 

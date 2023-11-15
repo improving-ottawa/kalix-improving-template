@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package com.example.gateway.api;
+
+import "com/example/gateway/domain/login_token.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+
+// Note: This service is not exposed to the internet or public. It is only available to the gateway(proxy) service.
+service LoginToken {
+    option (kalix.service).acl.allow = {service: "gateway"};
+    option (kalix.codegen) = {
+        value_entity: {
+            entity_type: "login_token"
+            name: "com.example.gateway.api.LoginTokenService"
+            state: "com.example.gateway.domain.LoginTokenState"
+        }
+    };
+
+    // Register/create a LoginToken which can be later claimed by a user (via a link).
+    rpc CreateLoginToken (domain.CreateLoginTokenRequest) returns (domain.CreateLoginTokenResponse);
+
+    // Attempt to claim a previously defined login token.
+    // Note: The act of claiming a token will invalidate it, as they are single use only.
+    rpc ClaimLoginToken (domain.ClaimTokenRequest) returns (domain.ClaimTokenResponse);
+
+    // Invalidates a LoginToken
+    rpc InvalidateLoginToken (domain.ClaimTokenRequest) returns (google.protobuf.Empty);
+}

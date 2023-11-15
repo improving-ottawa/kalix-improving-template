@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.example.gateway.domain;
+
+import "com/example/gateway/domain/gateway_domain_objects.proto";
+
+message SendLoginLinkResponse {
+    // NOTE: This will be blank in production!
+    string login_token_for_test_only = 1;
+}
+
+message DoNothingTwiceResponse {
+    DoNothingTwice value = 1;
+}

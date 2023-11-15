@@ -1,15 +1,85 @@
 syntax = "proto3";
 
-package com.example.gateway;
+package com.example.gateway.api;
 
-import "com/example/gateway/domain/gatewayCommands.proto";
-import "com/example/gateway/domain/gatewayEvents.proto";
+import "com/example/bounded-context/domain/service1_domain.proto";
+import "com/example/bounded-context/domain/service2_domain.proto";
+import "com/example/gateway/domain/gateway_commands.proto";
+import "com/example/gateway/domain/gateway_responses.proto";
+import "com/example/gateway/domain/login_token.proto";
+import "com/example/gateway/messages/online_check_messages.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
 service Gateway {
     option (kalix.codegen) = {
-        action: {}
+        action: {
+            name: "com.example.gateway.api.GatewayProxy"
+        }
     };
 
-    rpc DoNothingTwice (domain.DoNothingTwiceCommand) returns (domain.DoNothingTwiceEvent) {}
+    /**************************
+     * Unauthenticated routes *
+     ***************************/
+
+    // Simple online check
+    rpc OnlineCheck (google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            // The HTTP/JSON endpoint for this RPC
+            get: "/online"
+        };
+    }
+
+    // Health check: checks that all backend-service (and implicitly the gateway) are online and available.
+    rpc HealthCheck (google.protobuf.Empty) returns (HealthCheckResponse) {
+        option (google.api.http) = {
+            // The HTTP/JSON endpoint for this RPC
+            get: "/health-check"
+        };
+    }
+
+    // TODO: uncomment if enabling email
+    // Creates a login token based on an admins email address and emails them a link to login to the app
+    // rpc SendAdminLoginLink (domain.SendLoginLinkRequest) returns (domain.SendLoginLinkResponse);
+
+    // Attempts to claim a previously created login token
+    rpc ClaimLoginToken (domain.ClaimTokenRequest) returns (domain.ClaimTokenResponse);
+
+    /*************************
+     * JWT/Admin Info routes *
+     *************************/
+
+    // Validates the provided JWT token
+    rpc ValidateJwt (domain.JwtValidationRequest) returns (domain.JwtValidationResponse) {
+        option (kalix.method).jwt = {
+            validate: BEARER_TOKEN
+            bearer_token_issuer: "example.io"
+        };
+    }
+
+    rpc DoNothingTwice (domain.DoNothingTwiceCommand) returns (domain.DoNothingTwiceResponse) {
+        option (kalix.method).jwt = {
+            validate: BEARER_TOKEN
+            bearer_token_issuer: "example.io"
+        };
+    }
+
+    // **************************
+    // * Bounded Context Routes *
+    // **************************
+
+    rpc DoNothingService1 (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1) {
+        option (kalix.method).jwt = {
+            validate: BEARER_TOKEN
+            bearer_token_issuer: "off-the-top.io"
+        };
+    }
+
+    rpc DoNothingService2 (boundedContext.domain.DoNothingCommand2) returns (boundedContext.domain.DoNothingResponse2) {
+        option (kalix.method).jwt = {
+            validate: BEARER_TOKEN
+            bearer_token_issuer: "off-the-top.io"
+        };
+    }
 }

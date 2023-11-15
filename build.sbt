@@ -12,8 +12,7 @@ organizationHomepage := Some(url("https://www.improving.com/"))
 // docker images built and they are deployable to the Kalix cloud.
 // Note: if you write a new Kalix service, make sure it is added to this list!
 lazy val kalixServices = List[Project](
-  service1,
-  service2,
+  boundedContext,
   gateway
 )
 
@@ -31,7 +30,7 @@ lazy val root = project
     // Publish containers + deploy services (combo command)
     KalixEnv.publishAndDeploy := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
-  .aggregate(design, common, utils, service1, service2, gateway)
+  .aggregate(design, common, utils, boundedContext, gateway)
 
 lazy val design: Project = project
   .in(file("design"))
@@ -52,18 +51,8 @@ lazy val common: Project = project
   .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
-lazy val service1 = project
-  .in(file("service1"))
-  .configure(Config.Kalix.kalixLibrary)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.withDepsPackage(Dependencies.csvParsingDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )
-
-lazy val service2 = project
-  .in(file("service2"))
+lazy val boundedContext = project
+  .in(file("bounded-context"))
   .configure(Config.Kalix.kalixLibrary)
   .configure(Config.Kalix.dependsOn(common))
   .configure(Config.Kalix.dependsOn(utils))
@@ -75,5 +64,4 @@ lazy val service2 = project
 lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.Kalix.service)
-  .configure(Config.Kalix.dependsOn(service1))
-  .configure(Config.Kalix.dependsOn(service2))
+  .configure(Config.Kalix.dependsOn(boundedContext))
