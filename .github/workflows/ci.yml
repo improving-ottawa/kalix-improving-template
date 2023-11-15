@@ -4,66 +4,27 @@ name: CI
 
 on:
   pull_request:
-  push:
     branches:
       - main
+    paths:
+      - '**.scala'
+      - '**.proto'
+      - '**.conf'
+      - '**.yml'
+      - '**.sbt'
+      - '**.sh'
 
 permissions:
   contents: read
 
 jobs:
-  checks:
-    name: Basic checks
+  scala-build-test:
+    name: sbt build, test
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         # v3.1.0
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
-
-      - name: Checkout GitHub merge
-        if: github.event.pull_request
-        run: |-
-          git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
-          git checkout scratch
-
-      - name: Restore Coursier cache
-        # https://github.com/actions/cache/releases
-        # v3.3.1
-        uses: actions/cache/restore@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
-        with:
-          path: |
-            ~/.cache/coursier
-            ~/.sbt
-            ~/.ivy2/cache
-          key: coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-${{ hashFiles('build.sbt', 'project/**.scala', 'project/**.sbt') }}
-          restore-keys: |
-            coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-${{ hashFiles('build.sbt', 'project/**.scala', 'project/**.sbt') }}
-            coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-
-            coursier-
-
-      - name: Set up JDK 17
-        # https://github.com/coursier/setup-action/releases
-        # v1.3.0
-        uses: coursier/setup-action@70323223454ac2a9eb2de46f389b4d045cbcdea5
-        with:
-          jvm: temurin:1.17
-
-      - name: Run scalafmt checks
-        run: |
-          sbt --client "scalafmtCheckAll" || \
-            { echo "[error] Code not formatted prior to commit. Run 'sbt scalafmtAll' then commit the reformatted code."; false; }
-
-      - name: sbt shutdown
-        run: |
-          sbt --client shutdown
-
-  build-publish-test:
-    name: Build, publish locally, test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        # v3.1.0
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
+        uses: actions/checkout@v4
 
       - name: Checkout GitHub merge
         if: github.event.pull_request
@@ -74,7 +35,7 @@ jobs:
       - name: Cache Coursier cache
         # https://github.com/actions/cache/releases
         # v3.3.1
-        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ~/.cache/coursier
@@ -88,26 +49,31 @@ jobs:
 
       - name: Set up JDK 17
         # https://github.com/coursier/setup-action/releases
-        # v1.3.0
-        uses: coursier/setup-action@70323223454ac2a9eb2de46f389b4d045cbcdea5
+        # v1.3.4
+        uses: coursier/setup-action@v1.3.4
         with:
           jvm: temurin:1.17
 
-      - name: Build and publish project
-        id: build_sdk
-        run: |-
-          sbt "Docker / publishLocal"
+      - name: Get riddl
+        uses: reactific/riddl/actions/get-riddlc@main
 
-      - name: sbt test
+      - name: Validate design
+        run: |
+          riddlc from "design/src/main/riddl/example.conf" validate
+
+      - name: Running unit tests
         run: sbt test
+
+      # TODO: uncomment when integration tests are complete
+      # - name: Running integration tests
+      #  run: sbt "integration-test/test"
 
   ui-build-test:
     name: npm ci, build and test
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        # v3.1.0
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8
+        uses: actions/checkout@v4
 
       - name: Checkout GitHub merge
         if: github.event.pull_request
@@ -120,10 +86,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: protoGen for scala project
+        run: sbt protocGenerate
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+        with:
+          version: "24.x"
+
       - name: npm
         working-directory: ui
         run: |
+          npm install -g protoc-gen-js
           npm ci
-          npm run build --if-present
+          ./proto-gen.sh
           # TODO: enable when tests are ready 
           # npm test

@@ -13,12 +13,14 @@ addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.1.4")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.0")
-addSbtPlugin("com.reactific" %% "sbt-riddl" % "0.27.+")
+addSbtPlugin("com.reactific" %% "sbt-riddl" % "0.27.1" )
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
 
-// For ScalaPB 0.11.x:
+// For ScalaPB 0.11.x we meed these items
 libraryDependencies ++= Seq(
   "com.thesamet.scalapb" %% "compilerplugin" % "0.11.13",
   "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.4",
 )
 
+// This gets rid of some resolution failures by forcing the scala-xml to use
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always

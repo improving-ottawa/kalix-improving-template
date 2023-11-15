@@ -1,0 +1,136 @@
+@import "screens/colors";
+
+.primary-font {
+  @extend .regular-font-weight;
+  @extend .primary-text-colour;
+  font-family: 'Roboto';
+}
+
+.regular-font-weight {
+  font-weight: 400;
+}
+
+.medium-font-weight {
+  font-weight: 550;
+}
+
+.bold-font-weight {
+  font-weight: 700;
+}
+
+.small-display {
+  @extend .primary-font;
+  font-size: 36px;
+  line-height: 44px;
+  letter-spacing: 0;
+}
+
+.medium-display {
+  @extend .primary-font;
+  font-size: 45px;
+  line-height: 52px;
+  letter-spacing: 0;
+}
+
+.large-display {
+  @extend .primary-font;
+  font-size: 57px;
+  line-height: 64px;
+  letter-spacing: -0.25px;
+}
+
+.small-headline {
+  @extend .primary-font;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0;
+}
+
+.medium-headline {
+  @extend .primary-font;
+  font-size: 28px;
+  line-height: 36px;
+  letter-spacing: 0;
+}
+
+.large-headline {
+  @extend .primary-font;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: 0;
+}
+
+.small-title {
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+.medium-title {
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+}
+
+.large-title {
+  @extend .primary-font;
+  font-size: 22px;
+  line-height: 28px;
+  letter-spacing: 0;
+}
+
+.small-label {
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+}
+
+.medium-label {
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+}
+
+.large-label {
+  @extend .primary-font;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+.small-body {
+  @extend .primary-font;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+}
+
+.medium-body {
+  @extend .primary-font;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+}
+
+.large-body {
+  @extend .primary-font;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.5px;
+}
+
+.primary-text-colour {
+  background: #202020;
+}
+
+.neutral-text-color {
+  color: #FFFFFF;
+}

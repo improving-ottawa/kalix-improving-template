@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package common;
+
+import "com/example/common/domain/uniqueid.proto";
+import "com/example/common/timestamp.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option java_package = "com.example.common";
+
+option (scalapb.options) = {
+  scope: FILE
+  flat_package: true
+  single_file: true
+  java_conversions: false
+
+  // This transformation makes all fields marked with `(validate.rules).message.required = true`
+  // as "unboxed" (no `Option[_]` wrapper)
+  field_transformations: [
+    {
+      when: {options: {[validate.rules] {message: {required: true}}}}
+      set: {
+        [scalapb.field] { required: true }
+      }
+    }
+  ]
+};
+
+/** Captures each time a services touches a [[PingThroughRequest]] */
+message ServiceTrace {
+  string service_name = 1 [(validate.rules).string.min_len = 1];
+  common.Timestamp trace_timestamp = 2 [(validate.rules).message.required = true];
+}
+
+/** Used for online and responsiveness testing/verification */
+message PingThroughRequest {
+  com.example.common.common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
+  common.Timestamp start_time = 2 [(validate.rules).message.required = true];
+  /** Keeps track of the services which this request passed through during the request */
+  repeated ServiceTrace traces = 3 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
+}
+
+/**
+A reply for a [[PingThroughRequest]], which get bubbled-up from lower level services to the gateway service eventually.
+*/
+message PingThroughResponse {
+  com.example.common.common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
+  common.Timestamp start_time = 2 [(validate.rules).message.required = true];
+  common.Timestamp end_time = 3 [(validate.rules).message.required = true];
+  /** All of the services which the `PingThrough` passed through */
+  repeated ServiceTrace traces = 4 [
+    (validate.rules).repeated.min_items = 1,
+    (scalapb.field).collection_type = "scala.collection.immutable.List"
+  ];
+}

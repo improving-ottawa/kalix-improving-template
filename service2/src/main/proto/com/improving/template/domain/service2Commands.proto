@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package com.improving.template.domain;
-
-import "com/improving/template/domain/service2DomainObjects.proto";
-
-message DoNothingCommand {
-    DoNothing nothing = 1;
-}
