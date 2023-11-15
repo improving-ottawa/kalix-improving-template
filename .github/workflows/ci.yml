@@ -64,8 +64,9 @@ jobs:
       - name: Running unit tests
         run: sbt test
 
-      - name: Running integration tests
-        run: sbt "integration-test/test"
+      # TODO: uncomment when integration tests are complete
+      # - name: Running integration tests
+      #  run: sbt "integration-test/test"
 
   ui-build-test:
     name: npm ci, build and test

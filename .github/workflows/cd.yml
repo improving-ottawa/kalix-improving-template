@@ -62,12 +62,13 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
-      - name: Docker package and publish
-        working-directory: ui
-        run: |
-          docker build -t "$WEB_UI_IMAGE":"$GITHUB_SHA" -t "$WEB_UI_IMAGE":latest .
-          docker push "$WEB_UI_IMAGE":"$GITHUB_SHA"
-          docker push "$WEB_UI_IMAGE":latest
+      # TODO: uncomment when GCP has been configured
+      # - name: Docker package and publish
+      #  working-directory: ui
+      #  run: |
+      #    docker build -t "$WEB_UI_IMAGE":"$GITHUB_SHA" -t "$WEB_UI_IMAGE":latest .
+      #    docker push "$WEB_UI_IMAGE":"$GITHUB_SHA"
+      #    docker push "$WEB_UI_IMAGE":latest
 
   # TODO: uncomment when GCP has been configured
   #      - name: Google Cloud Run Deploy
@@ -108,8 +109,9 @@ jobs:
         with:
           jvm: temurin:1.17
 
-      - name: Running unit tests and integration tests
-        run: sbt test "integration-test/test"
+      # TODO: uncomment when integration tests are complete
+      # - name: Running unit tests and integration tests
+      #  run: sbt test "integration-test/test"
 
       - name: Installing Kalix CLI
         run: |
