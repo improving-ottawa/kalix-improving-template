@@ -29,8 +29,9 @@ object KalixEnv {
    */
   val secretsMap: Map[String, String] = Map(
     "JWT_KEY_PASSWORD" -> "private-key-password/password",
-    "MAILJET_API_KEY" -> "mailjet-secret/APIKEY",
-    "MAILJET_PRIVATE_KEY" -> "mailjet-secret/PRIVATEKEY",
+    // TODO: uncomment if using a mail client
+    // "MAILJET_API_KEY" -> "mailjet-secret/APIKEY",
+    // "MAILJET_PRIVATE_KEY" -> "mailjet-secret/PRIVATEKEY",
   )
 
   /* Sbt tasks */
