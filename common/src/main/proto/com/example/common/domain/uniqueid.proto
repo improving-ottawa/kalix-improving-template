@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package com.example.common.common.domain;
+
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option java_package = "com.example.common";
+
+option (scalapb.options) = {
+    scope: FILE
+    flat_package: true
+    single_file: true
+    java_conversions: false
+};
+
+/** A "universally-unique-identifier" (`uuid`), represented in Scala as a `java.util.UUID`. */
+message UniqueID {
+    option (scalapb.message).type = "java.util.UUID";
+    option (scalapb.message).companion_extends = "com.example.common.UniqueIDCompanion";
+
+    // The high 64 bits of the 128-bit UUID
+    string uuid = 1 [(validate.rules).string.uuid = true];
+}

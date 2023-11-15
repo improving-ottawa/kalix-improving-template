@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package common.rrule;
+
+option java_package = "com.example.common";
+
+import "scalapb/scalapb.proto";
+
+option (scalapb.options) = {
+    scope: FILE
+    flat_package: true
+    single_file: true
+    java_conversions: false
+};
+
+enum Frequency {
+    FREQUENCY_DAILY = 0;
+    FREQUENCY_WEEKLY = 1;
+    FREQUENCY_MONTHLY = 2;
+    FREQUENCY_YEARLY = 3;
+
+    // Rule never runs
+    FREQUENCY_NEVER = 2147483647;
+}

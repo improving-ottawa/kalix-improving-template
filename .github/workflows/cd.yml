@@ -1,0 +1,125 @@
+name: CD
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    pull_request:
+      branches: [ main ]
+      paths:
+        - .github/workflows/cd.yml
+  # runs when pull requests are merged (pushes into `main` branch)
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: 'write'
+
+jobs:
+  ui-build-test-deploy:
+    name: npm build, test, package, deploy
+    runs-on: ubuntu-22.04
+    env:
+      WEB_UI_IMAGE: "gcr.io/kalix-solution-web-servers/off-the-top/web-ui"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: protoGen for scala project
+        run: sbt protocGenerate
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+        with:
+          version: "24.x"
+
+      - name: npm test
+        working-directory: ui
+        run: |
+          npm install -g protoc-gen-js
+          npm ci
+          ./proto-gen.sh     
+          # TODO: enable when tests are ready 
+          # npm test
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
+          token_format: 'access_token'
+
+      - name: Docker Auth
+        uses: 'docker/login-action@v1'
+        with:
+          registry: 'gcr.io'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+
+      # TODO: uncomment when GCP has been configured
+      # - name: Docker package and publish
+      #  working-directory: ui
+      #  run: |
+      #    docker build -t "$WEB_UI_IMAGE":"$GITHUB_SHA" -t "$WEB_UI_IMAGE":latest .
+      #    docker push "$WEB_UI_IMAGE":"$GITHUB_SHA"
+      #    docker push "$WEB_UI_IMAGE":latest
+
+  # TODO: uncomment when GCP has been configured
+  #      - name: Google Cloud Run Deploy
+  #        uses: 'google-github-actions/deploy-cloudrun@v1'
+  #        with:
+  #          service: 'ott-web-ui'
+  #          region: 'us-east1'
+  #          image: '${{ env.WEB_UI_IMAGE }}:latest'
+
+  scala-build-test-deploy:
+    name: sbt build, test, deploy
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Coursier cache
+        # https://github.com/actions/cache/releases
+        # v3.3.1
+        uses: actions/cache@v3.3.1
+        with:
+          path: |
+            ~/.cache/coursier
+            ~/.sbt
+            ~/.ivy2/cache
+          key: coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-${{ hashFiles('build.sbt', 'project/**.scala', 'project/**.sbt') }}
+          restore-keys: |
+            coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-${{ hashFiles('build.sbt', 'project/**.scala', 'project/**.sbt') }}
+            coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-
+            coursier-
+
+      - name: Set up JDK 17
+        # https://github.com/coursier/setup-action/releases
+        # v1.3.4
+        uses: coursier/setup-action@v1.3.4
+        with:
+          jvm: temurin:1.17
+
+      # TODO: uncomment when integration tests are complete
+      # - name: Running unit tests and integration tests
+      #  run: sbt test "integration-test/test"
+
+      - name: Installing Kalix CLI
+        run: |
+          curl -sL https://docs.kalix.io/install-cli.sh | bash -s -- --yes
+          echo "Installed Kalix CLI version: $(kalix version)"
+
+# TODO: uncomment when secret is configured
+#      - name: Kalix Deploy
+#        run: sbt publishAndDeploy
+#        env:
+#          KALIX_TOKEN: ${{ secrets.KALIX_TOKEN }}

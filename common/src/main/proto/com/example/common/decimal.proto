@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package common;
+
+import "scalapb/scalapb.proto";
+
+option java_package = "com.example.common";
+
+option (scalapb.options) = {
+    scope: FILE
+    package_name: "com.example.common"
+    flat_package: true
+    single_file: true
+    java_conversions: false
+};
+
+// Number of arbitrary precision, used for monetary and financial calculations. It's represented using two's-complement
+// binary representation and the bytes are in big-endian byte-order.
+//
+// Maps to the Scala `BigDecimal` type in code.
+message Decimal {
+    option (scalapb.message).type = "scala.math.BigDecimal";
+    option (scalapb.message).companion_extends = "com.example.common.DecimalCompanion";
+
+    // Unscaled value of the decimal
+    bytes unscaled_value = 1;
+    // The value of the decimal is: unscaled_value * 10^(-scale)
+    int32 scale = 2;
+}

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package common.rrule;
+
+option java_package = "com.example.common";
+
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option (scalapb.options) = {
+    scope: FILE
+    flat_package: true
+    single_file: true
+    java_conversions: false
+};
+
+enum Weekday {
+    WEEKDAY_SU = 0;
+    WEEKDAY_MO = 1;
+    WEEKDAY_TU = 2;
+    WEEKDAY_WE = 3;
+    WEEKDAY_TH = 4;
+    WEEKDAY_FR = 5;
+    WEEKDAY_SA = 6;
+}
+
+message WeekdayNum {
+    option (scalapb.message).companion_extends = "com.example.common.WeekdayNumCompanion";
+
+    uint32 pos = 1 [
+        (validate.rules).uint32.gte = 1,
+        (validate.rules).uint32.lte = 53
+    ];
+
+    Weekday weekday = 2;
+}

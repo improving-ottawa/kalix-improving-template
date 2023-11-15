@@ -4,17 +4,17 @@ import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
-import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
-import com.typesafe.sbt.SbtNativePackager.autoImport.maintainer
-import sbt.Keys.*
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
+import sbt.Keys._
 import sbt.{Compile, _}
-import scoverage.ScoverageKeys.{*, coverageFailOnMinimum}
+import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
-import wartremover.WartRemover.autoImport.*
+import wartremover.WartRemover.autoImport._
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
+import kalix.sbt.KalixPlugin.autoImport.*
 import protocbridge.Target
 import sbtbuildinfo.BuildInfoKey
 import sbtbuildinfo.BuildInfoKeys.buildInfoKeys
@@ -29,8 +29,7 @@ import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
 import scalapb.GeneratorOption.{FlatPackage, _}
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport._
 
 import java.net.URI
 import java.util.Calendar
@@ -38,16 +37,10 @@ import java.util.Calendar
 object Config {
   def withInfo(p: Project): Project = {
     p.settings(
-      ThisBuild / maintainer := "reid@ossum.biz",
-      ThisBuild / organization := "com.ossum.amenities",
-      ThisBuild / organizationHomepage := Some(URI.create("https://reactific.com/").toURL),
-      ThisBuild / organizationName := "Ossum Inc.",
-      ThisBuild / startYear := Some(2019),
-      ThisBuild / licenses +=
-        (
-          "Apache-2.0",
-          new URI("https://www.apache.org/licenses/LICENSE-2.0.txt").toURL
-        ),
+      ThisBuild / organization := "io.off-the-top",
+      // ThisBuild / organizationHomepage := Some(URI.create("https://???/").toURL),
+      ThisBuild / organizationName := "Off The Top",
+      ThisBuild / startYear := Some(2023),
       ThisBuild / versionScheme := Option("early-semver"),
       ThisBuild / dynverVTagPrefix := false,
       run / fork := true,
@@ -59,6 +52,12 @@ object Config {
       ThisBuild / dynverSeparator := "-",
     )
   }
+
+  def withDepsPackage(deps: scala.collection.Seq[ModuleID])(proj: Project): Project =
+    proj.settings(libraryDependencies ++= deps)
+
+  def withDeps(first: ModuleID, rest: ModuleID*)(proj: Project): Project =
+    proj.settings(libraryDependencies ++= first +: rest)
 
   object Scala {
 
@@ -95,43 +94,6 @@ object Config {
           Test / logBuffered := false,
           libraryDependencies ++= Dependencies.basicTestingDependencies ++ Dependencies.jsonDependencies
         )
-    }
-
-    lazy val scala_3_options: Seq[String] =
-      Seq(
-        "-deprecation",
-        "-feature",
-        "-new-syntax",
-        "-explain",
-        "-explain-types",
-        "-Werror",
-        "-pagewidth",
-        "120"
-      )
-
-    def scala_3_doc_options(version: String): Seq[String] = {
-      Seq(
-        "-deprecation",
-        "-feature",
-        "-groups",
-        "-project:RIDDL",
-        "-comment-syntax:wiki",
-        s"-project-version:$version",
-        "-siteroot:doc/src/hugo/static/apidoc",
-        "-author",
-        "-doc-canonical-base-url:https://riddl.tech/apidoc"
-      )
-    }
-
-    def withScala3(p: Project): Project = {
-      p.configure(withInfo)
-        .settings(
-          scalaVersion := "3.3.1",
-          scalacOptions := scala_3_options,
-          Compile / doc / scalacOptions := scala_3_doc_options((compile / scalaVersion).value),
-          autoAPIMappings := true
-        )
-        .configure(withWartRemover)
     }
 
     def scalapbCodeGen(project: Project): Project = {
@@ -220,10 +182,26 @@ object Config {
       proj
         .enablePlugins(wartremover.WartRemover)
         .settings(
-          Compile / compile / wartremoverErrors ++= Warts.all,
+          Compile / compile / wartremoverWarnings ++= Warts.all,
+          Compile / compile / wartremoverWarnings -= Wart.ImplicitConversion,
           // Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Nothing, Wart.Serializable)
           // wartremoverWarnings += Wart.Nothing,
           // wartremoverWarnings ++= Seq(Wart.Any, Wart.Serializable)
+
+          // Skip any generated code (lots of warts there!)
+          wartremoverExcluded ++= Seq(
+            (proj / sourceManaged).value,
+            (proj / crossTarget).value / "akka-grpc"
+          ),
+
+          // Seems like this doesn't work in the current WartRemover plugin, so we do it manually
+          proj / scalacOptions ++= {
+            val base = (LocalRootProject / baseDirectory).value
+            wartremoverExcluded.value.distinct.map { c =>
+              val x = base.toPath.relativize(c.toPath)
+              s"-P:wartremover:excluded:$x"
+            }
+          }
         )
     }
   }
@@ -250,18 +228,6 @@ object Config {
             ) ++ dockerBuildOptions.value :+ "."
           } else dockerBuildCommand.value
         }
-      )
-  }
-
-  def withRiddl(appName: String)(proj: Project): Project = {
-    proj
-      .enablePlugins(RiddlSbtPlugin)
-      .configure(Config.Scala.withScala3)
-      .settings(
-        scalaVersion := "3.3.1",
-        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
-        riddlcMinVersion := "0.27.0",
-        riddlcOptions := Seq("--show-times", "--verbose"),
       )
   }
 
@@ -300,6 +266,27 @@ object Config {
         .configure(Config.Scala.withScala2)
         .configure(Config.ScalaPB.protoGenValidate)
         .configure(Config.withDocker)
+        .configure(Scala.withWartRemover)
+        .settings(
+          dockerRepository := Some(KalixEnv.containerRepository),
+          dockerAliases := {
+            val packageName = (proj / name).value
+            val projVersion = (proj / version).value
+            val updatedAlias = DockerAlias(
+              registryHost = Some(KalixEnv.containerRepository),
+              username = None,
+              name = s"${KalixEnv.organizationName}/${KalixEnv.projectName}/$packageName",
+              tag = Some(projVersion)
+            )
+
+            Seq(
+              // Updated docker alias
+              updatedAlias,
+              // With the `latest` tag
+              updatedAlias.withTag(Some("latest"))
+            )
+          }
+        )
         .settings(
           exportJars := true,
           run / envVars += ("HOST", "0.0.0.0"),
@@ -310,7 +297,12 @@ object Config {
           ),
           run / fork := true,
           Global / cancelable := false, // ctrl-c
-          libraryDependencies ++= Dependencies.testingDeps ++ Dependencies.grpc ++ Dependencies.loggingDependencies,
+          libraryDependencies ++= (
+            Dependencies.testingDeps ++
+              Dependencies.grpc ++
+              Dependencies.loggingDependencies ++
+              Dependencies.integrationTestDependencies
+          ),
           Compile / scalacOptions ++= Seq(
             "-target:11",
             "-deprecation",
@@ -325,26 +317,55 @@ object Config {
             "-parameters" // for Jackson
           )
         )
-    }
-
-    def library(proj: Project): Project = {
-      proj
-        .enablePlugins(KalixPlugin, JavaAppPackaging)
-        .configure(Config.Scala.withScala2)
-        .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Config.ScalaPB.protoGenValidate)
         .settings(
-          libraryDependencies ++= testingDeps
+          // Publishes docker images to Kalix container registry
+          KalixEnv.publishContainers := {
+            KalixEnv.publishProjectContainers(Seq(proj)).value
+          },
+          // Publishes each service to Kalix with the `latest` image tag.
+          KalixEnv.deployServices := {
+            KalixEnv.deployProjectServices(Seq(proj)).value
+          },
+          // Publish containers + deploy services (combo command)
+          KalixEnv.publishAndDeploy := {
+            KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value
+          }
         )
     }
 
-    def dependsOn(dependency: Project)(
-        project: Project
-    ): Project = {
-      project
-        .dependsOn(dependency)
-        .dependsOn(dependency % "protobuf;compile->compile;test->test")
+    def baseLibrary(proj: Project): Project =
+      proj
+        .configure(Config.Scala.withScala2)
+        .configure(Config.Scala.withCoverage(minCoverage))
+        .configure(Scala.withWartRemover)
+        .configure(Config.ScalaPB.protoGenValidate)
+        .settings(
+          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage,
+          libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",
+          excludeDependencies ++= Seq(
+            ExclusionRule("com.lightbend.akka.grpc"),
+          )
+        )
+
+    def kalixLibrary(proj: Project): Project = {
+      proj
+        .enablePlugins(KalixPlugin)
+        .configure(Config.Scala.withScala2)
+        .configure(Config.Scala.withCoverage(minCoverage))
+        .configure(Scala.withWartRemover)
+        .configure(Config.ScalaPB.protoGenValidate)
+        .settings(
+          libraryDependencies ++= testingDeps ++ akkaKalixServiceDepsPackage,
+          runAll := {
+            val logger = streams.value.log
+            logger.warn("You cannot run a library!")
+          }
+        )
     }
+
+    def dependsOn(dependency: Project)(project: Project): Project =
+      project
+        .dependsOn(dependency % "protobuf;compile->compile;test->test")
 
   }
 
@@ -352,10 +373,12 @@ object Config {
     proj
       .enablePlugins(RiddlSbtPlugin)
       .settings(
-        // riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
-        riddlcMinVersion := "0.25.0",
+        scalaVersion := "3.3.1",
+        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
+        riddlcMinVersion := "0.27.0",
+        riddlcConf := file("design/src/main/riddl/offTheTop.conf"),
+        riddlcOptions := Seq("--show-times", "--verbose"),
       )
-
   }
 }
 
@@ -368,4 +391,24 @@ object Testing {
       libraryDependencies ++= basicTestingDependencies ++ jsonDependencies
     )
   }
+}
+
+object Utils {
+  import java.io.{File, FileInputStream}
+  import java.security.{DigestInputStream, MessageDigest}
+
+  def hashFile(file: File): String = {
+    val buffer = new Array[Byte](8192)
+    val sha1 = MessageDigest.getInstance("SHA-1")
+
+    val dis = new DigestInputStream(new FileInputStream(file), sha1)
+    try {
+      while (dis.read(buffer) != -1) {}
+    } finally {
+      dis.close()
+    }
+
+    sha1.digest.map("%02x".format(_)).mkString
+  }
+
 }
