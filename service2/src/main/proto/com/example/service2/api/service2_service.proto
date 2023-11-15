@@ -18,5 +18,7 @@ service Service2 {
         }
     };
 
-    rpc DoNothing (domain.DoNothingCommand) returns (google.protobuf.Empty) {}
+    rpc DoNothing (domain.DoNothingCommand) returns (google.protobuf.Empty) {
+        option (kalix.method).entity.key_generator = VERSION_4_UUID;
+    }
 }

@@ -1,5 +1,11 @@
 package com.example.gateway
 
+import com.example.gateway.domain.{DoNothingTwiceCommand, DoNothingTwiceEvent}
+import com.example.service1.Service1
+import com.example.service1.domain.{DoNothingCommand => Service1DoNothingCommand}
+import com.example.service2.Service2
+import com.example.service2.domain.{DoNothingCommand => Service2DoNothingCommand}
+
 import com.typesafe.config.{Config, ConfigFactory}
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.action.ActionCreationContext
@@ -16,25 +22,21 @@ class GatewayAction(creationContext: ActionCreationContext) extends AbstractGate
 
   lazy val config: Config = ConfigFactory.load()
 
-  val service1: Service1Client = creationContext.getGrpcClient(
-    classOf[Service1Client],
-    config.getString(
-      "com.example.template.gateway.service1.grpc-client-name"
-    )
+  val service1: Service1 = creationContext.getGrpcClient(
+    classOf[Service1],
+    config.getString("com.improving.template.gateway.service1.grpc-client-name")
   )
 
-  val service2: Service2Client = creationContext.getGrpcClient(
-    classOf[Service2Client],
-    config.getString(
-      "com.example.template.gateway.service2.grpc-client-name"
-    )
+  val service2: Service2 = creationContext.getGrpcClient(
+    classOf[Service2],
+    config.getString("com.improving.template.gateway.service2.grpc-client-name")
   )
 
   override def doNothingTwice(doNothingTwiceCommand: DoNothingTwiceCommand): Action.Effect[DoNothingTwiceEvent] = {
     effects.asyncReply {
       for {
-        _ <- service1.doNothing().invoke(DoNothingCommand())
-        _ <- service2.doNothing().invoke(DoNothingCommand())
+        _ <- service1.doNothing(Service1DoNothingCommand())
+        _ <- service2.doNothing(Service2DoNothingCommand())
       } yield DoNothingTwiceEvent()
     }
   }

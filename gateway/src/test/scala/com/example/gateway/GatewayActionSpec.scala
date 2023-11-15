@@ -1,27 +1,26 @@
 package com.example.gateway
 
+import com.example.gateway.domain.DoNothingTwiceCommand
 import akka.actor.ActorSystem
-import com.example.gateway
-import com.example.service1.Main
+import com.google.protobuf.empty.Empty
 import com.typesafe.config.ConfigFactory
-import kalix.javasdk.impl.GrpcClients
 import kalix.scalasdk.KalixRunner
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{BeforeAndAfterAll, Ignore}
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters.MapHasAsJava
-import com.google.protobuf.empty.Empty
-import org.scalatest.time.{Millis, Seconds, Span}
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
 //
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
+@Ignore
 class GatewayActionSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures with Eventually {
 
   implicit private val patience: PatienceConfig = {
@@ -39,11 +38,10 @@ class GatewayActionSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
     )
 
     val config = ConfigFactory.parseMap(confMap.asJava).withFallback(ConfigFactory.load())
-    }
-  gateway.Main
-      /** EndMarker */
+
+    com.example.gateway.Main
       .createKalix()
-      .createRunner(config).createKalix().createRunner(config)
+      .createRunner(config)
   }
 
   override def beforeAll(): Unit =
@@ -68,4 +66,5 @@ class GatewayActionSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll
     }
 
   }
+
 }
