@@ -1,186 +1,136 @@
 @import "screens/colors";
 
 .primary-font {
-    @extend .regular-font-weight;
-    @extend .primary-text-colour;
-    font-family: 'Roboto';
+  @extend .regular-font-weight;
+  @extend .primary-text-colour;
+  font-family: 'Roboto';
 }
 
 .regular-font-weight {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 .medium-font-weight {
-    font-weight: 550;
+  font-weight: 550;
 }
 
 .bold-font-weight {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .small-display {
-    @extend .primary-font;
-    font-size: 36px;
-    line-height: 44px;
-    letter-spacing: 0;
+  @extend .primary-font;
+  font-size: 36px;
+  line-height: 44px;
+  letter-spacing: 0;
 }
 
 .medium-display {
-    @extend .primary-font;
-    font-size: 45px;
-    line-height: 52px;
-    letter-spacing: 0;
+  @extend .primary-font;
+  font-size: 45px;
+  line-height: 52px;
+  letter-spacing: 0;
 }
 
 .large-display {
-    @extend .primary-font;
-    font-size: 57px;
-    line-height: 64px;
-    letter-spacing: -0.25px;
+  @extend .primary-font;
+  font-size: 57px;
+  line-height: 64px;
+  letter-spacing: -0.25px;
 }
 
 .small-headline {
-    @extend .primary-font;
-    font-size: 24px;
-    line-height: 32px;
-    letter-spacing: 0;
+  @extend .primary-font;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0;
 }
 
 .medium-headline {
-    @extend .primary-font;
-    font-size: 28px;
-    line-height: 36px;
-    letter-spacing: 0;
+  @extend .primary-font;
+  font-size: 28px;
+  line-height: 36px;
+  letter-spacing: 0;
 }
 
 .large-headline {
-    @extend .primary-font;
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: 0;
+  @extend .primary-font;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: 0;
 }
 
 .small-title {
-    @extend .primary-font;
-    @extend .medium-font-weight;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.1px;
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
 }
 
 .medium-title {
-    @extend .primary-font;
-    @extend .medium-font-weight;
-    font-size: 16px;
-    line-height: 24px;
-    letter-spacing: 0.15px;
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.15px;
 }
 
 .large-title {
-    @extend .primary-font;
-    font-size: 22px;
-    line-height: 28px;
-    letter-spacing: 0;
+  @extend .primary-font;
+  font-size: 22px;
+  line-height: 28px;
+  letter-spacing: 0;
 }
 
 .small-label {
-    @extend .primary-font;
-    @extend .medium-font-weight;
-    font-size: 11px;
-    line-height: 16px;
-    letter-spacing: 0.5px;
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
 }
 
 .medium-label {
-    @extend .primary-font;
-    @extend .medium-font-weight;
-    font-size: 11px;
-    line-height: 16px;
-    letter-spacing: 0.5px;
+  @extend .primary-font;
+  @extend .medium-font-weight;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
 }
 
 .large-label {
-    @extend .primary-font;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.1px;
+  @extend .primary-font;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.1px;
 }
 
 .small-body {
-    @extend .primary-font;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 0.4px;
+  @extend .primary-font;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
 }
 
 .medium-body {
-    @extend .primary-font;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.25px;
+  @extend .primary-font;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.25px;
 }
 
 .large-body {
-    @extend .primary-font;
-    font-size: 16px;
-    line-height: 24px;
-    letter-spacing: 0.5px;
+  @extend .primary-font;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.5px;
 }
 
 .primary-text-colour {
-    background: #202020;
+  background: #202020;
 }
 
 .neutral-text-color {
-    color: #FFFFFF;
-}
-
-.large-viewport .medium-viewport {
-    margin: 48px;
-}
-
-.small-viewport {
-    margin: 24px;
-}
-
-.styled-grid {
-    .MuiGrid-root {
-        .MuiGrid-item:focus-within {
-            outline: none;
-            flex: 1;
-            height: 100vh;
-        }
-    }
-}
-
-.step {
-    .MuiStepLabel-root .Mui-active {
-        color: $secondary-40;
-    }
-}
-
-.styled-menu-item {
-    border-color: #000000;
-    border-radius: 1px;
-}
-
-.blue-gradient-background {
-    background: linear-gradient(150.7deg, #012C53 4.14%, #00488A 51.59%, rgba(0, 145, 190, 0.984314) 102.85%);
-    justify-items: center;
-    align-items: center;
-}
-
-.surface-background {
-    background: $surface-light-3;
-    .MuiPaper-root {
-        background: $surface-light-3;
-    }
-}
-
-.default-button {
-    background: #00488A;
-}
-
-.category-filter {
-    background: $primary-10;
+  color: #FFFFFF;
 }

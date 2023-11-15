@@ -46,7 +46,8 @@ export const exampleSlice = createSlice({
     //},
 })
 
-export const {  } = exampleSlice.actions
+//export reducer actions here
+export const {} = exampleSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 // TODO: use a select to get state in a component
