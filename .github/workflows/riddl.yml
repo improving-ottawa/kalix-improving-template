@@ -50,17 +50,10 @@ jobs:
       - name: Generate Hugo input from RIDDL source
         run: riddlc from "design/src/main/riddl/example.conf" hugo
 
-      - name: Generate HTML From Hugo
+      - name: Generate Static HTML Site Using Hugo
         run: |
-          cd design/src/main/riddl/target/hugo 
+          cd design/target/hugo 
           hugo --minify -D -v --baseURL "https://improving-ottawa.github.com/kalix-improving-template" --printMemoryUsage --noBuildLock
-
-      - name: Generate Site With Hugo
-        run: |
-          cd design/src/main/riddl ; \
-          hugo --minify -v \
-          --baseURL "https://riddl.tech" \
-          --printMemoryUsage --noBuildLock
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
