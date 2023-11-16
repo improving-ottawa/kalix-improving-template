@@ -9,6 +9,7 @@ trait TimeUnitCompanion extends GeneratedEnumCompanion[TimeUnit] {
   /** The [[TypeMapper]] for [[TimeUnit]] <==> [[java.util.concurrent.TimeUnit]] */
   implicit final val timeUnitMapper: TypeMapper[TimeUnit, JTimeUnit] =
     new TypeMapper[TimeUnit, JTimeUnit] {
+
       final def toCustom(base: TimeUnit): JTimeUnit = base match {
         case TimeUnit.TimeUnitNanoseconds  => JTimeUnit.NANOSECONDS
         case TimeUnit.TimeUnitMicroseconds => JTimeUnit.MICROSECONDS
@@ -28,6 +29,7 @@ trait TimeUnitCompanion extends GeneratedEnumCompanion[TimeUnit] {
         case JTimeUnit.HOURS        => TimeUnit.TimeUnitHours
         case JTimeUnit.DAYS         => TimeUnit.TimeUnitDays
       }
+
     }
 
 }

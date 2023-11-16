@@ -11,9 +11,9 @@ import javax.crypto.{Cipher, EncryptedPrivateKeyInfo, SecretKeyFactory}
 object GatewayKeyLoader extends KeyLoader {
 
   protected def loadPrivateKey(): PrivateKey = {
-    val passwordOption = privateKeyPassword
+    val passwordOption      = privateKeyPassword
     val (privateKeyPath, _) = keyFilePaths(passwordOption.isDefined)
-    val privateKeyBytes = loadPrivateKeyFromResource(privateKeyPath)
+    val privateKeyBytes     = loadPrivateKeyFromResource(privateKeyPath)
 
     passwordOption match {
       case Some(password) => readEncryptedPrivateKey(privateKeyBytes, password)
@@ -22,9 +22,9 @@ object GatewayKeyLoader extends KeyLoader {
   }
 
   protected def loadPublicKey(): PublicKey = {
-    val passwordOption = privateKeyPassword
+    val passwordOption     = privateKeyPassword
     val (_, publicKeyPath) = keyFilePaths(passwordOption.isDefined)
-    val publicKeyBytes = loadPublicKeyFromResource(publicKeyPath)
+    val publicKeyBytes     = loadPublicKeyFromResource(publicKeyPath)
     readPublicKey(publicKeyBytes)
   }
 
@@ -56,7 +56,7 @@ object GatewayKeyLoader extends KeyLoader {
 
   private def loadPrivateKeyFromResource(resourceName: String) = {
     val decoder = java.util.Base64.getDecoder
-    val reader = scala.io.Source.fromResource(resourceName)
+    val reader  = scala.io.Source.fromResource(resourceName)
     try {
       val fileText = reader.getLines().mkString(System.lineSeparator)
       decoder.decode(
@@ -74,15 +74,15 @@ object GatewayKeyLoader extends KeyLoader {
 
   private def readEncryptedPrivateKey(keyBytes: Array[Byte], password: String) = {
     val encryptedPKInfo = new EncryptedPrivateKeyInfo(keyBytes)
-    val algName = "PBEWithHmacSHA256AndAES_128"
-    val cipher = Cipher.getInstance(algName)
-    val pbeKeySpec = new PBEKeySpec(password.toCharArray)
-    val secretKeyFac = SecretKeyFactory.getInstance(algName)
-    val pbeKey = secretKeyFac.generateSecret(pbeKeySpec)
+    val algName         = "PBEWithHmacSHA256AndAES_128"
+    val cipher          = Cipher.getInstance(algName)
+    val pbeKeySpec      = new PBEKeySpec(password.toCharArray)
+    val secretKeyFac    = SecretKeyFactory.getInstance(algName)
+    val pbeKey          = secretKeyFac.generateSecret(pbeKeySpec)
 
     cipher.init(Cipher.DECRYPT_MODE, pbeKey, encryptedPKInfo.getAlgParameters)
     val pkcs8KeySpec = encryptedPKInfo.getKeySpec(cipher)
-    val keyFactory = KeyFactory.getInstance("RSA")
+    val keyFactory   = KeyFactory.getInstance("RSA")
     keyFactory.generatePrivate(pkcs8KeySpec)
   }
 

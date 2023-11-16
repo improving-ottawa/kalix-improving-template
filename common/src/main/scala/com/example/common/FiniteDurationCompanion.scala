@@ -8,9 +8,8 @@ trait FiniteDurationCompanion extends GeneratedMessageCompanion[FiniteDuration] 
 
   /** The [[TypeMapper]] for [[FiniteDuration]] <==> [[scala.concurrent.duration.FiniteDuration]] */
   implicit final val finiteDurationMapper: TypeMapper[FiniteDuration, SFiniteDuration] =
-    TypeMapper[FiniteDuration, SFiniteDuration](
-      proto => SFiniteDuration(proto.length, proto.unit))(
-      scala => FiniteDuration(scala.length, scala.unit)
+    TypeMapper[FiniteDuration, SFiniteDuration](proto => SFiniteDuration(proto.length, proto.unit))(scala =>
+      FiniteDuration(scala.length, scala.unit)
     )
 
 }

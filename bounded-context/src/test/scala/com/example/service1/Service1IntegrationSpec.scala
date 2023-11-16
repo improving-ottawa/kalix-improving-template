@@ -41,4 +41,5 @@ class Service1IntegrationSpec extends AnyWordSpec with Matchers with BeforeAndAf
     testKit.stop()
     super.afterAll()
   }
+
 }

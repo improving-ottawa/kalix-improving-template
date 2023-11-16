@@ -28,4 +28,5 @@ object Main {
     log.info("starting the Kalix service")
     createKalix().start()
   }
+
 }
