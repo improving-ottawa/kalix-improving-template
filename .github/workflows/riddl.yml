@@ -55,9 +55,12 @@ jobs:
           cd design/target/hugo 
           hugo --minify -D -v --baseURL "https://improving-ottawa.github.com/kalix-improving-template" --printMemoryUsage --noBuildLock
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+      - name: Prepare Site Artifact
+        uses: actions/upload-pages-artifact
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./design/target/hugo/public
+          path: design/target/hugo/public
+
+      - name: Deploy GitHub Pages Artifact
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN}}
