@@ -1,3 +1,5 @@
+[![.github/workflows/riddl.yml](https://github.com/improving-ottawa/kalix-improving-template/actions/workflows/riddl.yml/badge.svg)](https://github.com/improving-ottawa/kalix-improving-template/actions/workflows/riddl.yml)
+
 # sbt-kalix-improving
 
 sbt and typescript based multiproject as a template for frontend with microservices backend

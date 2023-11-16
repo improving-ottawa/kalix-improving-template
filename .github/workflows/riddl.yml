@@ -56,11 +56,11 @@ jobs:
           hugo --minify -D -v --baseURL "https://improving-ottawa.github.com/kalix-improving-template" --printMemoryUsage --noBuildLock
 
       - name: Prepare Site Artifact
-        uses: actions/upload-pages-artifact
+        uses: actions/upload-pages-artifact@v2 # or the latest "vX.X.X" version tag for this action
         with:
           path: design/target/hugo/public
 
       - name: Deploy GitHub Pages Artifact
-        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
+        uses: actions/deploy-pages@v2.0.3 # or the latest "vX.X.X" version tag for this action
         with:
           token: ${{ secrets.GITHUB_TOKEN}}
