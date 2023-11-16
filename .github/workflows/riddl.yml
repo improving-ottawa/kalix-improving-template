@@ -5,10 +5,13 @@ name: Deploy RIDDL Design to GitHub Pages
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    pull_request:
-      branches: [ "main" ]
-      paths:
-        - .github/workflows/riddl.yml
+
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - .github/workflows/riddl.yml
+      - design/src/main/riddl/**.riddl
+      - design/src/main/riddl/**.conf
 
   # Runs on pushes targeting the default branch if specific files change
   push:
