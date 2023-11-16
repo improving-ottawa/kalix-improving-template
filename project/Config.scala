@@ -1,20 +1,20 @@
-import Dependencies._
+import Dependencies.*
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
-import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
-import sbt.Keys._
-import sbt.{Compile, _}
-import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
+import sbt.Keys.*
+import sbt.{Compile, *}
+import scoverage.ScoverageKeys.{coverageFailOnMinimum, *}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
-import wartremover.WartRemover.autoImport._
+import wartremover.WartRemover.autoImport.*
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
-import kalix.sbt.KalixPlugin.autoImport._
+import kalix.sbt.KalixPlugin.autoImport.*
 import protocbridge.Target
 import sbtbuildinfo.BuildInfoKey
 import sbtbuildinfo.BuildInfoKeys.buildInfoKeys
@@ -28,8 +28,9 @@ import sbtbuildinfo.BuildInfoOption.ToMap
 import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
-import scalapb.GeneratorOption.{FlatPackage, _}
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport._
+import scalapb.GeneratorOption.{FlatPackage, *}
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
+import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
 import java.net.URI
 import java.util.Calendar
@@ -127,6 +128,7 @@ object Config {
         coverageMinimumBranchPerPackage := percent,
         coverageMinimumStmtPerFile      := percent,
         coverageMinimumBranchPerFile    := percent,
+        coverallsToken                  := Some("jOdrBeb97Y02GGAeLnuLx4Gmm7anBb2Z"),
         coverageExcludedPackages        := "<empty>"
       )
     }

@@ -66,6 +66,8 @@ jobs:
 
       - name: Running unit tests
         run: sbt -v clean coverage Test/compile test coverageAggregate coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
