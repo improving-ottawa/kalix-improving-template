@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "deploy-riddl-doc" ]
     paths:
       - .github/workflows/riddl.yml
       - design/src/main/riddl/**.riddl
