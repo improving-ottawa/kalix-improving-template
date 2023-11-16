@@ -23,13 +23,14 @@ sealed trait TemplateEngineSelectSource {
 }
 
 private object TemplateEngineSelectSource {
+
   def apply(substitutionDataSources: Map[String, Any]): TemplateEngineSelectSource =
     Impl(substitutionDataSources)
 
   final private case class Impl(substitutionDataSources: Map[String, Any]) extends TemplateEngineSelectSource {
 
     def fromTemplateFile(templateFilePath: String): TemplateEngine = {
-      val templateFile = new File(templateFilePath)
+      val templateFile     = new File(templateFilePath)
       if (!templateFile.exists()) { throw new FileNotFoundException(templateFilePath) }
       val templateResource = Resource.fromAutoCloseable(IO(new FileInputStream(templateFile))).map { fileInputStream =>
         new StreamedTemplate(templateFile.toURI, fileInputStream)
@@ -38,8 +39,8 @@ private object TemplateEngineSelectSource {
     }
 
     def fromTemplateResource(templateResourcePath: String): TemplateEngine = {
-      val resourcePath = if (templateResourcePath.startsWith("/")) templateResourcePath else "/" + templateResourcePath
-      val templateUri = getClass.getResource(resourcePath).toURI
+      val resourcePath     = if (templateResourcePath.startsWith("/")) templateResourcePath else "/" + templateResourcePath
+      val templateUri      = getClass.getResource(resourcePath).toURI
       val templateResource =
         Resource.fromAutoCloseable(IO(getClass.getResourceAsStream(resourcePath))).map { inputStream =>
           new StreamedTemplate(templateUri, inputStream)
@@ -56,8 +57,8 @@ private object TemplateEngineSelectSource {
   }
 
   final private class StreamedTemplate(val templateUri: URI, source: InputStream) extends TemplateSource {
-    private val reader = new BufferedReader(new InputStreamReader(source))
-    private[this] var hasClosed = false
+    private val reader                       = new BufferedReader(new InputStreamReader(source))
+    private[this] var hasClosed              = false
     private[this] var buffer: Option[String] = Option(reader.readLine())
 
     def hasNext: Boolean = buffer.nonEmpty
@@ -80,7 +81,7 @@ private object TemplateEngineSelectSource {
   }
 
   final private class TextTemplate(templateText: String) extends TemplateSource {
-    private val reader = new BufferedReader(new StringReader(templateText))
+    private val reader                       = new BufferedReader(new StringReader(templateText))
     private[this] var buffer: Option[String] = Option(reader.readLine())
 
     def templateUri: URI = URI.create("text://templateText")
@@ -102,8 +103,8 @@ private object TemplateEngineSelectSource {
 }
 
 final class TemplateEngine private[email] (
-    templateResource: Resource[IO, TemplateSource],
-    substitutionDataSources: Map[String, Any]
+  templateResource: Resource[IO, TemplateSource],
+  substitutionDataSources: Map[String, Any]
 ) {
   import TemplateEngine._
   import Validated.{Invalid, Valid}
@@ -175,9 +176,9 @@ final class TemplateEngine private[email] (
   }
 
   private def formatTemplate(source: Iterator[String]): IO[ValidatedLines] = IO {
-    val fileContents = source.toList
+    val fileContents  = source.toList
     val parsingResult = for {
-      sections <- TemplateParser(fileContents).toEither
+      sections       <- TemplateParser(fileContents).toEither
       formattedLines <- TemplateFormatter(sections, substitutionDataSources).toEither
     } yield formattedLines
 

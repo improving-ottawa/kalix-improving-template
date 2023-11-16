@@ -420,29 +420,29 @@ object TemplateEngineSpec {
       |</html>""".stripMargin
 
   private case class CompanyInfo(
-      id: _root_.scala.Predef.String = "",
-      name: _root_.scala.Predef.String = "",
-      subdomain: _root_.scala.Predef.String = "",
-      address: com.example.common.domain.address.Address,
-      approvedDomains: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
-      adminEmails: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
-      logo: _root_.scala.Predef.String = "",
-      maxAnnualDonation: _root_.scala.Float = 0.0f,
-      defaultCharityPercentageMatch: _root_.scala.Float = 0.0f,
-      defaultCharityMinimumDonation: _root_.scala.Float = 0.0f
+    id: _root_.scala.Predef.String = "",
+    name: _root_.scala.Predef.String = "",
+    subdomain: _root_.scala.Predef.String = "",
+    address: com.example.common.domain.address.Address,
+    approvedDomains: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
+    adminEmails: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
+    logo: _root_.scala.Predef.String = "",
+    maxAnnualDonation: _root_.scala.Float = 0.0f,
+    defaultCharityPercentageMatch: _root_.scala.Float = 0.0f,
+    defaultCharityMinimumDonation: _root_.scala.Float = 0.0f
   )
 
   private case class DonationsByCharity(
-      charityName: String,
-      donationTotalAmount: Double,
-      donorTotalAmount: Double,
-      companyMatchTotalAmount: Double,
-      charityMatchPercentage: Double
+    charityName: String,
+    donationTotalAmount: Double,
+    donorTotalAmount: Double,
+    companyMatchTotalAmount: Double,
+    charityMatchPercentage: Double
   )
 
   private case class PendingDonations(
-      byCharity: List[DonationsByCharity],
-      feesTotalAmount: Double
+    byCharity: List[DonationsByCharity],
+    feesTotalAmount: Double
   )
 
   private val exampleAdmin = Contact(
@@ -473,7 +473,7 @@ object TemplateEngineSpec {
 class TemplateEngineSpec extends AnyWordSpec with Matchers with ScalaFutures {
   import TemplateEngineSpec._
 
-  implicit val patience: PatienceConfig = PatienceConfig(500.millis, Span(100, org.scalatest.time.Millis))
+  implicit val patience: PatienceConfig           = PatienceConfig(500.millis, Span(100, org.scalatest.time.Millis))
   implicit val executionContext: ExecutionContext = ExecutionContext.global
 
   "TemplateEngine" should {
@@ -481,7 +481,7 @@ class TemplateEngineSpec extends AnyWordSpec with Matchers with ScalaFutures {
     "be able to format a string template" in {
       val substitutionsMap = Map(
         "companyInfo" -> exampleCompany,
-        "contact" -> exampleAdmin
+        "contact"     -> exampleAdmin
       )
 
       val templateEngine = TemplateEngine(substitutionsMap).fromTemplateString(templateText)
@@ -499,7 +499,7 @@ class TemplateEngineSpec extends AnyWordSpec with Matchers with ScalaFutures {
       )
 
       val templateEngine = TemplateEngine(substitutionsMap).fromTemplateResource("test-template.html")
-      val resultLines = templateEngine.formatLinesFuture.futureValue
+      val resultLines    = templateEngine.formatLinesFuture.futureValue
       resultLines.length mustBe 433
 
       resultLines.exists(_.contains(expectedString1)) mustBe true

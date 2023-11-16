@@ -43,7 +43,7 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
       case None =>
         val loginToken = req.token
         token = Some(loginToken)
-        val newState = LoginTokenState(
+        val newState   = LoginTokenState(
           // usage = req.usage,
           // field = req.field,
           // userEmail = req.userEmail,

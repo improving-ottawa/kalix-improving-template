@@ -11,7 +11,7 @@ import com.example.extensions.email._
 object EmailSendTest extends IOApp {
 
   // This is a test only key
-  private val apiKey = "ec309c632c0d5eb4eb1ea6c4c5d80934"
+  private val apiKey     = "ec309c632c0d5eb4eb1ea6c4c5d80934"
   private val privateKey = "7e35fd00266feded508d6c8af2244705"
 
   val testContacts = List(
@@ -56,8 +56,8 @@ object EmailSendTest extends IOApp {
 
     for {
       emails <- createTestEmails
-      _ <- checkSystem
-      _ <- sendEmails(emails)
+      _      <- checkSystem
+      _      <- sendEmails(emails)
     } yield ExitCode.Success
   }
 
@@ -67,10 +67,11 @@ object EmailSendTest extends IOApp {
     IO.pure(EmailBody.text("This is a test."))
 
   private def createEmailHtml(contact: Contact): IO[EmailBody] = {
-    val substitutions = Map(
+    val substitutions  = Map(
       "loginLink" -> "https://example.io/",
     )
     val templateEngine = TemplateEngine(substitutions).fromTemplateResource("/TokenForAdminLoginEmail.html")
     templateEngine.formatToString.map(EmailBody.html)
   }
+
 }

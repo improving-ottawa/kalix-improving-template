@@ -33,4 +33,5 @@ object ConsoleEmailSystem extends EmailSystem {
       .iterator
       .toSeq
   }
+
 }

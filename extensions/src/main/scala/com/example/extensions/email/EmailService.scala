@@ -15,30 +15,31 @@ trait EmailService {
 }
 
 object EmailService {
+
   final def apply(emailSystem: EmailSystem, logAuthTokens: Boolean = false)(implicit
-      executionContext: ExecutionContext
+    executionContext: ExecutionContext
   ): EmailService = EmailServiceImpl(emailSystem, logAuthTokens)
 
 }
 
 final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens: Boolean)(implicit
-    executionContext: ExecutionContext
+  executionContext: ExecutionContext
 ) extends EmailService {
   import EmailServiceImpl._
 
   implicit private val ioRuntime: IORuntime = IORuntime.builder().setCompute(executionContext, () => ()).build()
-  private val logger = LoggerFactory.getLogger("com.example.utils.EmailService")
+  private val logger                        = LoggerFactory.getLogger("com.example.utils.EmailService")
 
   def sendAdminLoginEmail(recipient: Contact, loginToken: String): Future[Unit] = {
-    val loginLink = adminLoginUriBase + loginToken
-    val substitutionsMap = Map(
-      "contact" -> recipient,
+    val loginLink         = adminLoginUriBase + loginToken
+    val substitutionsMap  = Map(
+      "contact"   -> recipient,
       "loginLink" -> loginLink
     )
-    val templateEngine = TemplateEngine(substitutionsMap).fromTemplateResource(adminLoginEmailTemplate)
+    val templateEngine    = TemplateEngine(substitutionsMap).fromTemplateResource(adminLoginEmailTemplate)
     val formattedTemplate = templateEngine.formatToString
-    val recipientName = Some(s"${recipient.firstName} ${recipient.lastName}")
-    val emailBody = formattedTemplate.map { htmlContent =>
+    val recipientName     = Some(s"${recipient.firstName} ${recipient.lastName}")
+    val emailBody         = formattedTemplate.map { htmlContent =>
       val emailBody = EmailBody.Html(htmlContent)
       Email(
         sendFromLoginEmail,
@@ -48,7 +49,7 @@ final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens
       )
     }
 
-    val sendIO = emailBody.flatMap(sendSingleEmailIO(_, "admin login"))
+    val sendIO     = emailBody.flatMap(sendSingleEmailIO(_, "admin login"))
     val logTokenIO =
       IO(logAuthTokens).ifM(IO(logger.info(s"Login token for '${recipient.emailAddress}' is '$loginToken'")), IO.unit)
     (sendIO <* logTokenIO).unsafeToFuture()
@@ -78,6 +79,7 @@ final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens
 }
 
 private object EmailServiceImpl {
+
   final private val sendFromLoginEmail: FromEmailAddress =
     FromEmailAddress("service@example.io", Some("Example"))
 
@@ -86,7 +88,7 @@ private object EmailServiceImpl {
   final private val adminLoginEmailTemplate = "/TokenForAdminLoginEmail.html"
 
   def apply(emailSystem: EmailSystem, logAuthTokens: Boolean)(implicit
-      executionContext: ExecutionContext
+    executionContext: ExecutionContext
   ): EmailServiceImpl =
     new EmailServiceImpl(emailSystem, logAuthTokens)
 

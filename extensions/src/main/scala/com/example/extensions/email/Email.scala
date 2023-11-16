@@ -22,17 +22,19 @@ sealed trait EmailAddress {
 }
 
 final case class FromEmailAddress(address: String, name: Option[String] = None) extends EmailAddress
-final case class RecipientEmailAddress(address: String, recipientType: RecipientType, name: Option[String] = None) extends EmailAddress
 
+final case class RecipientEmailAddress(address: String, recipientType: RecipientType, name: Option[String] = None)
+    extends EmailAddress
 
 sealed abstract class RecipientType(val code: String)
+
 object RecipientType {
-  case object To extends RecipientType("to")
-  case object CC extends RecipientType("cc")
+  case object To  extends RecipientType("to")
+  case object CC  extends RecipientType("cc")
   case object BCC extends RecipientType("bcc")
 }
 
-case class Email (
+case class Email(
   from: FromEmailAddress,
   subject: String,
   body: EmailBody,

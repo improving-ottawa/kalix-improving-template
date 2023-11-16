@@ -13,9 +13,9 @@ import sttp.model.{StatusCode, Uri}
 import org.slf4j.LoggerFactory
 
 final class MailJetEmailSystem private (
-    apiKey: String,
-    privateKey: String,
-    backendResource: Resource[IO, SttpBackend[IO, _]]
+  apiKey: String,
+  privateKey: String,
+  backendResource: Resource[IO, SttpBackend[IO, _]]
 ) extends EmailSystem {
   import MailJetEmailSystem._
 
@@ -29,7 +29,7 @@ final class MailJetEmailSystem private (
       response.body match {
         case Right(unexpected) =>
           safeLog(_.error(s"Got an unexpected response from MailJet API (/REST/apikey/): $unexpected"))
-        case Left(error) => safeLog(_.error(s"Failed to verify MailChimp API access due to: $error (${response.code})"))
+        case Left(error)       => safeLog(_.error(s"Failed to verify MailChimp API access due to: $error (${response.code})"))
       }
     }
 
@@ -86,6 +86,7 @@ final class MailJetEmailSystem private (
 }
 
 sealed abstract class MailJetEmailFormatting { self: MailJetEmailSystem.type =>
+
   implicit val emailAddressEncoder: Encoder[FromEmailAddress] = { case FromEmailAddress(address, name) =>
     val baseJson = Json.obj("FromEmail" -> Json.fromString(address))
     name.fold(baseJson)(fromName => baseJson.deepMerge(Json.obj("FromName" -> Json.fromString(fromName))))
@@ -110,7 +111,7 @@ sealed abstract class MailJetEmailFormatting { self: MailJetEmailSystem.type =>
       emailAddressEncoder(email.from)
         .deepMerge(
           Json.obj(
-            "Subject" -> Json.fromString(email.subject),
+            "Subject"    -> Json.fromString(email.subject),
             "Recipients" -> Json.arr(email.recipients.map(recipientEmailAddressEncoder.apply).iterator.toSeq: _*)
           )
         )
