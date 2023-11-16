@@ -7,7 +7,7 @@ object LoginTokenGenerator {
   final val bitLength = 256
 
   def generate(): String = {
-    val gen = new SecureRandom()
+    val gen    = new SecureRandom()
     val target = new Array[Byte](bitLength / 8)
     gen.nextBytes(target)
     // Using the `UrlEncoder` here so the token can be used in the login link

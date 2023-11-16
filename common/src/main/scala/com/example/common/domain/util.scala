@@ -10,8 +10,10 @@ import scala.util.Try
 object util {
 
   implicit class PhoneNumberUtil(phoneNumber: PhoneNumber) {
+
     implicit def printPhoneNumber: String =
       s"${phoneNumber.countryCode}-(${phoneNumber.areaCode})-${phoneNumber.personalNumber.splitAt(3).productIterator.toSeq.mkString("-")}"
+
   }
 
   implicit class AddressUtil(address: Address) {
@@ -33,8 +35,11 @@ object util {
       country = editable.country.getOrElse(address.country),
       postalCode = editable.postalCode.orElse(address.postalCode)
     )
+
   }
+
   implicit class EditableAddressUtil(address: EditableAddress) {
+
     implicit def copyFromEditable(oldAddress: Address): Address =
       Address(
         line1 = address.line1.getOrElse(oldAddress.line1),
@@ -62,18 +67,23 @@ object util {
       country = editable.country.orElse(address.country),
       postalCode = editable.postalCode.orElse(address.postalCode)
     )
+
   }
 
   implicit class GeneratedMessageUtil[T <: GeneratedMessage](req: T) {
+
     implicit def printAsResponse: String = s"""\"${JsonFormat.toJsonString(req).replace("\"", "\\\"")}\""""
+
     implicit def printAsDataResponse: String = s"""${JsonFormat
         .toJsonString(req)
         .replace("\\\\\\", "\\")
         .replace("\"\\\"", "")
         .replace("\\\"\"", "")}"""
+
   }
 
   implicit class StringUtil(str: String) {
+
     implicit def parsePhoneNumber: Try[PhoneNumber] = Try(
       PhoneNumber(
         s"${str.take(1)}",
@@ -81,5 +91,7 @@ object util {
         s"${str.slice(8, 11)}${str.slice(12, 16)}"
       )
     )
+
   }
+
 }

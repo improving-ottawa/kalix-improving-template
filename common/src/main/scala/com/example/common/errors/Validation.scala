@@ -77,4 +77,5 @@ object Validation {
       address => required("country")(address.country),
       address => required("postalCode")(address.postalCode)
     )
+
 }

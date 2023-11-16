@@ -16,8 +16,8 @@ class Service1Entity(context: EventSourcedEntityContext) extends AbstractService
   override def emptyState: NoState1 = NoState1.defaultInstance
 
   override def doNothing(
-      currentState: NoState1,
-      doNothingCommand: DoNothingCommand1
+    currentState: NoState1,
+    doNothingCommand: DoNothingCommand1
   ): EventSourcedEntity.Effect[DoNothingResponse1] = effects.reply(DoNothingResponse1.defaultInstance)
 
   override def doNothingResponse1(currentState: NoState1, doNothingResponse: DoNothingResponse1): NoState1 =
