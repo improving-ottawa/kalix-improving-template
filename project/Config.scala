@@ -35,15 +35,16 @@ import java.net.URI
 import java.util.Calendar
 
 object Config {
+
   def withInfo(p: Project): Project = {
     p.settings(
-      ThisBuild / organization := "io.off-the-top",
+      ThisBuild / organization     := "io.off-the-top",
       // ThisBuild / organizationHomepage := Some(URI.create("https://???/").toURL),
       ThisBuild / organizationName := "Off The Top",
-      ThisBuild / startYear := Some(2023),
-      ThisBuild / versionScheme := Option("early-semver"),
+      ThisBuild / startYear        := Some(2023),
+      ThisBuild / versionScheme    := Option("early-semver"),
       ThisBuild / dynverVTagPrefix := false,
-      run / fork := true,
+      run / fork                   := true,
       run / envVars += ("HOST", "0.0.0.0"),
       run / javaOptions ++= Seq("-Dlogback.configurationFile=logback-dev-mode.xml"),
 
@@ -85,13 +86,13 @@ object Config {
       p.configure(withInfo)
         .settings(
           ThisBuild / dynverSeparator := "-",
-          scalaVersion := "2.13.10", // "3.3.1-RC7",
-          scalacOptions := scala_2_options,
-          apiURL := Some(url("https://riddl.tech/apidoc/")),
-          autoAPIMappings := true,
-          Test / parallelExecution := false,
+          scalaVersion                := "2.13.10", // "3.3.1-RC7",
+          scalacOptions               := scala_2_options,
+          apiURL                      := Some(url("https://riddl.tech/apidoc/")),
+          autoAPIMappings             := true,
+          Test / parallelExecution    := false,
           Test / testOptions += Tests.Argument("-oDF"),
-          Test / logBuffered := false,
+          Test / logBuffered          := false,
           libraryDependencies ++= Dependencies.basicTestingDependencies ++ Dependencies.jsonDependencies
         )
     }
@@ -119,29 +120,29 @@ object Config {
 
     def withCoverage(percent: Int = defaultPercentage)(p: Project): Project = {
       p.settings(
-        coverageFailOnMinimum := true,
-        coverageMinimumStmtTotal := percent,
-        coverageMinimumBranchTotal := percent,
-        coverageMinimumStmtPerPackage := percent,
+        coverageFailOnMinimum           := true,
+        coverageMinimumStmtTotal        := percent,
+        coverageMinimumBranchTotal      := percent,
+        coverageMinimumStmtPerPackage   := percent,
         coverageMinimumBranchPerPackage := percent,
-        coverageMinimumStmtPerFile := percent,
-        coverageMinimumBranchPerFile := percent,
-        coverageExcludedPackages := "<empty>"
+        coverageMinimumStmtPerFile      := percent,
+        coverageMinimumBranchPerFile    := percent,
+        coverageExcludedPackages        := "<empty>"
       )
     }
 
     def withBuildInfo(
-        homePage: String,
-        orgName: String,
-        packageName: String,
-        objName: String = "BuildInfo",
-        baseYear: Int = 2023
+      homePage: String,
+      orgName: String,
+      packageName: String,
+      objName: String = "BuildInfo",
+      baseYear: Int = 2023
     )(p: Project): Project = {
       p.enablePlugins(BuildInfoPlugin)
         .settings(
-          buildInfoObject := objName,
-          buildInfoPackage := packageName,
-          buildInfoOptions := Seq(ToMap, ToJson, BuildTime),
+          buildInfoObject           := objName,
+          buildInfoPackage          := packageName,
+          buildInfoOptions          := Seq(ToMap, ToJson, BuildTime),
           buildInfoUsePackageAsPath := true,
           buildInfoKeys ++= Seq[BuildInfoKey](
             name,
@@ -204,15 +205,16 @@ object Config {
           }
         )
     }
+
   }
 
   def withDocker(proj: Project): Project = {
     proj
       .enablePlugins(DockerPlugin)
       .settings(
-        dockerBaseImage := "docker.io/library/adoptopenjdk:11-jre-hotspot",
-        dockerUsername := sys.props.get("docker.username"),
-        dockerRepository := sys.props.get("docker.registry"),
+        dockerBaseImage    := "docker.io/library/adoptopenjdk:11-jre-hotspot",
+        dockerUsername     := sys.props.get("docker.username"),
+        dockerRepository   := sys.props.get("docker.registry"),
         dockerUpdateLatest := true,
         dockerExposedPorts ++= Seq(8080),
         dockerBuildCommand := {
@@ -254,11 +256,13 @@ object Config {
           )
         )
     }
+
   }
 
   val minCoverage: Int = 80
 
   object Kalix {
+
     def service(proj: Project): Project = {
       proj
         .enablePlugins(KalixPlugin, JavaAppPackaging, DockerPlugin)
@@ -269,9 +273,9 @@ object Config {
         .configure(Scala.withWartRemover)
         .settings(
           dockerRepository := Some(KalixEnv.containerRepository),
-          dockerAliases := {
-            val packageName = (proj / name).value
-            val projVersion = (proj / version).value
+          dockerAliases    := {
+            val packageName  = (proj / name).value
+            val projVersion  = (proj / version).value
             val updatedAlias = DockerAlias(
               registryHost = Some(KalixEnv.containerRepository),
               username = None,
@@ -288,14 +292,14 @@ object Config {
           }
         )
         .settings(
-          exportJars := true,
+          exportJars          := true,
           run / envVars += ("HOST", "0.0.0.0"),
           // needed for the proxy to access the user function on all platforms
           run / javaOptions ++= Seq(
             "-Dkalix.user-function-interface=0.0.0.0",
             "-Dlogback.configurationFile=logback-dev-mode.xml"
           ),
-          run / fork := true,
+          run / fork          := true,
           Global / cancelable := false, // ctrl-c
           libraryDependencies ++= (
             Dependencies.testingDeps ++
@@ -323,11 +327,11 @@ object Config {
             KalixEnv.publishProjectContainers(Seq(proj)).value
           },
           // Publishes each service to Kalix with the `latest` image tag.
-          KalixEnv.deployServices := {
+          KalixEnv.deployServices    := {
             KalixEnv.deployProjectServices(Seq(proj)).value
           },
           // Publish containers + deploy services (combo command)
-          KalixEnv.publishAndDeploy := {
+          KalixEnv.publishAndDeploy  := {
             KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value
           }
         )
@@ -373,24 +377,27 @@ object Config {
     proj
       .enablePlugins(RiddlSbtPlugin)
       .settings(
-        scalaVersion := "3.3.1",
-        riddlcConf := file(s"design/src/main/riddl/$appName.conf"),
+        scalaVersion     := "3.3.1",
+        riddlcConf       := file(s"design/src/main/riddl/$appName.conf"),
         riddlcMinVersion := "0.27.0",
-        riddlcConf := file("design/src/main/riddl/offTheTop.conf"),
-        riddlcOptions := Seq("--show-times", "--verbose"),
+        riddlcConf       := file("design/src/main/riddl/offTheTop.conf"),
+        riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }
+
 }
 
 object Testing {
+
   def scalaTest(project: Project): Project = {
     project.settings(
       Test / parallelExecution := false,
       Test / testOptions += Tests.Argument("-oDF"),
-      Test / logBuffered := false,
+      Test / logBuffered       := false,
       libraryDependencies ++= basicTestingDependencies ++ jsonDependencies
     )
   }
+
 }
 
 object Utils {
@@ -399,7 +406,7 @@ object Utils {
 
   def hashFile(file: File): String = {
     val buffer = new Array[Byte](8192)
-    val sha1 = MessageDigest.getInstance("SHA-1")
+    val sha1   = MessageDigest.getInstance("SHA-1")
 
     val dis = new DigestInputStream(new FileInputStream(file), sha1)
     try {

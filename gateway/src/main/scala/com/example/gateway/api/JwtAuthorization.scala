@@ -33,9 +33,9 @@ trait JwtAuthorization extends Action {
     claims.foldLeft(Authorization()) { case (jwt, (key, value)) => jwt }
   }
 
-  final private def authorizeOrFailWith[R](first: Authorizer, rest: Authorizer*)(
-      succeedWith: => R
-  )(failWith: => R): R = {
+  final private def authorizeOrFailWith[R](first: Authorizer, rest: Authorizer*)(succeedWith: => R)(
+    failWith: => R
+  ): R = {
     val authResult = Authorize(first, rest: _*)(extractJwtAuthorization())
     authResult match {
       case Right(_)       => succeedWith
@@ -48,28 +48,33 @@ trait JwtAuthorization extends Action {
     log.warn(s"Action authorization failed due to:\n$failuresString")
     result
   }
+
 }
 
 object JwtAuthorization {
 
   final case class Authorization(
-      companyId: Option[String] = None,
-      // usage: Option[LoginTokenUsage] = None
+    companyId: Option[String] = None,
+    // usage: Option[LoginTokenUsage] = None
   )
 
   final private case class Authorizer(
-      verify: Authorization => Boolean,
-      error: Authorization => String
+    verify: Authorization => Boolean,
+    error: Authorization => String
   ) extends (Authorization => Validated[NonEmptyChain[String], Unit]) {
+
     def apply(auth: Authorization): Validated[NonEmptyChain[String], Unit] =
       if (verify(auth)) Validated.valid(()) else Validated.invalid(NonEmptyChain.one(error(auth)))
 
   }
 
   private object Authorize {
+
     def apply(first: Authorizer, rest: Authorizer*)(auth: Authorization): Either[NonEmptyChain[String], Unit] = {
       val authorizers = first +: rest
+
       val success: Validated[NonEmptyChain[String], Unit] = Validated.valid(())
+
       authorizers
         .foldLeft(success) { case (validated, authorizer) =>
           validated.combine(authorizer(auth))

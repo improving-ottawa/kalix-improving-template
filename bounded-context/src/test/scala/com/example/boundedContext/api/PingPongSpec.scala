@@ -12,9 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class PingPongSpec
-    extends AnyWordSpec
-    with Matchers {
+class PingPongSpec extends AnyWordSpec with Matchers {
 
   "PingPong" must {
 
@@ -30,7 +28,7 @@ class PingPongSpec
 
     "handle command PingThrough" in {
       val service = PingPongTestKit(new PingPong(_))
-          pending
+      pending
       // val result = service.pingThrough(PingThroughRequest(...))
     }
 
