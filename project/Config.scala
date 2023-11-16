@@ -38,11 +38,11 @@ object Config {
 
   def withInfo(p: Project): Project = {
     p.settings(
-      ThisBuild / organization := "io.example",
+      ThisBuild / organization     := "io.example",
       // ThisBuild / organizationHomepage := Some(URI.create("https://???/").toURL),
       ThisBuild / organizationName := "example",
-      ThisBuild / startYear := Some(2023),
-      ThisBuild / versionScheme := Option("early-semver"),
+      ThisBuild / startYear        := Some(2023),
+      ThisBuild / versionScheme    := Option("early-semver"),
       ThisBuild / dynverVTagPrefix := false,
       run / fork                   := true,
       run / envVars += ("HOST", "0.0.0.0"),
@@ -380,8 +380,8 @@ object Config {
         scalaVersion     := "3.3.1",
         riddlcConf       := file(s"design/src/main/riddl/$appName.conf"),
         riddlcMinVersion := "0.27.0",
-        riddlcConf := file("design/src/main/riddl/example.conf"),
-        riddlcOptions := Seq("--show-times", "--verbose"),
+        riddlcConf       := file("design/src/main/riddl/example.conf"),
+        riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }
 
