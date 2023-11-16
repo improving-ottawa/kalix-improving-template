@@ -1,7 +1,5 @@
-package com.example.service2.domain
+package com.example.boundedContext.entity
 
-import kalix.scalasdk.eventsourcedentity.EventSourcedEntity
-import kalix.scalasdk.testkit.EventSourcedResult
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -10,10 +8,10 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class Service2Spec extends AnyWordSpec with Matchers {
-  "The Service2" should {
+class Service1EntitySpec extends AnyWordSpec with Matchers {
+  "The Service1Entity" should {
     "have example test that can be removed" in {
-      val testKit = Service2TestKit(new Service2(_))
+      val testKit = Service1EntityTestKit(new Service1Entity(_))
       pending
       // use the testkit to execute a command:
       // val result: EventSourcedResult[R] = testKit.someOperation(SomeRequest("id"));
@@ -28,9 +26,9 @@ class Service2Spec extends AnyWordSpec with Matchers {
     }
 
     "correctly process commands of type DoNothing" in {
-      val testKit = Service2TestKit(new Service2(_))
+      val testKit = Service1EntityTestKit(new Service1Entity(_))
       pending
-      // val result: EventSourcedResult[DoNothingEvent] = testKit.doNothing(DoNothingCommand(...))
+      // val result: EventSourcedResult[DoNothingResponse] = testKit.doNothing(DoNothingCommand(...))
     }
   }
 }

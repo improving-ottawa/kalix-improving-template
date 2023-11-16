@@ -12,7 +12,6 @@ import kalix.scalasdk.action.ActionCreationContext
 
 class Service1Impl(creationContext: ActionCreationContext) extends AbstractService1Impl {
 
-  override def doNothing(doNothingCommand: DoNothingCommand1): Action.Effect[DoNothingResponse1] = {
-    throw new RuntimeException("The command handler for `DoNothing` is not implemented, yet")
-  }
+  override def doNothing(doNothingCommand: DoNothingCommand1): Action.Effect[DoNothingResponse1] =
+    effects.reply(DoNothingResponse1.defaultInstance)
 }

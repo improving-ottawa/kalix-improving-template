@@ -13,14 +13,12 @@ import kalix.scalasdk.eventsourcedentity.EventSourcedEntityContext
 // or delete it so it is regenerated as needed.
 
 class Service1Entity(context: EventSourcedEntityContext) extends AbstractService1Entity {
-  override def emptyState: NoState1 =
-    throw new UnsupportedOperationException("Not implemented yet, replace with your empty entity state")
+  override def emptyState: NoState1 = NoState1.defaultInstance
 
   override def doNothing(
       currentState: NoState1,
       doNothingCommand: DoNothingCommand1
-  ): EventSourcedEntity.Effect[DoNothingResponse1] =
-    effects.error("The command handler for `DoNothing` is not implemented, yet")
+  ): EventSourcedEntity.Effect[DoNothingResponse1] = effects.reply(DoNothingResponse1.defaultInstance)
 
   override def doNothingResponse1(currentState: NoState1, doNothingResponse: DoNothingResponse1): NoState1 =
     currentState.update()

@@ -1,9 +1,6 @@
-package com.example.service1
+package com.example.boundedContext.entity
 
-import akka.actor.ActorSystem
 import com.example.boundedContext.Main
-import com.example.boundedContext.entity.Service1
-import com.google.protobuf.empty.Empty
 import kalix.scalasdk.testkit.KalixTestKit
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
@@ -18,7 +15,11 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class Service1IntegrationSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
+class Service1IntegrationSpec
+    extends AnyWordSpec
+    with Matchers
+    with BeforeAndAfterAll
+    with ScalaFutures {
 
   implicit private val patience: PatienceConfig =
     PatienceConfig(Span(5, Seconds), Span(500, Millis))

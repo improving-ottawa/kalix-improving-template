@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package com.example.service2.domain;
-
-import "com/example/service2/domain/service2DomainObjects.proto";
-
-message DoNothingEvent {
-    DoNothing value = 1;
-}

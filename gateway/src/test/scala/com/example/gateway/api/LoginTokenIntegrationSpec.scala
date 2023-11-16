@@ -1,6 +1,11 @@
-package com.example.service2
+package com.example.gateway.api
 
 import akka.actor.ActorSystem
+import com.example.gateway.Main
+import com.example.gateway.domain.ClaimTokenRequest
+import com.example.gateway.domain.ClaimTokenResponse
+import com.example.gateway.domain.CreateLoginTokenRequest
+import com.example.gateway.domain.CreateLoginTokenResponse
 import com.google.protobuf.empty.Empty
 import kalix.scalasdk.testkit.KalixTestKit
 import org.scalatest.BeforeAndAfterAll
@@ -16,16 +21,20 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class Service2IntegrationSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
+class LoginTokenIntegrationSpec
+    extends AnyWordSpec
+    with Matchers
+    with BeforeAndAfterAll
+    with ScalaFutures {
 
   implicit private val patience: PatienceConfig =
     PatienceConfig(Span(5, Seconds), Span(500, Millis))
 
   private val testKit = KalixTestKit(Main.createKalix()).start()
 
-  private val client = testKit.getGrpcClient(classOf[Service2])
+  private val client = testKit.getGrpcClient(classOf[LoginToken])
 
-  "Service2" must {
+  "LoginToken" must {
 
     "have example test that can be removed" in {
       pending
