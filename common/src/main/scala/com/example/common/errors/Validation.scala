@@ -55,13 +55,15 @@ object Validation {
   }
 
   def validateAll[T](validator: Validator[T]): Validator[Iterable[T]] = iterable => {
-    iterable.foldLeft[Option[ValidationError]](None)((maybeExistingError: Option[ValidationError], elementToValidate: T) => {
-      if (maybeExistingError.isDefined) {
-        maybeExistingError
-      } else {
-        validator(elementToValidate)
+    iterable.foldLeft[Option[ValidationError]](None)(
+      (maybeExistingError: Option[ValidationError], elementToValidate: T) => {
+        if (maybeExistingError.isDefined) {
+          maybeExistingError
+        } else {
+          validator(elementToValidate)
+        }
       }
-    })
+    )
   }
 
   val urlValidator: Validator[String] = url => {

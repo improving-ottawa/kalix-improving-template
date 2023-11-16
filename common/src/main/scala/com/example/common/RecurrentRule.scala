@@ -30,12 +30,14 @@ object RecurrentRulePart {
     if (wdn.pos == 0) wdn.weekday.name
     else s"${wdn.pos}${wdn.weekday.name}"
 
-  case class BySetPosition(positions: NonEmptySeq[Int])       extends RuleBase("BYSETPOS", positions.iterator)
-  case class ByMonth(months: NonEmptySeq[Month])              extends RuleBase("BYMONTH", months.iterator.map(_.getValue))
-  case class ByDayOfMonth(daysOfMonth: NonEmptySeq[Int])      extends RuleBase("BYMONTHDAY", daysOfMonth.iterator)
-  case class ByDayOfYear(daysOfYear: NonEmptySeq[Int])        extends RuleBase("BYYEARDAY", daysOfYear.iterator)
-  case class ByWeekOfYear(weeksOfYear: NonEmptySeq[Int])      extends RuleBase("BYWEEKNO", weeksOfYear.iterator)
-  case class ByDayOfWeek(daysOfWeek: NonEmptySeq[WeekdayNum]) extends RuleBase("BYDAY", daysOfWeek.iterator.map(formatWeekdayNum))
+  case class BySetPosition(positions: NonEmptySeq[Int])  extends RuleBase("BYSETPOS", positions.iterator)
+  case class ByMonth(months: NonEmptySeq[Month])         extends RuleBase("BYMONTH", months.iterator.map(_.getValue))
+  case class ByDayOfMonth(daysOfMonth: NonEmptySeq[Int]) extends RuleBase("BYMONTHDAY", daysOfMonth.iterator)
+  case class ByDayOfYear(daysOfYear: NonEmptySeq[Int])   extends RuleBase("BYYEARDAY", daysOfYear.iterator)
+  case class ByWeekOfYear(weeksOfYear: NonEmptySeq[Int]) extends RuleBase("BYWEEKNO", weeksOfYear.iterator)
+
+  case class ByDayOfWeek(daysOfWeek: NonEmptySeq[WeekdayNum])
+      extends RuleBase("BYDAY", daysOfWeek.iterator.map(formatWeekdayNum))
 
 }
 

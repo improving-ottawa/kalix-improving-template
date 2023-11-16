@@ -10,7 +10,9 @@ trait FutureUtils {
   final protected type RetrySettings = FutureUtils.RetrySettings
   final protected val RetrySettings = FutureUtils.RetrySettings
 
-  final protected def backoffRetry[A](settings: RetrySettings, onFailure: Throwable => Unit = defaultOnFailure)(futureSrc: => Future[A])(implicit
+  final protected def backoffRetry[A](settings: RetrySettings, onFailure: Throwable => Unit = defaultOnFailure)(
+    futureSrc: => Future[A]
+  )(implicit
     ec: ExecutionContext
   ): Future[A] = retryLoop(settings, () => futureSrc, onFailure)
 
@@ -20,7 +22,12 @@ trait FutureUtils {
     else Future(blocking(Thread.sleep(totalMillis)))
   }
 
-  final private[this] def retryLoop[A](settings: RetrySettings, futureSrc: () => Future[A], onFailure: Throwable => Unit, failures: Int = 0)(implicit
+  final private[this] def retryLoop[A](
+    settings: RetrySettings,
+    futureSrc: () => Future[A],
+    onFailure: Throwable => Unit,
+    failures: Int = 0
+  )(implicit
     ec: ExecutionContext
   ): Future[A] =
     futureSrc().recoverWith { error =>

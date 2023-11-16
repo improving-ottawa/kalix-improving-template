@@ -24,7 +24,8 @@ object KalixEnv {
   val projectId = "???"
 
   /**
-    * A map of Kalix secrets to environment variables (keys are environment variables and values are the kalix secret path).
+    * A map of Kalix secrets to environment variables (keys are environment variables and values are the kalix secret
+    * path).
     */
   val secretsMap: Map[String, String] = Map(
     "JWT_KEY_PASSWORD" -> "private-key-password/password",

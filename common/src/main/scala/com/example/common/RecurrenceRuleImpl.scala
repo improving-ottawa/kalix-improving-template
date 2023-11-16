@@ -1,6 +1,10 @@
 package com.example.common
 
-import org.dmfs.rfc5545.recur.{Freq => JavaRRuleFreq, RecurrenceRule => JavaRRule, RecurrenceRuleIterator => JavaRRuleIterator}
+import org.dmfs.rfc5545.recur.{
+  Freq => JavaRRuleFreq,
+  RecurrenceRule => JavaRRule,
+  RecurrenceRuleIterator => JavaRRuleIterator
+}
 
 import org.dmfs.rfc5545.{DateTime => RRDateTime, Weekday => RRWeekday}
 
@@ -52,7 +56,8 @@ abstract class RecurrenceRuleImpl private[common] (
       case ByDayOfMonth(dom)  => rrule.setByPart(JavaRRule.Part.BYMONTHDAY, toJavaList(dom.iterator))
       case ByDayOfYear(doy)   => rrule.setByPart(JavaRRule.Part.BYYEARDAY, toJavaList(doy.iterator))
       case ByWeekOfYear(woy)  => rrule.setByPart(JavaRRule.Part.BYWEEKNO, toJavaList(woy.iterator))
-      case ByDayOfWeek(dow)   => rrule.setByDayPart(java.util.Arrays.asList(dow.iterator.map(weekdayNumToRRWeekdayNum).toSeq: _*))
+      case ByDayOfWeek(dow)   =>
+        rrule.setByDayPart(java.util.Arrays.asList(dow.iterator.map(weekdayNumToRRWeekdayNum).toSeq: _*))
     }
 
     rrule
