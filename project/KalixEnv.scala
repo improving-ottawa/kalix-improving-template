@@ -24,9 +24,8 @@ object KalixEnv {
   val projectId = "???"
 
   /**
-   * A map of Kalix secrets to environment variables (keys are environment variables and values are the kalix secret
-   * path).
-   */
+    * A map of Kalix secrets to environment variables (keys are environment variables and values are the kalix secret path).
+    */
   val secretsMap: Map[String, String] = Map(
     "JWT_KEY_PASSWORD" -> "private-key-password/password",
     // TODO: uncomment if using a mail client
@@ -89,8 +88,8 @@ object KalixEnv {
         allProjects.map { project =>
           Def.taskDyn {
             val dockerAliasNames = (project / dockerAliases).value.map(_.toString)
-            val projName = (project / name).value
-            val logger = (project / streams).value.log
+            val projName         = (project / name).value
+            val logger           = (project / streams).value.log
             logger.info(s"Publishing image for $projectName / $projName with the following tags:")
             dockerAliasNames.foreach(alias => logger.info(s"\t- $alias"))
 
@@ -119,9 +118,9 @@ object KalixEnv {
         allProjects.map { pubProject =>
           Def.taskDyn {
             val dockerAliasNames = (pubProject / dockerAliases).value.map(_.toString)
-            val projName = (pubProject / name).value
-            val logger = (pubProject / streams).value.log
-            val dynVersionTag = dockerAliasNames.filterNot(_ == "latest").headOption
+            val projName         = (pubProject / name).value
+            val logger           = (pubProject / streams).value.log
+            val dynVersionTag    = dockerAliasNames.filterNot(_ == "latest").headOption
 
             dynVersionTag match {
               case None =>
