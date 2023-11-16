@@ -62,7 +62,14 @@ jobs:
           riddlc from "design/src/main/riddl/example.conf" validate
 
       - name: Running unit tests
-        run: sbt test
+        run: sbt -v clean coverage Test/compile test coverageAggregate coveralls
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: **/target/scala-2.12/scoverage-report
+
 
       # TODO: uncomment when integration tests are complete
       # - name: Running integration tests

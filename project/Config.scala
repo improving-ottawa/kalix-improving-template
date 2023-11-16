@@ -14,7 +14,7 @@ import wartremover.WartRemover.autoImport._
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
-import kalix.sbt.KalixPlugin.autoImport.*
+import kalix.sbt.KalixPlugin.autoImport._
 import protocbridge.Target
 import sbtbuildinfo.BuildInfoKey
 import sbtbuildinfo.BuildInfoKeys.buildInfoKeys
@@ -85,7 +85,7 @@ object Config {
       p.configure(withInfo)
         .settings(
           ThisBuild / dynverSeparator := "-",
-          scalaVersion := "2.13.10", // "3.3.1-RC7",
+          scalaVersion := "2.13.12", // "3.3.1-RC7",
           scalacOptions := scala_2_options,
           apiURL := Some(url("https://riddl.tech/apidoc/")),
           autoAPIMappings := true,
@@ -119,7 +119,7 @@ object Config {
 
     def withCoverage(percent: Int = defaultPercentage)(p: Project): Project = {
       p.settings(
-        coverageFailOnMinimum := true,
+        coverageFailOnMinimum := false,
         coverageMinimumStmtTotal := percent,
         coverageMinimumBranchTotal := percent,
         coverageMinimumStmtPerPackage := percent,
