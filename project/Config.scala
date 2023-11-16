@@ -38,9 +38,9 @@ object Config {
 
   def withInfo(p: Project): Project = {
     p.settings(
-      ThisBuild / organization     := "io.off-the-top",
+      ThisBuild / organization     := "io.example",
       // ThisBuild / organizationHomepage := Some(URI.create("https://???/").toURL),
-      ThisBuild / organizationName := "Off The Top",
+      ThisBuild / organizationName := "example",
       ThisBuild / startYear        := Some(2023),
       ThisBuild / versionScheme    := Option("early-semver"),
       ThisBuild / dynverVTagPrefix := false,
@@ -380,7 +380,7 @@ object Config {
         scalaVersion     := "3.3.1",
         riddlcConf       := file(s"design/src/main/riddl/$appName.conf"),
         riddlcMinVersion := "0.27.0",
-        riddlcConf       := file("design/src/main/riddl/offTheTop.conf"),
+        riddlcConf       := file("design/src/main/riddl/example.conf"),
         riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }
