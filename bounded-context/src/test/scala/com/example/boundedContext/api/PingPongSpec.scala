@@ -1,7 +1,5 @@
 package com.example.boundedContext.api
 
-import com.example.common.PingThroughRequest
-import com.example.common.PingThroughResponse
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.testkit.ActionResult
 import org.scalatest.matchers.should.Matchers
@@ -12,9 +10,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class PingPongSpec
-    extends AnyWordSpec
-    with Matchers {
+class PingPongSpec extends AnyWordSpec with Matchers {
 
   "PingPong" must {
 
@@ -30,7 +26,7 @@ class PingPongSpec
 
     "handle command PingThrough" in {
       val service = PingPongTestKit(new PingPong(_))
-          pending
+      pending
       // val result = service.pingThrough(PingThroughRequest(...))
     }
 

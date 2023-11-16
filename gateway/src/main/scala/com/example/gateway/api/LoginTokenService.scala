@@ -33,8 +33,8 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
   override def emptyState: LoginTokenState = LoginTokenState.defaultInstance
 
   override def createLoginToken(
-      currentState: LoginTokenState,
-      req: CreateLoginTokenRequest
+    currentState: LoginTokenState,
+    req: CreateLoginTokenRequest
   ): Effect[CreateLoginTokenResponse] =
     token match {
       case Some(_) =>
@@ -43,10 +43,10 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
       case None =>
         val loginToken = req.token
         token = Some(loginToken)
-        val newState = LoginTokenState(
-          //usage = req.usage,
-          //field = req.field,
-          //userEmail = req.userEmail,
+        val newState   = LoginTokenState(
+          // usage = req.usage,
+          // field = req.field,
+          // userEmail = req.userEmail,
           redirectUri = req.redirectUri,
           expirationTimestamp = Some(createExpirationTimestamp)
         )
@@ -55,12 +55,12 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
     }
 
   override def claimLoginToken(
-      currentState: LoginTokenState,
-      claimTokenRequest: ClaimTokenRequest
+    currentState: LoginTokenState,
+    claimTokenRequest: ClaimTokenRequest
   ): Effect[ClaimTokenResponse] = {
     val nowTimestamp = SystemClock.currentInstant
     token match {
-      case None => createErrorResponse(s"Login token is invalid", StatusCode.NOT_FOUND)
+      case None    => createErrorResponse(s"Login token is invalid", StatusCode.NOT_FOUND)
       case Some(_) =>
         currentState.expirationTimestamp match {
           case Some(instant) if instant.compareTo(nowTimestamp) < 0 =>
@@ -125,8 +125,8 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
 
 object LoginTokenService {
   final val jwtTokenValidDuration = java.time.Duration.ofHours(6)
-  final val tokenValidDuration = java.time.Duration.ofHours(1)
-  final val tokenIssuer = "example.io"
+  final val tokenValidDuration    = java.time.Duration.ofHours(1)
+  final val tokenIssuer           = "example.io"
 
   /** EndMarker */
 
@@ -134,4 +134,5 @@ object LoginTokenService {
     /** EndMarker */
     .plus(tokenValidDuration)
     .plus(tokenValidDuration)
+
 }
