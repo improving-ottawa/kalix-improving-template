@@ -12,4 +12,5 @@ class Service2Impl(creationContext: ActionCreationContext) extends AbstractServi
 
   override def doNothing(doNothingCommand: DoNothingCommand2): Action.Effect[DoNothingResponse2] =
     effects.reply(DoNothingResponse2.defaultInstance)
+
 }

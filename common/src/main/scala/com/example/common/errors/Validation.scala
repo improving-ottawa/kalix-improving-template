@@ -1,6 +1,7 @@
 package com.example.common.errors
 
 import com.example.common.domain.address.EditableAddress
+
 object Validation {
 
   type Validator[T] = T => Option[ValidationError]
@@ -77,4 +78,5 @@ object Validation {
       address => required("country")(address.country),
       address => required("postalCode")(address.postalCode)
     )
+
 }

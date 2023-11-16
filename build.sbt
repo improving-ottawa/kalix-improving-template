@@ -5,7 +5,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 name := "example"
 
-organization := "improving"
+organization         := "improving"
 organizationHomepage := Some(url("https://www.improving.com/"))
 
 // These are the projects which are Kalix services, meaning precisely they will have
@@ -20,15 +20,15 @@ lazy val kalixServices = List[Project](
 lazy val root = project
   .in(file("."))
   .settings(
-    publish := {},
-    publishLocal := {},
-    publishTo := Some(Resolver.defaultLocal),
+    publish                    := {},
+    publishLocal               := {},
+    publishTo                  := Some(Resolver.defaultLocal),
     // Publishes docker images to Kalix container registry
     KalixEnv.publishContainers := { KalixEnv.publishProjectContainers(kalixServices).value },
     // Publishes each service to Kalix with the `latest` image tag.
-    KalixEnv.deployServices := { KalixEnv.deployProjectServices(kalixServices).value },
+    KalixEnv.deployServices    := { KalixEnv.deployProjectServices(kalixServices).value },
     // Publish containers + deploy services (combo command)
-    KalixEnv.publishAndDeploy := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
+    KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
   .aggregate(design, common, utils, boundedContext, gateway)
 

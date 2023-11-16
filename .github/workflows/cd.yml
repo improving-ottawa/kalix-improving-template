@@ -109,17 +109,20 @@ jobs:
         with:
           jvm: temurin:1.17
 
-      # TODO: uncomment when integration tests are complete
-      # - name: Running unit tests and integration tests
-      #  run: sbt test "integration-test/test"
-
       - name: Installing Kalix CLI
         run: |
           curl -sL https://docs.kalix.io/install-cli.sh | bash -s -- --yes
           echo "Installed Kalix CLI version: $(kalix version)"
 
-# TODO: uncomment when secret is configured
-#      - name: Kalix Deploy
-#        run: sbt publishAndDeploy
-#        env:
-#          KALIX_TOKEN: ${{ secrets.KALIX_TOKEN }}
+      - name: Running unit tests
+        run: sbt test
+
+      # TODO: uncomment when integration tests are complete
+      # - name: Running integration tests
+      #  run: sbt "integration-test/test"
+
+      # TODO: uncomment when secret is configured
+      # - name: Kalix Deploy
+      #   run: sbt publishAndDeploy
+      #     env:
+      #       KALIX_TOKEN: ${{ secrets.KALIX_TOKEN }}
