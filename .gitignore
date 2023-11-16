@@ -5,3 +5,6 @@ project/project
 *.log
 *.out
 *.class
+/www/hugo_stats.json
+/www/go.sum
+/www/.hugo_build.lock

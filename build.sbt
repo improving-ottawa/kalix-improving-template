@@ -3,7 +3,7 @@ ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-name := "example"
+name := "kalix-improving-template"
 
 organization := "improving"
 organizationHomepage := Some(url("https://www.improving.com/"))
