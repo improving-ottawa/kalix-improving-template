@@ -1,14 +1,12 @@
-package com.example.common.email
+package com.example.extensions.email
 
-import akka.event.slf4j.Logger
-import com.example.common.common.domain.Contact
 import com.example.common.domain.address.Address
-import com.example.utils.email.TemplateEngine
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
 
+import com.example.common.common.domain._
 import scala.concurrent.duration._
 import scala.concurrent._
 

@@ -1,12 +1,12 @@
-package com.example.common
+package com.example.extensions
 
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.effect.std._
 import cats.syntax.all._
 import com.example.common.common.domain.Contact
-import com.example.utils.email.RecipientType.To
-import com.example.utils.email._
+import com.example.extensions.email.RecipientType.To
+import com.example.extensions.email._
 
 object EmailSendTest extends IOApp {
 

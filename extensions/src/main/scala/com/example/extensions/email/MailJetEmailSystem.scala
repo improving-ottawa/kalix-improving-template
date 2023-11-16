@@ -1,4 +1,4 @@
-package com.example.utils.email
+package com.example.extensions.email
 
 import cats.effect._
 import cats.effect.kernel.Resource

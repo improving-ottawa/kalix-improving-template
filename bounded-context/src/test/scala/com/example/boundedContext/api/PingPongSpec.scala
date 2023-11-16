@@ -1,7 +1,5 @@
 package com.example.boundedContext.api
 
-import com.example.common.PingThroughRequest
-import com.example.common.PingThroughResponse
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.testkit.ActionResult
 import org.scalatest.matchers.should.Matchers

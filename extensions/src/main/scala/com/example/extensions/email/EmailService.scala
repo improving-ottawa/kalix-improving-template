@@ -1,17 +1,17 @@
-package com.example.common.email
+package com.example.extensions.email
 
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.effect.unsafe.IORuntime
+import com.example.extensions.email._
 import com.example.common.common.domain.Contact
-import com.example.utils.email._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent._
 
 //TODO: Search and replace Example with name of app
 trait EmailService {
-  def sendAdminLoginEmail(recipient: Contact, companyInfo: Product, loginToken: String): Future[Unit]
+  def sendAdminLoginEmail(recipient: Contact, loginToken: String): Future[Unit]
 }
 
 object EmailService {
@@ -29,11 +29,10 @@ final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens
   implicit private val ioRuntime: IORuntime = IORuntime.builder().setCompute(executionContext, () => ()).build()
   private val logger = LoggerFactory.getLogger("com.example.utils.EmailService")
 
-  def sendAdminLoginEmail(recipient: Contact, companyInfo: Product, loginToken: String): Future[Unit] = {
+  def sendAdminLoginEmail(recipient: Contact, loginToken: String): Future[Unit] = {
     val loginLink = adminLoginUriBase + loginToken
     val substitutionsMap = Map(
       "contact" -> recipient,
-      "companyInfo" -> companyInfo,
       "loginLink" -> loginLink
     )
     val templateEngine = TemplateEngine(substitutionsMap).fromTemplateResource(adminLoginEmailTemplate)
