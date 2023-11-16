@@ -11,6 +11,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/cd.yml
+      - '**.scala'
+      - '**.proto'
+      - '**.conf'
+      - '**.sbt'
+      - '**.sh'
 
 permissions:
   contents: read
