@@ -1,19 +1,12 @@
 package com.example.common
 
-import org.dmfs.rfc5545.recur.{
-  Freq => JavaRRuleFreq,
-  RecurrenceRule => JavaRRule,
-  RecurrenceRuleIterator => JavaRRuleIterator
-}
+import org.dmfs.rfc5545.recur.{Freq => JavaRRuleFreq, RecurrenceRule => JavaRRule, RecurrenceRuleIterator => JavaRRuleIterator}
 
-import org.dmfs.rfc5545.{
-  DateTime => RRDateTime,
-  Weekday => RRWeekday
-}
+import org.dmfs.rfc5545.{DateTime => RRDateTime, Weekday => RRWeekday}
 
 import java.time._
 
-abstract class RecurrenceRuleImpl private[common](
+abstract class RecurrenceRuleImpl private[common] (
   frequency: Frequency,
   interval: Int,
   untilCount: Option[Int],
@@ -24,7 +17,7 @@ abstract class RecurrenceRuleImpl private[common](
 ) {
   import RecurrenceRuleImpl._
 
-  private[this] final lazy val cachedRRule: JavaRRule = createJavaRRule()
+  final private[this] lazy val cachedRRule: JavaRRule = createJavaRRule()
 
   final lazy val series: LazyList[LocalDate] =
     createSeries(cachedRRule, startDate.getOrElse(LocalDate.now(Clock.systemUTC)))
@@ -36,7 +29,7 @@ abstract class RecurrenceRuleImpl private[common](
 
   def ruleParts: List[RecurrentRulePart]
 
-  private[this] final def createJavaRRule() = {
+  final private[this] def createJavaRRule() = {
     val rrule = new JavaRRule(frequencyToJava(frequency))
     rrule.setInterval(interval)
 
@@ -65,15 +58,16 @@ abstract class RecurrenceRuleImpl private[common](
     rrule
   }
 
-  private[this] final def createSeries(rrule: JavaRRule, fromDate: LocalDate): LazyList[LocalDate] = {
-    val exceptDates = exclusions.toSet
+  final private[this] def createSeries(rrule: JavaRRule, fromDate: LocalDate): LazyList[LocalDate] = {
+    val exceptDates   = exclusions.toSet
     val rruleIterator = rrule.iterator(localDateToRRDateTime(fromDate))
 
     // Return the series
     if (exceptDates.isEmpty)
       LazyList.from(convertIterator(rruleIterator)).dropWhile(_.compareTo(fromDate) <= 0)
     else
-      LazyList.from(convertIterator(rruleIterator))
+      LazyList
+        .from(convertIterator(rruleIterator))
         .filterNot(exceptDates.contains)
         .dropWhile(_.compareTo(fromDate) <= 0)
   }
@@ -81,30 +75,32 @@ abstract class RecurrenceRuleImpl private[common](
 }
 
 private object RecurrenceRuleImpl {
-  private final val utcZoneId = ZoneId.of("UTC")
+  final private val utcZoneId = ZoneId.of("UTC")
 
-  @inline private final def frequencyToJava(frequency: Frequency): JavaRRuleFreq =
+  @inline final private def frequencyToJava(frequency: Frequency): JavaRRuleFreq =
     JavaRRuleFreq.valueOf(frequency.name)
 
-  @inline private final def dayOfWeekToWeekday(dow: DayOfWeek): RRWeekday =
+  @inline final private def dayOfWeekToWeekday(dow: DayOfWeek): RRWeekday =
     RRWeekday.valueOf(dow.name.take(2))
 
-  @inline private final def weekdayNumToRRWeekdayNum(wdn: WeekdayNum): JavaRRule.WeekdayNum =
+  @inline final private def weekdayNumToRRWeekdayNum(wdn: WeekdayNum): JavaRRule.WeekdayNum =
     new JavaRRule.WeekdayNum(wdn.pos, RRWeekday.valueOf(wdn.weekday.name))
 
-  @inline private final def localDateToRRDateTime(ld: LocalDate): RRDateTime =
+  @inline final private def localDateToRRDateTime(ld: LocalDate): RRDateTime =
     new RRDateTime(
       RRDateTime.UTC,
       ld.atStartOfDay(utcZoneId).toInstant.toEpochMilli
     )
 
-  private final def convertIterator(rrIterator: JavaRRuleIterator): Iterator[LocalDate] =
+  final private def convertIterator(rrIterator: JavaRRuleIterator): Iterator[LocalDate] =
     new Iterator[LocalDate] {
       final def hasNext: Boolean = rrIterator.hasNext
+
       final def next(): LocalDate = {
         val nextInstance = Instant.ofEpochMilli(rrIterator.nextMillis())
         LocalDate.ofInstant(nextInstance, utcZoneId)
       }
+
     }
 
 }

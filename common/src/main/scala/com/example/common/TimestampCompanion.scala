@@ -10,7 +10,7 @@ trait TimestampCompanion extends GeneratedMessageCompanion[Timestamp] {
   implicit final val timestampInstantMapper: TypeMapper[Timestamp, Instant] =
     new TypeMapper[Timestamp, Instant] {
       final def toCustom(ts: Timestamp): Instant = Instant.ofEpochSecond(ts.seconds, ts.nanos)
-      final def toBase(ins: Instant): Timestamp = Timestamp(ins.getEpochSecond, ins.getNano)
+      final def toBase(ins: Instant): Timestamp  = Timestamp(ins.getEpochSecond, ins.getNano)
     }
 
 }

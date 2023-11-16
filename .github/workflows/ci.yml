@@ -61,6 +61,9 @@ jobs:
         run: |
           riddlc from "design/src/main/riddl/example.conf" validate
 
+      - name: Run scalafmt
+        run: sbt scalafmtCheckAll; scalafmtSbtCheck
+
       - name: Running unit tests
         run: sbt test
 

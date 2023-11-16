@@ -1,6 +1,7 @@
 package com.example.common.errors
 
 import com.example.common.domain.address.EditableAddress
+
 object Validation {
 
   type Validator[T] = T => Option[ValidationError]
@@ -54,15 +55,13 @@ object Validation {
   }
 
   def validateAll[T](validator: Validator[T]): Validator[Iterable[T]] = iterable => {
-    iterable.foldLeft[Option[ValidationError]](None)(
-      (maybeExistingError: Option[ValidationError], elementToValidate: T) => {
-        if (maybeExistingError.isDefined) {
-          maybeExistingError
-        } else {
-          validator(elementToValidate)
-        }
+    iterable.foldLeft[Option[ValidationError]](None)((maybeExistingError: Option[ValidationError], elementToValidate: T) => {
+      if (maybeExistingError.isDefined) {
+        maybeExistingError
+      } else {
+        validator(elementToValidate)
       }
-    )
+    })
   }
 
   val urlValidator: Validator[String] = url => {
@@ -77,4 +76,5 @@ object Validation {
       address => required("country")(address.country),
       address => required("postalCode")(address.postalCode)
     )
+
 }

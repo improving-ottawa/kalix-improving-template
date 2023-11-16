@@ -13,7 +13,9 @@ sealed trait RecurrentRulePart {
 }
 
 object RecurrentRulePart {
+
   sealed abstract class RuleBase(val partName: String, elements: => Iterator[Any]) extends RecurrentRulePart {
+
     override def toString: String = {
       val elementsText = elements.toSeq.map(_.toString) match {
         case Seq(single) => single
@@ -21,19 +23,19 @@ object RecurrentRulePart {
       }
       s"$partName=$elementsText"
     }
+
   }
 
   final private def formatWeekdayNum(wdn: WeekdayNum): String =
     if (wdn.pos == 0) wdn.weekday.name
     else s"${wdn.pos}${wdn.weekday.name}"
 
-  case class BySetPosition(positions: NonEmptySeq[Int]) extends RuleBase("BYSETPOS", positions.iterator)
-  case class ByMonth(months: NonEmptySeq[Month]) extends RuleBase("BYMONTH", months.iterator.map(_.getValue))
-  case class ByDayOfMonth(daysOfMonth: NonEmptySeq[Int]) extends RuleBase("BYMONTHDAY", daysOfMonth.iterator)
-  case class ByDayOfYear(daysOfYear: NonEmptySeq[Int]) extends RuleBase("BYYEARDAY", daysOfYear.iterator)
-  case class ByWeekOfYear(weeksOfYear: NonEmptySeq[Int]) extends RuleBase("BYWEEKNO", weeksOfYear.iterator)
-  case class ByDayOfWeek(daysOfWeek: NonEmptySeq[WeekdayNum])
-      extends RuleBase("BYDAY", daysOfWeek.iterator.map(formatWeekdayNum))
+  case class BySetPosition(positions: NonEmptySeq[Int])       extends RuleBase("BYSETPOS", positions.iterator)
+  case class ByMonth(months: NonEmptySeq[Month])              extends RuleBase("BYMONTH", months.iterator.map(_.getValue))
+  case class ByDayOfMonth(daysOfMonth: NonEmptySeq[Int])      extends RuleBase("BYMONTHDAY", daysOfMonth.iterator)
+  case class ByDayOfYear(daysOfYear: NonEmptySeq[Int])        extends RuleBase("BYYEARDAY", daysOfYear.iterator)
+  case class ByWeekOfYear(weeksOfYear: NonEmptySeq[Int])      extends RuleBase("BYWEEKNO", weeksOfYear.iterator)
+  case class ByDayOfWeek(daysOfWeek: NonEmptySeq[WeekdayNum]) extends RuleBase("BYDAY", daysOfWeek.iterator.map(formatWeekdayNum))
 
 }
 
@@ -59,7 +61,7 @@ sealed trait RecurrentRule {
   /** ICal / formatted string representation of this [[RecurrentRule rrule]] */
   final def formatted: String = {
     val dtStart = startDate.map(dt => s"DTSTART:${formatISO8601(dt)}\n").getOrElse("")
-    val exDate = exclusions match {
+    val exDate  = exclusions match {
       case Nil   => ""
       case elems => s"\nEXDATE:${elems.map(formatISO8601).mkString(",")}"
     }
@@ -102,12 +104,12 @@ sealed trait RecurrentRule {
 
   final def equals(x: RecurrentRule): Boolean =
     frequency == x.frequency &&
-      interval == x.interval &&
-      untilCount == x.untilCount &&
-      untilDate == x.untilDate &&
-      startDayOfWeek == x.startDayOfWeek &&
-      exclusions == x.exclusions &&
-      ruleParts.sortBy(_.partName) == x.ruleParts.sortBy(_.partName)
+    interval == x.interval &&
+    untilCount == x.untilCount &&
+    untilDate == x.untilDate &&
+    startDayOfWeek == x.startDayOfWeek &&
+    exclusions == x.exclusions &&
+    ruleParts.sortBy(_.partName) == x.ruleParts.sortBy(_.partName)
 
   def frequency: Frequency
   def interval: Int
@@ -125,10 +127,10 @@ sealed trait RecurrentRule {
   def ruleParts: List[RecurrentRulePart]
 
   /**
-   * A series of all [[LocalDate instances]] defined by this rule.
-   * @note
-   *   This series __can__ be (effectively) infinite.
-   */
+    * A series of all [[LocalDate instances]] defined by this rule.
+    * @note
+    *   This series __can__ be (effectively) infinite.
+    */
   def series: LazyList[LocalDate]
 
   /** Gets the next [[LocalDate instance]] occurring on or after `fromDate`. */
@@ -151,6 +153,7 @@ sealed trait BuildableRule extends RecurrentRule {
 
   def bySetPosition(first: Int, rest: Int*): BuildableRule
   def byMonth(first: Int, rest: Int*): BuildableRule
+
   final def byMonth(first: Month, rest: Month*): BuildableRule =
     byMonth(first.getValue, rest.map(_.getValue): _*)
 
@@ -167,8 +170,10 @@ sealed trait ProtobufRRuleConversion { self: RecurrentRule.type =>
   import com.google.`type`.month.{Month => ProtoMonth}
 
   trait RRuleCompanion extends GeneratedMessageCompanion[protobuf.RRule] {
+
     implicit final val rruleScalaTypeMapper: TypeMapper[protobuf.RRule, RecurrentRule] =
       self.recurrentRuleTypeMapper
+
   }
 
   final val recurrentRuleTypeMapper: TypeMapper[protobuf.RRule, RecurrentRule] =
@@ -192,7 +197,7 @@ sealed trait ProtobufRRuleConversion { self: RecurrentRule.type =>
     moy.value match {
       case protobuf.MonthOfYear.Value.Month(value)     => protoMonthMapper.toCustom(value)
       case protobuf.MonthOfYear.Value.MonthNumber(num) => Month.of(num)
-      case protobuf.MonthOfYear.Value.Empty => throw new ValidationException("MonthOfYear value not specified")
+      case protobuf.MonthOfYear.Value.Empty            => throw new ValidationException("MonthOfYear value not specified")
     }
 
   final private def monthToProtoMonthOfYear(month: Month): protobuf.MonthOfYear =
@@ -213,7 +218,7 @@ sealed trait ProtobufRRuleConversion { self: RecurrentRule.type =>
       remParts match {
         case Nil                        => instance
         case BySetPosition(pos) :: tail => processParts(tail, instance.withByPosition(pos.toSeq))
-        case ByMonth(mons) :: tail =>
+        case ByMonth(mons) :: tail      =>
           processParts(tail, instance.withByMonth(mons.iterator.map(monthToProtoMonthOfYear).toSeq))
         case ByDayOfMonth(doms) :: tail => processParts(tail, instance.withByMonthDay(doms.toSeq))
         case ByDayOfYear(doys) :: tail  => processParts(tail, instance.withByYearDay(doys.toSeq))
@@ -258,26 +263,27 @@ object RecurrentRule extends ProtobufRRuleConversion {
   def never: RecurrentRule = NeverRuleInstance
 
   def apply(frequency: Frequency): BuildableRule = apply(frequency, 1)
+
   def apply(frequency: Frequency, interval: Int): BuildableRule = {
     assert(frequency != Frequency.FrequencyNever, "Frequency cannot be `NEVER`, use `RecurrentRule.never` instead.")
     BuildableInstance(frequency, interval)
   }
 
-  private val utcZoneId = ZoneId.of("UTC")
+  private val utcZoneId     = ZoneId.of("UTC")
   private val dateFormatter = format.DateTimeFormatter.ofPattern("yyyyMMdd")
 
   final private def formatISO8601(dt: LocalDate): String =
     dt.atStartOfDay(utcZoneId).format(format.DateTimeFormatter.ISO_ZONED_DATE_TIME)
 
   final protected def createInstance(
-      frequency: Frequency,
-      interval: Int,
-      untilCount: Option[Int],
-      untilDate: Option[LocalDate],
-      startDate: Option[LocalDate],
-      startDayOfWeek: Option[DayOfWeek],
-      exclusions: Seq[LocalDate],
-      ruleParts: Seq[RecurrentRulePart]
+    frequency: Frequency,
+    interval: Int,
+    untilCount: Option[Int],
+    untilDate: Option[LocalDate],
+    startDate: Option[LocalDate],
+    startDayOfWeek: Option[DayOfWeek],
+    exclusions: Seq[LocalDate],
+    ruleParts: Seq[RecurrentRulePart]
   ): RecurrentRule =
     Instance(
       frequency,
@@ -291,14 +297,14 @@ object RecurrentRule extends ProtobufRRuleConversion {
     )
 
   final private case class Instance(
-      frequency: Frequency,
-      interval: Int,
-      untilCount: Option[Int],
-      untilDate: Option[LocalDate],
-      startDate: Option[LocalDate],
-      startDayOfWeek: Option[DayOfWeek],
-      ruleParts: List[RecurrentRulePart],
-      exclusions: Seq[LocalDate]
+    frequency: Frequency,
+    interval: Int,
+    untilCount: Option[Int],
+    untilDate: Option[LocalDate],
+    startDate: Option[LocalDate],
+    startDayOfWeek: Option[DayOfWeek],
+    ruleParts: List[RecurrentRulePart],
+    exclusions: Seq[LocalDate]
   ) extends RecurrenceRuleImpl(
         frequency,
         interval,
@@ -313,19 +319,19 @@ object RecurrentRule extends ProtobufRRuleConversion {
   import RecurrentRulePart._
 
   final private case class BuildableInstance(
-      frequency: Frequency,
-      interval: Int,
-      untilCount: Option[Int] = None,
-      untilDate: Option[LocalDate] = None,
-      startDate: Option[LocalDate] = None,
-      startDayOfWeek: Option[DayOfWeek] = None,
-      exclusions: Seq[LocalDate] = Seq.empty,
-      bySetPosition: Option[BySetPosition] = None,
-      byMonth: Option[ByMonth] = None,
-      byDayOfMonth: Option[ByDayOfMonth] = None,
-      byDayOfYear: Option[ByDayOfYear] = None,
-      byWeekOfYear: Option[ByWeekOfYear] = None,
-      byDayOfWeek: Option[ByDayOfWeek] = None
+    frequency: Frequency,
+    interval: Int,
+    untilCount: Option[Int] = None,
+    untilDate: Option[LocalDate] = None,
+    startDate: Option[LocalDate] = None,
+    startDayOfWeek: Option[DayOfWeek] = None,
+    exclusions: Seq[LocalDate] = Seq.empty,
+    bySetPosition: Option[BySetPosition] = None,
+    byMonth: Option[ByMonth] = None,
+    byDayOfMonth: Option[ByDayOfMonth] = None,
+    byDayOfYear: Option[ByDayOfYear] = None,
+    byWeekOfYear: Option[ByWeekOfYear] = None,
+    byDayOfWeek: Option[ByDayOfWeek] = None
   ) extends RecurrenceRuleImpl(
         frequency,
         interval,
@@ -336,26 +342,32 @@ object RecurrentRule extends ProtobufRRuleConversion {
         exclusions
       )
       with BuildableRule {
-    def withStartDate(dt: LocalDate): BuildableRule = copy(startDate = Some(dt))
+    def withStartDate(dt: LocalDate): BuildableRule        = copy(startDate = Some(dt))
     def withWeekStart(dayOfWeek: DayOfWeek): BuildableRule = copy(startDayOfWeek = Some(dayOfWeek))
-    def withInterval(i: Int): BuildableRule = copy(interval = i)
-    def withCount(count: Int): BuildableRule = copy(untilCount = Some(count))
-    def withUntil(dt: LocalDate): BuildableRule = copy(untilDate = Some(dt))
+    def withInterval(i: Int): BuildableRule                = copy(interval = i)
+    def withCount(count: Int): BuildableRule               = copy(untilCount = Some(count))
+    def withUntil(dt: LocalDate): BuildableRule            = copy(untilDate = Some(dt))
 
     @inline private def nonEmpty(first: Int, rest: Seq[Int]): NonEmptySeq[Int] =
       NonEmptySeq(first, rest)
 
     def bySetPosition(first: Int, rest: Int*): BuildableRule =
       copy(bySetPosition = Some(BySetPosition(nonEmpty(first, rest))))
+
     def byMonth(first: Int, rest: Int*): BuildableRule =
       copy(byMonth = Some(ByMonth(nonEmpty(first, rest).map(Month.of))))
+
     def byMonthDay(first: Int, rest: Int*): BuildableRule =
       copy(byDayOfMonth = Some(ByDayOfMonth(nonEmpty(first, rest))))
+
     def byYearDay(first: Int, rest: Int*): BuildableRule = copy(byDayOfYear = Some(ByDayOfYear(nonEmpty(first, rest))))
+
     def byWeekNumber(first: Int, rest: Int*): BuildableRule =
       copy(byWeekOfYear = Some(ByWeekOfYear(nonEmpty(first, rest))))
+
     def byWeekday(first: WeekdayNum, rest: WeekdayNum*): BuildableRule =
       copy(byDayOfWeek = Some(ByDayOfWeek(NonEmptySeq(first, rest))))
+
     def withExcludedDates(first: LocalDate, rest: LocalDate*): BuildableRule = copy(exclusions = first +: rest)
 
     lazy val ruleParts: List[RecurrentRulePart] =
@@ -372,19 +384,19 @@ object RecurrentRule extends ProtobufRRuleConversion {
 
   private object NeverRuleInstance extends RecurrentRule {
     val frequency: Frequency = Frequency.FrequencyNever
-    val interval: Int = 0
+    val interval: Int        = 0
 
-    val untilCount: Option[Int] = None
+    val untilCount: Option[Int]      = None
     val untilDate: Option[LocalDate] = None
 
-    val startDate: Option[LocalDate] = None
+    val startDate: Option[LocalDate]      = None
     val startDayOfWeek: Option[DayOfWeek] = None
 
-    val exclusions: Seq[LocalDate] = Seq.empty
+    val exclusions: Seq[LocalDate]         = Seq.empty
     val ruleParts: List[RecurrentRulePart] = List.empty
-    val series: LazyList[LocalDate] = LazyList.empty
+    val series: LazyList[LocalDate]        = LazyList.empty
 
-    def nextInstance(fromDate: LocalDate): Option[LocalDate] = None
+    def nextInstance(fromDate: LocalDate): Option[LocalDate]   = None
     def createSeries(fromDate: LocalDate): LazyList[LocalDate] = LazyList.empty
 
     override def toString: String = "RRule(NEVER)"

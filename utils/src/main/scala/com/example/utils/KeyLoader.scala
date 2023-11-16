@@ -1,6 +1,6 @@
 package com.example.utils
 
-import scala.util.{Try, Success}
+import scala.util.{Success, Try}
 
 import java.security.{PrivateKey, PublicKey}
 
@@ -27,14 +27,15 @@ abstract class KeyLoader {
   private def loadAndCacheKeys: Try[Cached] =
     synchronized {
       state match {
-        case cached@Cached(_, _) => Success(cached)
-        case Empty               => Try {
-          val privateKey = loadPrivateKey()
-          val publicKey = loadPublicKey()
-          val cached = Cached(privateKey, publicKey)
-          state = cached
-          cached
-        }
+        case cached @ Cached(_, _) => Success(cached)
+        case Empty                 =>
+          Try {
+            val privateKey = loadPrivateKey()
+            val publicKey  = loadPublicKey()
+            val cached     = Cached(privateKey, publicKey)
+            state = cached
+            cached
+          }
       }
     }
 
@@ -42,8 +43,8 @@ abstract class KeyLoader {
 
 object KeyLoader {
 
-  private sealed trait State
-  private case object Empty extends State
+  sealed private trait State
+  private case object Empty                                               extends State
   private case class Cached(privateKey: PrivateKey, publicKey: PublicKey) extends State
 
 }
