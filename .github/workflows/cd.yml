@@ -48,19 +48,21 @@ jobs:
           # TODO: enable when tests are ready 
           # npm test
 
-      - name: Google Auth
-        id: auth
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
-          token_format: 'access_token'
+      # TODO: uncomment when GCP Service Account has been configured
+      #- name: Google Auth
+      #  id: auth
+      #  uses: 'google-github-actions/auth@v1'
+      #  with:
+      #    credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
+      #    token_format: 'access_token'
 
-      - name: Docker Auth
-        uses: 'docker/login-action@v1'
-        with:
-          registry: 'gcr.io'
-          username: 'oauth2accesstoken'
-          password: '${{ steps.auth.outputs.access_token }}'
+      # TODO: uncomment when Docker has been configured
+      #- name: Docker Auth
+      #  uses: 'docker/login-action@v1'
+      #  with:
+      #    registry: 'gcr.io'
+      #    username: 'oauth2accesstoken'
+      #    password: '${{ steps.auth.outputs.access_token }}'
 
       # TODO: uncomment when GCP has been configured
       # - name: Docker package and publish
