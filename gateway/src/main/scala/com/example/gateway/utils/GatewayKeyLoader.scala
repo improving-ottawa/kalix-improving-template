@@ -1,8 +1,8 @@
 package com.example.gateway.utils
 
+import com.example.utils.KeyLoader
 import com.typesafe.config.ConfigFactory
 
-import com.example.utils.KeyLoader
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.security.{KeyFactory, PrivateKey, PublicKey}
 import javax.crypto.spec.PBEKeySpec
@@ -37,8 +37,8 @@ object GatewayKeyLoader extends KeyLoader {
 
   private def privateKeyPassword: Option[String] = {
     val config = ConfigFactory.load()
-    if (config.hasPath("com.ott.gateway.jwt.private-key-password")) {
-      val privateKey = config.getString("com.ott.gateway.jwt.private-key-password")
+    if (config.hasPath("com.example.gateway.jwt.private-key-password")) {
+      val privateKey = config.getString("com.example.gateway.jwt.private-key-password")
       if (privateKey.isBlank) None else Some(privateKey)
     } else None
   }
