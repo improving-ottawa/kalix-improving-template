@@ -51,15 +51,18 @@ lazy val common: Project = project
   .configure(Config.withDeps(Dependencies.javaLibRecur))
   .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
+lazy val extensions: Project = project
+  .in(file("extensions"))
+  .configure(Config.Kalix.baseLibrary)
+  .configure(Config.Kalix.dependsOn(common))
+
 lazy val boundedContext = project
   .in(file("bounded-context"))
   .configure(Config.Kalix.kalixLibrary)
   .configure(Config.Kalix.dependsOn(common))
   .configure(Config.Kalix.dependsOn(utils))
   .configure(Config.withDepsPackage(Dependencies.csvParsingDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )
+  .settings(Compile / run / fork := false)
 
 lazy val gateway = project
   .in(file("gateway"))
