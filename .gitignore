@@ -8,3 +8,5 @@ project/project
 /www/hugo_stats.json
 /www/go.sum
 /www/.hugo_build.lock
+/www/themes/small-apps/node_modules/
+/www/themes/small-apps/package-lock.json
