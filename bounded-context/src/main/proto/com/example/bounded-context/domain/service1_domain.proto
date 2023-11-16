@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.example.boundedContext.domain;
+
+//Records
+
+message DoNothingCommand1 {
+    DoNothing1 nothing = 1;
+}
+
+message DoNothingResponse1 {
+    DoNothing1 value = 1;
+}
+
+message DoNothing1 {}
+
+message NoState1 {}

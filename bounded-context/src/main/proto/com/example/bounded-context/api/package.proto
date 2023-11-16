@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "scalapb/scalapb.proto";
+import "scalapb/validate.proto";
+import "validate/validate.proto";
+
+package com.example.boundedContext.api;
+
+option (scalapb.options) = {
+  scope: PACKAGE
+  // flat_package: true
+
+  // Force validation on Protobuf message construction
+  [scalapb.validate.file] {
+    validate_at_construction: true
+  }
+
+  // Make sure that enumerations are generated using CamelCase
+  enum_value_naming: CAMEL_CASE
+
+  // This transformation makes all fields marked with `(validate.rules).message.required = true`
+  // as "unboxed" (no `Option[_]` wrapper)
+  field_transformations: [
+    {
+      when: {options: {[validate.rules] {message: {required: true}}}}
+      set: {
+        [scalapb.field] { required: true }
+      }
+    }
+  ]
+};

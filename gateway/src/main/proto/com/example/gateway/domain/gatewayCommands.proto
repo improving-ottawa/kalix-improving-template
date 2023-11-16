@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package com.example.gateway.domain;
-
-import "com/example/gateway/domain/gatewayDomainObjects.proto";
-
-message DoNothingTwiceCommand {
-    DoNothingTwice nothing_twice = 1;
-}

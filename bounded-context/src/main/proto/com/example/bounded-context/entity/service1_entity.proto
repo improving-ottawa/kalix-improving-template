@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.example.boundedContext.entity;
+
+import "com/example/bounded-context/domain/service1_domain.proto";
+import "kalix/annotations.proto";
+
+service Service1 {
+    option (kalix.codegen) = {
+        event_sourced_entity: {
+            name: "com.example.boundedContext.entity.Service1Entity"
+            entity_type: "service1"
+            state: "com.example.boundedContext.domain.NoState1"
+            events: [
+                "com.example.boundedContext.domain.DoNothingResponse1"
+            ]
+        }
+    };
+
+    rpc DoNothing (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1) {
+        option (kalix.method).entity.key_generator = VERSION_4_UUID;
+    }
+}
