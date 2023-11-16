@@ -1,7 +1,6 @@
 package com.example.boundedContext.api
 
 import com.example.common.{PingThroughHandler, PingThroughRequest, PingThroughResponse, ServiceTrace}
-import com.example.utils.SystemClock
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.action.ActionCreationContext
 

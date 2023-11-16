@@ -42,13 +42,13 @@ lazy val utils: Project = project
   .configure(Config.withDeps(Dependencies.kalixScalaSdk))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
   .configure(Config.withDepsPackage(Dependencies.httpDepsPackage))
+  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
 
 lazy val common: Project = project
   .in(file("common"))
   .configure(Config.Kalix.baseLibrary)
   .configure(Config.Kalix.dependsOn(utils))
   .configure(Config.withDeps(Dependencies.javaLibRecur))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
 lazy val boundedContext = project

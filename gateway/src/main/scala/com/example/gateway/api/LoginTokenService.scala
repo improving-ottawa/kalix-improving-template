@@ -44,9 +44,9 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
         val loginToken = req.token
         token = Some(loginToken)
         val newState = LoginTokenState(
-          //usage = req.usage,
-          //field = req.field,
-          //userEmail = req.userEmail,
+          // usage = req.usage,
+          // field = req.field,
+          // userEmail = req.userEmail,
           redirectUri = req.redirectUri,
           expirationTimestamp = Some(createExpirationTimestamp)
         )

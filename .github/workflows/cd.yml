@@ -21,7 +21,7 @@ jobs:
     name: npm build, test, package, deploy
     runs-on: ubuntu-22.04
     env:
-      WEB_UI_IMAGE: "gcr.io/kalix-solution-web-servers/off-the-top/web-ui"
+      WEB_UI_IMAGE: "gcr.io/kalix-solution-web-servers/example/web-ui"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
   #      - name: Google Cloud Run Deploy
   #        uses: 'google-github-actions/deploy-cloudrun@v1'
   #        with:
-  #          service: 'ott-web-ui'
+  #          service: 'example-web-ui'
   #          region: 'us-east1'
   #          image: '${{ env.WEB_UI_IMAGE }}:latest'
 
