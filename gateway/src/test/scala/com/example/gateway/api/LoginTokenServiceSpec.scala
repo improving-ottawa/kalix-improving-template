@@ -12,9 +12,7 @@ import kalix.scalasdk.valueentity.ValueEntity
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class LoginTokenServiceSpec
-    extends AnyWordSpec
-    with Matchers {
+class LoginTokenServiceSpec extends AnyWordSpec with Matchers {
 
   "LoginTokenService" must {
 

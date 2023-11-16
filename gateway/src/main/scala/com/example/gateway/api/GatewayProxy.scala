@@ -9,7 +9,7 @@ import com.google.protobuf.empty.Empty
 import com.typesafe.config.{Config, ConfigFactory}
 import kalix.javasdk.impl.GrpcClients
 import kalix.scalasdk.action.{Action, ActionCreationContext}
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
 //
@@ -23,16 +23,17 @@ class GatewayProxy(protected val creationContext: ActionCreationContext)
     with LoginProxy
     with JwtAuthorization {
 
-  final protected val system: akka.actor.ActorSystem = creationContext.materializer.system
+  final protected val system: akka.actor.ActorSystem                  = creationContext.materializer.system
   implicit final protected val materializer: akka.stream.Materializer = creationContext.materializer
-  final protected val grpcClients = GrpcClients(system)
+  final protected val grpcClients                                     = GrpcClients(system)
 
-  final protected val log = LoggerFactory.getLogger(this.getClass)
+  final protected val log: Logger           = LoggerFactory.getLogger(this.getClass)
   final protected val configuration: Config = ConfigFactory.load()
 
   // All gRPC clients
   final protected lazy val service1Client: Service1Service =
     grpcClients.getGrpcClient(classOf[Service1Service], "bounded-context")
+
   final protected lazy val service2Client: Service2Service =
     grpcClients.getGrpcClient(classOf[Service2Service], "bounded-context")
 
@@ -48,9 +49,11 @@ class GatewayProxy(protected val creationContext: ActionCreationContext)
 
   def healthCheck(empty: Empty): Action.Effect[HealthCheckResponse] =
     effects.asyncEffect(serviceOnline.healthChecks().map(effects.reply[HealthCheckResponse]))
+
   override def doNothingTwice(doNothingTwiceCommand: DoNothingTwiceCommand): Action.Effect[DoNothingTwiceResponse] =
     effects.asyncReply(for {
       _ <- service1Client.doNothing(DoNothingCommand1.defaultInstance)
       _ <- service2Client.doNothing(DoNothingCommand2.defaultInstance)
     } yield DoNothingTwiceResponse.defaultInstance)
+
 }

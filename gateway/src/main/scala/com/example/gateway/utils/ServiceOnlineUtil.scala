@@ -1,11 +1,11 @@
 package com.example.gateway.utils
 
-import com.example.utils._
 import com.example.gateway._
 import com.example.boundedContext
 import akka.actor.{ActorSystem, ClassicActorSystemProvider}
 import akka.grpc.scaladsl.AkkaGrpcClient
 import com.example.common.{PingThroughRequest, PingThroughResponse}
+import com.example.utils.SystemClock
 import kalix.javasdk.impl.GrpcClients
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,6 +14,7 @@ import scala.reflect.ClassTag
 import scala.util.Try
 import java.time.{Duration, Instant}
 import java.util.UUID
+
 final class ServiceOnlineUtil private (actorSystem: ActorSystem) {
   import ServiceOnlineUtil._
 
@@ -28,18 +29,18 @@ final class ServiceOnlineUtil private (actorSystem: ActorSystem) {
           serviceName match {
             case "bounded-context" =>
               checkServiceStatus[boundedContext.api.PingPongService](serviceName, endpoint, id, _.pingThrough)
-            case unknown => Future.failed(new RuntimeException(s"Unknown Kalix service: $unknown"))
+            case unknown           => Future.failed(new RuntimeException(s"Unknown Kalix service: $unknown"))
           }
         }.toList
       )
 
     for {
       correlationId <- Future.successful(UUID.randomUUID())
-      startTime <- Future.fromTry(Try(SystemClock.currentInstant))
-      statuses <- parCheckServiceStatuses(correlationId)
-      endTime <- Future.fromTry(Try(SystemClock.currentInstant))
+      startTime     <- Future.fromTry(Try(SystemClock.currentInstant))
+      statuses      <- parCheckServiceStatuses(correlationId)
+      endTime       <- Future.fromTry(Try(SystemClock.currentInstant))
     } yield {
-      val isHealthy = statuses.forall(_.isOnline)
+      val isHealthy       = statuses.forall(_.isOnline)
       val healthCheckTime = finiteDurationBetween(startTime, endTime)
 
       HealthCheckResponse(
@@ -53,11 +54,11 @@ final class ServiceOnlineUtil private (actorSystem: ActorSystem) {
 
   /* Utility functions */
 
-  private def checkServiceStatus[T: ClassTag](
-      serviceName: String,
-      endpoint: ServiceMapping,
-      correlationId: UUID,
-      selector: T => PingThroughRequest => Future[PingThroughResponse]
+  private def checkServiceStatus[T : ClassTag](
+    serviceName: String,
+    endpoint: ServiceMapping,
+    correlationId: UUID,
+    selector: T => PingThroughRequest => Future[PingThroughResponse]
   ): Future[ServiceStatus] = {
     val (hostingService, grpcPort) = (
       endpoint.hostingService,
@@ -73,12 +74,12 @@ final class ServiceOnlineUtil private (actorSystem: ActorSystem) {
         )
 
     val checkProgram = for {
-      client <- tryCreateGrpcClient[T](hostingService, grpcPort)
+      client    <- tryCreateGrpcClient[T](hostingService, grpcPort)
       startTime <- Future.fromTry(Try(SystemClock.currentInstant))
-      request <- Future.successful(genRequest(startTime))
-      _ <- selector(client)(request)
-      endTime <- Future.fromTry(Try(SystemClock.currentInstant))
-      rtTime <- Future.successful(finiteDurationBetween(startTime, endTime))
+      request   <- Future.successful(genRequest(startTime))
+      _         <- selector(client)(request)
+      endTime   <- Future.fromTry(Try(SystemClock.currentInstant))
+      rtTime    <- Future.successful(finiteDurationBetween(startTime, endTime))
     } yield {
       ServiceStatus(
         serviceName = s"$hostingService.$serviceName",
@@ -98,11 +99,11 @@ final class ServiceOnlineUtil private (actorSystem: ActorSystem) {
     }
   }
 
-  private def tryCreateGrpcClient[T: ClassTag](hostingService: String, grpcPort: Int = 9000): Future[T] =
+  private def tryCreateGrpcClient[T : ClassTag](hostingService: String, grpcPort: Int = 9000): Future[T] =
     Future.fromTry(
       Try {
         val clientClass = implicitly[ClassTag[T]].runtimeClass
-        val grpcClient =
+        val grpcClient  =
           if (localServiceEndpoints)
             GrpcClients(actorSystem).getGrpcClient(clientClass, hostingService, grpcPort)
           else
@@ -116,6 +117,7 @@ final class ServiceOnlineUtil private (actorSystem: ActorSystem) {
     val durBetween = Duration.between(start, end)
     FiniteDuration(durBetween.toMillis, MILLISECONDS)
   }
+
 }
 
 object ServiceOnlineUtil {
@@ -125,8 +127,8 @@ object ServiceOnlineUtil {
     import com.typesafe.config.ConfigFactory
     try {
       val config = ConfigFactory.load()
-      if (config.hasPath("com.ott.gateway.health-check.use-local")) {
-        config.getBoolean("com.ott.gateway.health-check.use-local")
+      if (config.hasPath("com.example.gateway.health-check.use-local")) {
+        config.getBoolean("com.example.gateway.health-check.use-local")
       } else false
     } catch {
       case scala.util.control.NonFatal(_) =>
@@ -141,7 +143,7 @@ object ServiceOnlineUtil {
   // Note: Add other deployed services to this list (and to the public `healthChecks()` function above).
   final val healthCheckEndpoints = Map(
     "company-charity" -> ServiceMapping("company-charity", 9001),
-    "donation" -> ServiceMapping("donation", 9002),
+    "donation"        -> ServiceMapping("donation", 9002),
   )
 
   final case class ServiceMapping(hostingService: String, grpcPort: Int)
