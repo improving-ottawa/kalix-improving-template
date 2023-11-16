@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.example.boundedContext.api;
+
+import "com/example/bounded-context/domain/service1_domain.proto";
+import "kalix/annotations.proto";
+
+service Service1Service {
+    option (kalix.codegen).action = {
+        name: "com.example.boundedContext.api.Service1Impl"
+    };
+
+    rpc DoNothing (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1);
+}

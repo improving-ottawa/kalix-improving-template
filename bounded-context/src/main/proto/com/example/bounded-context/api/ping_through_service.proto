@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package com.example.boundedContext.api;
+
+import "com/example/common/ping-pong.proto";
+import "kalix/annotations.proto";
+
+service PingPongService {
+    option (kalix.codegen) = {
+        action: {
+            name: "com.example.boundedContext.api.PingPong"
+        }
+    };
+
+    /** PingThrough handling */
+    rpc PingThrough (common.PingThroughRequest) returns (common.PingThroughResponse) {
+        option (kalix.method).acl.allow = {principal: ALL};
+    }
+
+}

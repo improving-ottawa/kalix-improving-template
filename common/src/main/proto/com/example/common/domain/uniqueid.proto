@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.example.common.common.domain;
+package com.example.common.domain;
 
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";

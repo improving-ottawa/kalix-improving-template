@@ -35,7 +35,7 @@ message ServiceTrace {
 
 /** Used for online and responsiveness testing/verification */
 message PingThroughRequest {
-  com.example.common.common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
+  com.example.common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
   common.Timestamp start_time = 2 [(validate.rules).message.required = true];
   /** Keeps track of the services which this request passed through during the request */
   repeated ServiceTrace traces = 3 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
@@ -45,7 +45,7 @@ message PingThroughRequest {
 A reply for a [[PingThroughRequest]], which get bubbled-up from lower level services to the gateway service eventually.
 */
 message PingThroughResponse {
-  com.example.common.common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
+  com.example.common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
   common.Timestamp start_time = 2 [(validate.rules).message.required = true];
   common.Timestamp end_time = 3 [(validate.rules).message.required = true];
   /** All of the services which the `PingThrough` passed through */

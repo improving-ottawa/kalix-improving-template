@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package com.example.gateway;
+
+import "com/example/common/domain/uniqueid.proto";
+import "com/example/common/finite_duration.proto";
+
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option (scalapb.options) = {
+  scope: FILE
+
+  // This transformation makes all fields marked with `(validate.rules).message.required = true`
+  // as "unboxed" (no `Option[_]` wrapper)
+  field_transformations: [
+    {
+      when: {options: {[validate.rules] {message: {required: true}}}}
+      set: {
+        [scalapb.field] { required: true }
+      }
+    }
+  ]
+};
+
+/** A named service for checking the online status of a specific backend service. */
+message ServiceOnlineRequest {
+  string service_name = 1 [(validate.rules).string.min_len = 1];
+}
+
+/** The status of a service during a check all health check */
+message ServiceStatus {
+  string service_name = 1 [(validate.rules).string.min_len = 1];
+  sint32 service_internal_port = 2;
+  bool is_online = 3;
+  optional .common.FiniteDuration round_trip_time = 4;
+}
+
+/** A response to a health check. */
+
+message HealthCheckResponse {
+  common.domain.UniqueID correlation_id = 1 [(validate.rules).message.required = true];
+  .common.FiniteDuration health_check_time = 2 [(validate.rules).message.required = true];
+  bool is_healthy = 3;
+  repeated ServiceStatus service_statuses = 4 [
+    (validate.rules).repeated.min_items = 1,
+    (scalapb.field).collection_type = "scala.collection.immutable.List"
+  ];
+}
