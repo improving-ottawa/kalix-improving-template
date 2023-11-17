@@ -26,5 +26,5 @@ page SignupPage {
   button FacebookSignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUserUsingFacebook
   button GitHubSignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUserUsingGitHub
   button GmailSignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUserUsingGmail
-  text SigninLink takes command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToSigninPage
+  text SigninLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToSigninPage
 }
