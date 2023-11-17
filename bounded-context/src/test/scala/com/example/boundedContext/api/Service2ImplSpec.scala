@@ -12,9 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class Service2ImplSpec
-    extends AnyWordSpec
-    with Matchers {
+class Service2ImplSpec extends AnyWordSpec with Matchers {
 
   "Service2Impl" must {
 
@@ -30,7 +28,7 @@ class Service2ImplSpec
 
     "handle command DoNothing" in {
       val service = Service2ImplTestKit(new Service2Impl(_))
-          pending
+      pending
       // val result = service.doNothing(DoNothingCommand2(...))
     }
 

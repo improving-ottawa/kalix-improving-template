@@ -6,20 +6,20 @@ import scala.util._
 
 import java.time.Duration
 
-final class JwtService private(loader: KeyLoader, algorithm: algorithms.JwtAsymmetricAlgorithm) {
+final class JwtService private (loader: KeyLoader, algorithm: algorithms.JwtAsymmetricAlgorithm) {
 
   def createAuthorizationToken(
     issuer: String,
-    //subject: String,
+    // subject: String,
     validFor: Duration,
     jwtId: String,
     claims: Map[String, String]
-  ): Try[String] = loader.privateKey map { privateKey =>
-    val nowEpochSeconds = SystemClock.currentInstant.toEpochMilli / 1000L
+  ): Try[String] = loader.privateKey.map { privateKey =>
+    val nowEpochSeconds        = SystemClock.currentInstant.toEpochMilli / 1000L
     val expirationEpochSeconds = nowEpochSeconds + validFor.toSeconds
-    val claim = JwtClaim(
+    val claim                  = JwtClaim(
       issuer = Some(issuer),
-      //subject = Some(subject),
+      // subject = Some(subject),
       expiration = Some(expirationEpochSeconds),
       notBefore = Some(nowEpochSeconds),
       issuedAt = Some(nowEpochSeconds),

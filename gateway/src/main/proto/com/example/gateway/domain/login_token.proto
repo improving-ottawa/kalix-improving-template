@@ -52,12 +52,11 @@ message ClaimTokenSuccess {
     // The email address of the authorized user
     string user_email = 1 [(validate.rules).string.min_len = 4];
 
-    // The (issued by OTT) JWT, which should be used in the `Authorization: Bearer` HTTP header for API requests.
+    // The (issued by Example) JWT, which should be used in the `Authorization: Bearer` HTTP header for API requests.
     // Note: The JWT will contain the following claims:
-    //   - `iss` will be "off-the-top.io"
-    //   - `company_id` will be "{company_id}"
+    //   - `iss` will be "example.io"
     //   - `sub` will be "{user_email}"
-    //   - `usage` will be "{LoginTokenUsage}"
+    //   - `usage` will be "{LoginTokenUsage}" - if used
     string bearer_token = 2 [(validate.rules).string.min_len = 1];
 
     // The token usage (either Admin or Donor)

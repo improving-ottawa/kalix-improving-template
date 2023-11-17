@@ -10,7 +10,7 @@ trait UniqueIDCompanion extends GeneratedMessageCompanion[UniqueID] {
   implicit final val uniqueIDMapper: TypeMapper[UniqueID, UUID] =
     new TypeMapper[UniqueID, UUID] {
       final def toCustom(base: UniqueID): UUID = UUID.fromString(base.uuid)
-      final def toBase(id: UUID): UniqueID = UniqueID(id.toString)
+      final def toBase(id: UUID): UniqueID     = UniqueID(id.toString)
     }
 
 }

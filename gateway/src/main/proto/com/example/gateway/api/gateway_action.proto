@@ -72,14 +72,14 @@ service Gateway {
     rpc DoNothingService1 (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1) {
         option (kalix.method).jwt = {
             validate: BEARER_TOKEN
-            bearer_token_issuer: "off-the-top.io"
+            bearer_token_issuer: "example.io"
         };
     }
 
     rpc DoNothingService2 (boundedContext.domain.DoNothingCommand2) returns (boundedContext.domain.DoNothingResponse2) {
         option (kalix.method).jwt = {
             validate: BEARER_TOKEN
-            bearer_token_issuer: "off-the-top.io"
+            bearer_token_issuer: "example.io"
         };
     }
 }

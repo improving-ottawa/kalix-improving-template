@@ -3,9 +3,9 @@ ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-name := "example"
+name := "kalix-improving-template"
 
-organization := "improving"
+organization         := "improving"
 organizationHomepage := Some(url("https://www.improving.com/"))
 
 // These are the projects which are Kalix services, meaning precisely they will have
@@ -20,17 +20,17 @@ lazy val kalixServices = List[Project](
 lazy val root = project
   .in(file("."))
   .settings(
-    publish := {},
-    publishLocal := {},
-    publishTo := Some(Resolver.defaultLocal),
+    publish                    := {},
+    publishLocal               := {},
+    publishTo                  := Some(Resolver.defaultLocal),
     // Publishes docker images to Kalix container registry
     KalixEnv.publishContainers := { KalixEnv.publishProjectContainers(kalixServices).value },
     // Publishes each service to Kalix with the `latest` image tag.
-    KalixEnv.deployServices := { KalixEnv.deployProjectServices(kalixServices).value },
+    KalixEnv.deployServices    := { KalixEnv.deployProjectServices(kalixServices).value },
     // Publish containers + deploy services (combo command)
-    KalixEnv.publishAndDeploy := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
+    KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
-  .aggregate(design, common, utils, boundedContext, gateway)
+  .aggregate(design, common, utils, boundedContext, gateway, extensions)
 
 lazy val design: Project = project
   .in(file("design"))
@@ -42,13 +42,13 @@ lazy val utils: Project = project
   .configure(Config.withDeps(Dependencies.kalixScalaSdk))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
   .configure(Config.withDepsPackage(Dependencies.httpDepsPackage))
+  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
 
 lazy val common: Project = project
   .in(file("common"))
   .configure(Config.Kalix.baseLibrary)
   .configure(Config.Kalix.dependsOn(utils))
   .configure(Config.withDeps(Dependencies.javaLibRecur))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
 lazy val boundedContext = project
@@ -65,3 +65,13 @@ lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(boundedContext))
+
+lazy val extensions = project
+  .in(file("extensions"))
+  .configure(Config.Kalix.kalixLibrary)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.Kalix.dependsOn(utils))
+  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
+  .settings(
+    Compile / run / fork := false
+  )

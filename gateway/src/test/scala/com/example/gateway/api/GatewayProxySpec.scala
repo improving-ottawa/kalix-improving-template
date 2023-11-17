@@ -20,9 +20,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class GatewayProxySpec
-    extends AnyWordSpec
-    with Matchers {
+class GatewayProxySpec extends AnyWordSpec with Matchers {
 
   "GatewayProxy" must {
 
@@ -38,43 +36,43 @@ class GatewayProxySpec
 
     "handle command OnlineCheck" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.onlineCheck(Empty(...))
     }
 
     "handle command HealthCheck" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.healthCheck(Empty(...))
     }
 
     "handle command SendAdminLoginLink" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.sendAdminLoginLink(SendLoginLinkRequest(...))
     }
 
     "handle command SendUserLoginLink" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.sendUserLoginLink(SendLoginLinkRequest(...))
     }
 
     "handle command ClaimLoginToken" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.claimLoginToken(ClaimTokenRequest(...))
     }
 
     "handle command ValidateJwt" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.validateJwt(JwtValidationRequest(...))
     }
 
     "handle command DoNothingTwice" in {
       val service = GatewayProxyTestKit(new GatewayProxy(_))
-          pending
+      pending
       // val result = service.doNothingTwice(DoNothingTwiceCommand(...))
     }
 
