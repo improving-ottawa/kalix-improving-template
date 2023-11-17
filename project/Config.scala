@@ -212,12 +212,12 @@ object Config {
     proj
       .enablePlugins(DockerPlugin)
       .settings(
-        dockerBaseImage    := "docker.io/library/adoptopenjdk:11-jre-hotspot",
-        dockerUsername     := sys.props.get("docker.username"),
-        dockerRepository   := sys.props.get("docker.registry"),
+        dockerBaseImage      := "docker.io/library/adoptopenjdk:11-jre-hotspot",
+        dockerUsername       := sys.props.get("docker.username"),
+        dockerRepository     := sys.props.get("docker.registry"),
         dockerUpdateLatest := true,
         dockerExposedPorts ++= Seq(8080),
-        dockerBuildCommand := {
+        dockerBuildCommand   := {
           val arch = sys.props("os.arch")
           if (arch != "amd64" && !arch.contains("x86")) {
             // use buildx with platform to build supported amd64 images on other CPU architectures
