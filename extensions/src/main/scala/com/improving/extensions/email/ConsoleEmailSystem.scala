@@ -20,12 +20,16 @@ object ConsoleEmailSystem extends EmailSystem {
 
     logger.info(consoleWriteBody)
 
-    email.recipients.map(recipient =>
-      SendResult(
-        id = UUID.randomUUID.toString,
-        emailAddress = recipient.address,
-        status = EmailStatus.Sent
+    email.recipients
+      .map(recipient =>
+        SendResult(
+          id = UUID.randomUUID.toString,
+          emailAddress = recipient.address,
+          status = EmailStatus.Sent
+        )
       )
-    ).iterator.toSeq
+      .iterator
+      .toSeq
   }
+
 }

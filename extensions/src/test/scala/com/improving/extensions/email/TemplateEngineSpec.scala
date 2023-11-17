@@ -1,12 +1,13 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import com.example.common.domain.address.Address
+import com.example.common.common.domain._
+
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
 
-import com.example.common.common.domain._
 import scala.concurrent.duration._
 import scala.concurrent._
 

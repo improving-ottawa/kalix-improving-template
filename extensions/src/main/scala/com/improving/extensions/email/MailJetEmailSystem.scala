@@ -12,7 +12,7 @@ import sttp.model.{StatusCode, Uri}
 
 import org.slf4j.LoggerFactory
 
-final class MailJetEmailSystem private(
+final class MailJetEmailSystem private (
   apiKey: String,
   privateKey: String,
   backendResource: Resource[IO, SttpBackend[IO, _]]
@@ -27,8 +27,9 @@ final class MailJetEmailSystem private(
   val checkCanSendEmails: IO[Boolean] = backendResource.use { backend =>
     def logBadResponse(response: Response[Either[String, String]]): IO[Unit] = {
       response.body match {
-        case Right(unexpected) => safeLog(_.error(s"Got an unexpected response from MailJet API (/REST/apikey/): $unexpected"))
-        case Left(error) => safeLog(_.error(s"Failed to verify MailChimp API access due to: $error (${response.code})"))
+        case Right(unexpected) =>
+          safeLog(_.error(s"Got an unexpected response from MailJet API (/REST/apikey/): $unexpected"))
+        case Left(error)       => safeLog(_.error(s"Failed to verify MailChimp API access due to: $error (${response.code})"))
       }
     }
 
@@ -36,8 +37,8 @@ final class MailJetEmailSystem private(
       .response(asString)
       .send(backend)
       .flatMap {
-        case Response(Right(_), StatusCode.Ok, _, _, _, _)  => IO.pure(true)
-        case other: Response[_]                             => logBadResponse(other).as(false)
+        case Response(Right(_), StatusCode.Ok, _, _, _, _) => IO.pure(true)
+        case other: Response[_]                            => logBadResponse(other).as(false)
       }
   }
 
@@ -61,42 +62,40 @@ final class MailJetEmailSystem private(
       SendResult(result.MessageUUID, result.Email, EmailStatus.Sent)
     }
 
-  //noinspection SameParameterValue
+  // noinspection SameParameterValue
   private def makePostRequest(functionName: String, body: Json) = {
     val postUri = Uri.unsafeParse(apiEndpoint(functionName))
     basicRequest
       .contentType("application/json")
-      .auth.basic(apiKey, privateKey)
+      .auth
+      .basic(apiKey, privateKey)
       .body(body)
       .post(postUri)
   }
 
-  //noinspection SameParameterValue
+  // noinspection SameParameterValue
   private def makeGetRequest(functionName: String) = {
     val postUri = Uri.unsafeParse(apiEndpoint(functionName))
     basicRequest
       .contentType("application/json")
-      .auth.basic(apiKey, privateKey)
+      .auth
+      .basic(apiKey, privateKey)
       .get(postUri)
   }
 
 }
 
 sealed abstract class MailJetEmailFormatting { self: MailJetEmailSystem.type =>
-  implicit val emailAddressEncoder: Encoder[FromEmailAddress] = {
-    case FromEmailAddress(address, name) =>
-      val baseJson = Json.obj("FromEmail" -> Json.fromString(address))
-      name.fold(baseJson)(fromName =>
-        baseJson.deepMerge(Json.obj("FromName" -> Json.fromString(fromName)))
-      )
+
+  implicit val emailAddressEncoder: Encoder[FromEmailAddress] = { case FromEmailAddress(address, name) =>
+    val baseJson = Json.obj("FromEmail" -> Json.fromString(address))
+    name.fold(baseJson)(fromName => baseJson.deepMerge(Json.obj("FromName" -> Json.fromString(fromName))))
   }
 
   implicit val recipientEmailAddressEncoder: Encoder[RecipientEmailAddress] = {
     case RecipientEmailAddress(address, _, recipientName) =>
       val baseJson = Json.obj("Email" -> Json.fromString(address))
-      recipientName.fold(baseJson)(name =>
-        baseJson.deepMerge(Json.obj("Name" -> Json.fromString(name)))
-      )
+      recipientName.fold(baseJson)(name => baseJson.deepMerge(Json.obj("Name" -> Json.fromString(name))))
   }
 
   implicit val emailBodyEncoder: Encoder[EmailBody] = {
@@ -112,7 +111,7 @@ sealed abstract class MailJetEmailFormatting { self: MailJetEmailSystem.type =>
       emailAddressEncoder(email.from)
         .deepMerge(
           Json.obj(
-            "Subject" -> Json.fromString(email.subject),
+            "Subject"    -> Json.fromString(email.subject),
             "Recipients" -> Json.arr(email.recipients.map(recipientEmailAddressEncoder.apply).iterator.toSeq: _*)
           )
         )
@@ -123,14 +122,12 @@ sealed abstract class MailJetEmailFormatting { self: MailJetEmailSystem.type =>
 }
 
 object MailJetEmailSystem extends MailJetEmailFormatting {
-  private[this] final val apiEndpointBase = "https://api.mailjet.com/v3"
+  final private[this] val apiEndpointBase = "https://api.mailjet.com/v3"
 
   private val globalDispatcher = Dispatcher.parallel[IO]
 
   def apply(apiKey: String, privateKey: String): MailJetEmailSystem = {
-    val backendResource = globalDispatcher.flatMap(dispatcher =>
-      Resource.liftK(HttpClientCatsBackend(dispatcher))
-    )
+    val backendResource = globalDispatcher.flatMap(dispatcher => Resource.liftK(HttpClientCatsBackend(dispatcher)))
 
     new MailJetEmailSystem(apiKey, privateKey, backendResource)
   }
@@ -138,13 +135,13 @@ object MailJetEmailSystem extends MailJetEmailFormatting {
   private case class MailjetReply(Sent: Seq[MailjetResult])
   private case class MailjetResult(Email: String, MessageUUID: String)
 
-  private final def apiEndpoint(functionName: String): String = {
+  final private def apiEndpoint(functionName: String): String = {
     val suffix = if (functionName.startsWith("/")) functionName else s"/$functionName"
     apiEndpointBase + suffix
   }
 
-  protected implicit final class ToMessageExtension(private val email: Email) extends AnyVal {
-    def toMailJetMessage: Json =  email.asJson
+  implicit final protected class ToMessageExtension(private val email: Email) extends AnyVal {
+    def toMailJetMessage: Json = email.asJson
   }
 
 }
