@@ -80,4 +80,4 @@ lazy val gateway = project
 lazy val `scheduled-tasks` = project
   .in(file("scheduled-tasks"))
   .configure(Config.Kalix.service)
-  .configure(Config.Kalix.dependsOn(boundedContext))
+  .configure(Config.Kalix.dependsOn(`bounded-context`))

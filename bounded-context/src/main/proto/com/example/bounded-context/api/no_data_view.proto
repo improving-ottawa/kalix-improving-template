@@ -17,7 +17,7 @@ service NoData1 {
 
     rpc ProcessNothing (domain.DoNothingCommand1) returns (google.protobuf.Empty) {
         option (kalix.method).eventing.in = {
-            event_sourced_entity: "service1"
+            event_sourced_entity: "service1-service"
         };
 
         option (kalix.method).view.update = {
