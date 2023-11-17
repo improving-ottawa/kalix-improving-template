@@ -1,0 +1,4 @@
+domain ksoTemplateAppDomain is {
+  include "common/contact"
+  include "application/appSpecification.riddl"
+}
