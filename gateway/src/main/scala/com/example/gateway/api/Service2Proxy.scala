@@ -5,7 +5,7 @@ import kalix.scalasdk.action.Action
 
 trait Service2Proxy extends GatewayProxyBase with JwtAuthorization {
 
-  override def doNothingService2(command: DoNothingCommand2): Action.Effect[DoNothingResponse2] =
+  override def doNothing2(command: DoNothingCommand2): Action.Effect[DoNothingResponse2] =
     requiresAuthorization(
       effects.asyncReply(service2Client.doNothing(DoNothingCommand2.defaultInstance))
     )

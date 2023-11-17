@@ -420,52 +420,12 @@ object TemplateEngineSpec {
       |  </body>
       |</html>""".stripMargin
 
-  private case class CompanyInfo(
-    id: _root_.scala.Predef.String = "",
-    name: _root_.scala.Predef.String = "",
-    subdomain: _root_.scala.Predef.String = "",
-    address: com.example.common.domain.address.Address,
-    approvedDomains: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
-    adminEmails: _root_.scala.Seq[_root_.scala.Predef.String] = _root_.scala.Seq.empty,
-    logo: _root_.scala.Predef.String = "",
-    maxAnnualDonation: _root_.scala.Float = 0.0f,
-    defaultCharityPercentageMatch: _root_.scala.Float = 0.0f,
-    defaultCharityMinimumDonation: _root_.scala.Float = 0.0f
-  )
-
-  private case class DonationsByCharity(
-    charityName: String,
-    donationTotalAmount: Double,
-    donorTotalAmount: Double,
-    companyMatchTotalAmount: Double,
-    charityMatchPercentage: Double
-  )
-
-  private case class PendingDonations(
-    byCharity: List[DonationsByCharity],
-    feesTotalAmount: Double
-  )
-
   private val exampleAdmin = Contact(
     "Test",
     "User",
-    "test.user@test-company.com",
+    "test.user@test.com",
     mobileNumber = None
   )
-
-  private val exampleCompany =
-    CompanyInfo(
-      id = java.util.UUID.randomUUID.toString,
-      name = "Example Company",
-      address = Address(
-        "1234 Testing way",
-        None,
-        "Testville",
-        "Validatoria",
-        "Testbecistan",
-        None
-      )
-    )
 
   private val expectedString1 = "Login Email for Example App"
   private val expectedString2 = "Hi there, Test User"
@@ -481,8 +441,7 @@ class TemplateEngineSpec extends AnyWordSpec with Matchers with ScalaFutures {
 
     "be able to format a string template" in {
       val substitutionsMap = Map(
-        "companyInfo" -> exampleCompany,
-        "contact"     -> exampleAdmin
+        "contact" -> exampleAdmin
       )
 
       val templateEngine = TemplateEngine(substitutionsMap).fromTemplateString(templateText)
@@ -510,9 +469,7 @@ class TemplateEngineSpec extends AnyWordSpec with Matchers with ScalaFutures {
     // TODO: enable if using a template with a foreach section
     // "be able to format a template with a foreach section" in {
     //  val substitutionsMap = Map(
-    //    "companyInfo" -> exampleCompany,
     //    "contact" -> exampleAdmin,
-    //    "pendingDonations" -> examplePendingDonations
     //  )
 //
     //  val templateEngine = TemplateEngine(substitutionsMap).fromTemplateResource("example.html")

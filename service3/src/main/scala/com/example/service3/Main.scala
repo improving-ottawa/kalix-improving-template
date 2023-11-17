@@ -1,9 +1,8 @@
-package com.example.boundedContext
+package com.example.service3
 
-import com.example.boundedContext.api._
-import com.example.boundedContext.entity._
-import com.example.service3.api.{NoData3Service, NoData3ServiceProvider}
-import com.example.service3.entity.{Service3Entity, Service3EntityProvider}
+import com.example.service3.api.NoData3Service
+import com.example.service3.api.PingPong
+import com.example.service3.entity.Service3Entity
 import kalix.scalasdk.Kalix
 import org.slf4j.LoggerFactory
 
@@ -14,24 +13,14 @@ import org.slf4j.LoggerFactory
 
 object Main {
 
-  private val log = LoggerFactory.getLogger("com.example.boundedContext.Main")
+  private val log = LoggerFactory.getLogger("com.example.service3.Main")
 
   def createKalix(): Kalix = {
     // The KalixFactory automatically registers any generated Actions, Views or Entities,
     // and is kept up-to-date with any changes in your protobuf definitions.
     // If you prefer, you may remove this and manually register these components in a
     // `Kalix()` instance.
-    KalixFactory
-      .withComponents(
-        new Service1Entity(_),
-        new NoData1View(_),
-        new PingPong(_),
-        new Service1Impl(_),
-        new Service2Impl(_)
-      )
-      .register(Service3EntityProvider(new Service3Entity(_)))
-      .register(NoData3ServiceProvider(new NoData3Service(_)))
-
+    KalixFactory.withComponents(new Service3Entity(_), new NoData3Service(_), new PingPong(_))
   }
 
   def main(args: Array[String]): Unit = {

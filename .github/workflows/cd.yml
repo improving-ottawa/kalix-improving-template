@@ -12,6 +12,10 @@ on:
         - '**.conf'
         - '**.sbt'
         - '**.sh'
+        - '**.tsx'
+        - '**.ts'
+        - '**.scss'
+        - '**.css'
 
   # runs when pull requests are merged (pushes into `main` branch)
   push:
@@ -24,6 +28,10 @@ on:
       - '**.conf'
       - '**.sbt'
       - '**.sh'
+      - '**.tsx'
+      - '**.ts'
+      - '**.scss'
+      - '**.css'
 
 permissions:
   contents: read
