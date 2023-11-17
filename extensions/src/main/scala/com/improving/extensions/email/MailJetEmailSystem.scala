@@ -1,7 +1,6 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import cats.effect._
-import cats.effect.kernel.Resource
 import cats.effect.std.Dispatcher
 import io.circe._
 import io.circe.syntax._
@@ -10,6 +9,7 @@ import sttp.client3._
 import sttp.client3.httpclient.cats._
 import sttp.client3.circe._
 import sttp.model.{StatusCode, Uri}
+
 import org.slf4j.LoggerFactory
 
 final class MailJetEmailSystem private (

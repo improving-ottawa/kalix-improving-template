@@ -1,12 +1,11 @@
-package com.example.extensions
+package com.improving.extensions.email
+
+import com.example.common.common.domain.Contact
 
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.effect.std._
 import cats.syntax.all._
-import com.example.common.common.domain.Contact
-import com.example.extensions.email.RecipientType.To
-import com.example.extensions.email._
 
 object EmailSendTest extends IOApp {
 
@@ -28,7 +27,7 @@ object EmailSendTest extends IOApp {
         fromEmailAddress,
         "Example test email",
         emailBody,
-        NonEmptyList.one(RecipientEmailAddress(contact.emailAddress, To, None))
+        NonEmptyList.one(RecipientEmailAddress(contact.emailAddress, RecipientType.To, None))
       )
 
     def sendEmails(emails: List[Email]): IO[Unit] =

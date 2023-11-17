@@ -1,10 +1,11 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 package object template {
 
   case class TextLine(lineNumber: Int, text: String)
 
   sealed private[template] trait ParseResult[+A]
+
   private[template] case class ParseSuccess[A](result: A) extends ParseResult[A]
 
   private[template] case class ParseFailure(lineNumber: Int, error: String) extends ParseResult[Nothing] {

@@ -1,7 +1,6 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import cats.effect._
-import cats.syntax.all._
 import io.circe._
 
 sealed abstract class EmailStatus(val code: String, val isError: Boolean)

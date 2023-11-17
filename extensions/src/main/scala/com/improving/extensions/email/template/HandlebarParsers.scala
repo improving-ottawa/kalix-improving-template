@@ -1,7 +1,6 @@
-package com.example.extensions.email.template
+package com.improving.extensions.email.template
 
 import scala.annotation.tailrec
-import scala.util.matching
 
 trait HandlebarParsers {
   import HandlebarParsers._

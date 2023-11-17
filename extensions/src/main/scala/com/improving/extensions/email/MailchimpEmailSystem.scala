@@ -1,4 +1,4 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import cats.effect._
 import cats.effect.std.Dispatcher
