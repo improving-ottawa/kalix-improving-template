@@ -1,8 +1,7 @@
 package com.improving.scheduler.api
 
 import com.improving.scheduler.domain.TaskStatus
-import kalix.scalasdk.action.Action
-import kalix.scalasdk.action.ActionCreationContext
+import kalix.scalasdk.action.{Action, ActionCreationContext}
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
 //

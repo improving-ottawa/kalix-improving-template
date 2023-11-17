@@ -3,7 +3,6 @@ package com.example.gateway.utils
 import com.example.gateway._
 import com.example.boundedContext
 import akka.actor.{ActorSystem, ClassicActorSystemProvider}
-import akka.grpc.scaladsl.AkkaGrpcClient
 import com.example.common.{PingThroughRequest, PingThroughResponse}
 import com.example.utils.SystemClock
 import kalix.javasdk.impl.GrpcClients

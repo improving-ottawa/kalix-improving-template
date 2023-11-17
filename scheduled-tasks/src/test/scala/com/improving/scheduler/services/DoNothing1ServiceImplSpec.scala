@@ -2,8 +2,6 @@ package com.improving.scheduler.services
 
 import com.google.protobuf.empty.Empty
 import com.improving.scheduler.domain.TaskRunResult
-import kalix.scalasdk.action.Action
-import kalix.scalasdk.testkit.ActionResult
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

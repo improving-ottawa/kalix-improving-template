@@ -125,14 +125,11 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
 
 object LoginTokenService {
   final val jwtTokenValidDuration = java.time.Duration.ofHours(6)
-  final val tokenValidDuration    = java.time.Duration.ofHours(1)
-  final val tokenIssuer           = "example.io"
-
-  /** EndMarker */
+  final val tokenValidDuration = java.time.Duration.ofHours(1)
+  final val tokenIssuer = "example.io"
 
   private def createExpirationTimestamp: Instant = SystemClock.currentInstant
-    /** EndMarker */
-    .plus(tokenValidDuration)
-    .plus(tokenValidDuration)
+      .plus(tokenValidDuration)
+      .plus(tokenValidDuration)
 
 }

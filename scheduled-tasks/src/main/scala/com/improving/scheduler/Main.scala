@@ -1,13 +1,14 @@
 package com.improving.scheduler
 
+import com.example.boundedContext.domain.DoNothing2
 import com.example.utils.FutureUtils.RetrySettings
 import com.improving.scheduler.services._
 import com.example.utils.FutureUtils
 import com.google.protobuf.empty.Empty
 import com.improving.scheduler.api._
 import com.improving.scheduler.entity._
-import kalix.scalasdk.{Kalix, WrappedKalix}
 import kalix.javasdk.impl.ProxyInfoHolder
+import kalix.scalasdk.{Kalix, WrappedKalix}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Future

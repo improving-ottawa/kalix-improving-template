@@ -1,13 +1,6 @@
 package com.example.gateway.api
 
-import com.example.gateway.domain.{
-  ClaimTokenRequest,
-  ClaimTokenResponse,
-  JwtValidationRequest,
-  JwtValidationResponse,
-  SendLoginLinkRequest,
-  SendLoginLinkResponse
-}
+import com.example.gateway.domain.{ClaimTokenRequest, ClaimTokenResponse, JwtValidationRequest, JwtValidationResponse, SendLoginLinkRequest, SendLoginLinkResponse}
 import kalix.scalasdk.action.Action
 
 /** EndMarker */

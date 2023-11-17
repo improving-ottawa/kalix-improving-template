@@ -1,11 +1,9 @@
 package kalix.javasdk
 
 import java.lang.management.ManagementFactory
-
 import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
-
 import akka.Done
 import akka.actor._
 import akka.http.scaladsl._
@@ -13,19 +11,13 @@ import akka.http.scaladsl.model._
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
 import com.typesafe.config.ConfigFactory
 import kalix.devtools.impl.DockerComposeUtils
-import kalix.javasdk.impl.{AbstractContext, DiscoveryImpl, GrpcClients, Service}
-import kalix.javasdk.impl.action.ActionService
-import kalix.javasdk.impl.action.ActionsImpl
-import kalix.javasdk.impl.eventsourcedentity.EventSourcedEntitiesImpl
-import kalix.javasdk.impl.eventsourcedentity.EventSourcedEntityService
-import kalix.javasdk.impl.replicatedentity.ReplicatedEntitiesImpl
-import kalix.javasdk.impl.replicatedentity.ReplicatedEntityService
-import kalix.javasdk.impl.valueentity.ValueEntitiesImpl
-import kalix.javasdk.impl.valueentity.ValueEntityService
-import kalix.javasdk.impl.view.ViewService
-import kalix.javasdk.impl.view.ViewsImpl
-import kalix.javasdk.impl.workflow.WorkflowImpl
-import kalix.javasdk.impl.workflow.WorkflowService
+import kalix.javasdk.impl._
+import kalix.javasdk.impl.eventsourcedentity._
+import kalix.javasdk.impl.valueentity._
+import kalix.javasdk.impl.replicatedentity._
+import kalix.javasdk.impl.view._
+import kalix.javasdk.impl.workflow._
+import kalix.javasdk.impl.action._
 import kalix.protocol.action.ActionsHandler
 import kalix.protocol.discovery.DiscoveryHandler
 import kalix.protocol.event_sourced_entity.EventSourcedEntitiesHandler
@@ -36,7 +28,7 @@ import kalix.protocol.workflow_entity.WorkflowEntitiesHandler
 import org.slf4j.LoggerFactory
 
 // Copied from `kalix.javasdk.KalixRunner` but need no bullshit from Kalix API!
-final class OpenKalixRunner private(
+final class OpenKalixRunner private (
   _system: ActorSystem,
   serviceFactories: Map[String, java.util.function.Function[ActorSystem, Service]],
   aclDescriptor: Option[FileDescriptorProto],
@@ -47,7 +39,7 @@ final class OpenKalixRunner private(
 
   // Hidden in `KalixRunner`, what bullshit!
   implicit val system: ActorSystem = _system
-  private val dockerComposeUtils = DockerComposeUtils.fromConfig(system.settings.config)
+  private val dockerComposeUtils   = DockerComposeUtils.fromConfig(system.settings.config)
 
   // Hidden in `KalixRunner`, what bullshit!
   val configuration: kalix.javasdk.KalixRunner.Configuration =
@@ -67,33 +59,33 @@ final class OpenKalixRunner private(
     val serviceRoutes =
       services.groupBy(_._2.getClass).foldLeft(PartialFunction.empty[HttpRequest, Future[HttpResponse]]) {
 
-        case (route, (serviceClass, eventSourcedServices: Map[String, EventSourcedEntityService]@unchecked))
-          if serviceClass == classOf[EventSourcedEntityService] =>
+        case (route, (serviceClass, eventSourcedServices: Map[String, EventSourcedEntityService] @unchecked))
+            if serviceClass == classOf[EventSourcedEntityService] =>
           val eventSourcedImpl = new EventSourcedEntitiesImpl(system, eventSourcedServices, configuration)
           route.orElse(EventSourcedEntitiesHandler.partial(eventSourcedImpl))
 
-        case (route, (serviceClass, services: Map[String, ReplicatedEntityService]@unchecked))
-          if serviceClass == classOf[ReplicatedEntityService] =>
+        case (route, (serviceClass, services: Map[String, ReplicatedEntityService] @unchecked))
+            if serviceClass == classOf[ReplicatedEntityService] =>
           val replicatedEntitiesImpl = new ReplicatedEntitiesImpl(system, services)
           route.orElse(ReplicatedEntitiesHandler.partial(replicatedEntitiesImpl))
 
-        case (route, (serviceClass, entityServices: Map[String, ValueEntityService]@unchecked))
-          if serviceClass == classOf[ValueEntityService] =>
+        case (route, (serviceClass, entityServices: Map[String, ValueEntityService] @unchecked))
+            if serviceClass == classOf[ValueEntityService] =>
           val valueEntityImpl = new ValueEntitiesImpl(system, entityServices, configuration)
           route.orElse(ValueEntitiesHandler.partial(valueEntityImpl))
 
-        case (route, (serviceClass, workflowServices: Map[String, WorkflowService]@unchecked))
-          if serviceClass == classOf[WorkflowService] =>
+        case (route, (serviceClass, workflowServices: Map[String, WorkflowService] @unchecked))
+            if serviceClass == classOf[WorkflowService] =>
           val workflowImpl = new WorkflowImpl(system, workflowServices)
           route.orElse(WorkflowEntitiesHandler.partial(workflowImpl))
 
-        case (route, (serviceClass, actionServices: Map[String, ActionService]@unchecked))
-          if serviceClass == classOf[ActionService] =>
+        case (route, (serviceClass, actionServices: Map[String, ActionService] @unchecked))
+            if serviceClass == classOf[ActionService] =>
           val actionImpl = new ActionsImpl(system, actionServices, rootContext)
           route.orElse(ActionsHandler.partial(actionImpl))
 
-        case (route, (serviceClass, viewServices: Map[String, ViewService]@unchecked))
-          if serviceClass == classOf[ViewService] =>
+        case (route, (serviceClass, viewServices: Map[String, ViewService] @unchecked))
+            if serviceClass == classOf[ViewService] =>
           val viewsImpl = new ViewsImpl(system, viewServices, rootContext)
           route.orElse(ViewsHandler.partial(viewsImpl))
 
@@ -139,7 +131,7 @@ final class OpenKalixRunner private(
       case Success(binding) =>
         val address = binding.localAddress
         system.log.debug("gRPC server started {}:{}", address.getHostString, address.getPort)
-      case Failure(ex) =>
+      case Failure(ex)      =>
         system.log.error(
           "Failed to bind gRPC server {}:{}, terminating system. {}",
           configuration.userFunctionInterface,
@@ -155,11 +147,11 @@ final class OpenKalixRunner private(
   def terminate: Future[Terminated] = system.terminate()
 
   private def logJvmInfo(): Unit = {
-    val osMBean = ManagementFactory.getOperatingSystemMXBean
+    val osMBean     = ManagementFactory.getOperatingSystemMXBean
     val memoryMBean = ManagementFactory.getMemoryMXBean
-    val heap = memoryMBean.getHeapMemoryUsage
-    val jvmName = sys.props.get("java.runtime.name").orElse(sys.props.get("java.vm.name")).getOrElse("")
-    val jvmVersion = sys.props.get("java.runtime.version").orElse(sys.props.get("java.vm.version")).getOrElse("")
+    val heap        = memoryMBean.getHeapMemoryUsage
+    val jvmName     = sys.props.get("java.runtime.name").orElse(sys.props.get("java.vm.name")).getOrElse("")
+    val jvmVersion  = sys.props.get("java.runtime.version").orElse(sys.props.get("java.vm.version")).getOrElse("")
 
     log.info(
       "JVM [{} {}], max heap [{} MB], processors [{}]",
@@ -178,10 +170,12 @@ object OpenKalixRunner {
 
   def apply(instance: kalix.javasdk.Kalix): OpenKalixRunner = {
 
-    val services = getPrivateField[JavaHashMap[java.lang.String, java.util.function.Function[ActorSystem, Service]]]("services")(instance)
+    val services       = getPrivateField[JavaHashMap[java.lang.String, java.util.function.Function[ActorSystem, Service]]](
+      "services"
+    )(instance)
     val aclDescriptors = getPrivateField[java.util.Optional[FileDescriptorProto]]("aclDescriptor")(instance)
-    val sdkName = kalix.javasdk.BuildInfo.name
-    val system = ActorSystem("kalix", KalixRunner.prepareConfig(ConfigFactory.load()))
+    val sdkName        = kalix.javasdk.BuildInfo.name
+    val system         = ActorSystem("kalix", KalixRunner.prepareConfig(ConfigFactory.load()))
 
     new OpenKalixRunner(
       system,
@@ -194,7 +188,7 @@ object OpenKalixRunner {
   private def getPrivateField[A](name: String)(instance: kalix.javasdk.Kalix): A = {
     val jvmField = kalixClass.getDeclaredField(name)
     jvmField.setAccessible(true)
-    val result = jvmField.get(instance)
+    val result   = jvmField.get(instance)
     jvmField.setAccessible(false)
 
     result.asInstanceOf[A]

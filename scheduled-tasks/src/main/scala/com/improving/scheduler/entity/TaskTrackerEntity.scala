@@ -4,8 +4,7 @@ import com.improving.scheduler.api._
 import com.improving.scheduler.domain._
 import com.google.protobuf.empty.Empty
 import com.improving.scheduler.entity
-import kalix.scalasdk.valueentity.ValueEntity
-import kalix.scalasdk.valueentity.ValueEntityContext
+import kalix.scalasdk.valueentity.{ValueEntity, ValueEntityContext}
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
 //
