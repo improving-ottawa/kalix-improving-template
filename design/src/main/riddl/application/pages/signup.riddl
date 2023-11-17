@@ -16,7 +16,7 @@ command CreateUserUsingGmail is {???}
 command RedirectUserToSigninPage is {???}
 
 page SignupPage {
-  form NewUserForm is {
+  form NewUserForm acquires record ksoTemplateAppDomain.ksoTemplateApp.SignupParameters {
     input firstName accepts ksoTemplateAppDomain.ksoTemplateApp.FirstName
     input lastName accepts ksoTemplateAppDomain.ksoTemplateApp.LastName
     input emailAddress accepts ksoTemplateAppDomain.EmailAddress

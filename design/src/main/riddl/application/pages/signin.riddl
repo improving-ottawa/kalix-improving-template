@@ -13,7 +13,7 @@ command RemindUserOfPassword is {email: EmailAddress}
 command RedirectUserToSignupPage is {???}
 
 page SigninPage {
-  form SigninForm is {
+  form SigninForm acquires record ksoTemplateAppDomain.ksoTemplateApp.LoginParameters {
     input signinEmailAddress accepts ksoTemplateAppDomain.EmailAddress
     input signinPassword accepts ksoTemplateAppDomain.ksoTemplateApp.Password
     selector rememberMeOption accepts ksoTemplateAppDomain.ksoTemplateApp.RememberMe
