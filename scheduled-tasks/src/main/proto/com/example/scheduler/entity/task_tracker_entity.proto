@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package com.example.scheduler.entity;
+
+import "com/example/scheduler/api/task_tracker_api.proto";
+import "com/example/scheduler/domain/task_tracker_domain.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+
+message TaskTrackerState {
+    string task_id = 1;
+    domain.TaskState state = 2;
+    domain.TaskRunResult last_result = 3;
+}
+
+message TaskCommand {
+    string task_id = 1 [(kalix.field).entity_key = true];
+}
+
+message TaskCompletedCommand {
+    string task_id = 1 [(kalix.field).entity_key = true];
+    domain.TaskRunResult result = 2 [(scalapb.field).required = true];
+}
+
+message TaskStartResponse {
+    bool can_start = 1;
+}
+
+service TaskTracker {
+    option (kalix.service).acl.allow = {service: "scheduler"};
+    option (kalix.codegen) = {
+        value_entity: {
+            entity_type: "task-tracker"
+            name: "com.example.scheduler.entity.TaskTrackerEntity"
+            state: "com.example.scheduler.entity.TaskTrackerState"
+        }
+    };
+
+    rpc GetTaskStatus (api.TaskStatusRequest) returns (domain.TaskStatus);
+    rpc GetLastRunResult (api.TaskStatusRequest) returns (api.TaskResultResponse);
+
+    rpc MarkTaskScheduled (TaskCommand) returns (google.protobuf.Empty);
+    rpc MarkTaskRunning (TaskCommand) returns (TaskStartResponse);
+    rpc MarkTaskCompleted (TaskCompletedCommand) returns (google.protobuf.Empty);
+}

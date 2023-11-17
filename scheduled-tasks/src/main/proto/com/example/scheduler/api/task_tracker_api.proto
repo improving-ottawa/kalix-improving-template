@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package com.example.scheduler.api;
+
+// Domain imports
+import "com/example/scheduler/domain/task_tracker_domain.proto";
+
+// Other imports
+import "kalix/annotations.proto";
+import "validate/validate.proto";
+
+// Requests
+
+message TaskStatusRequest {
+    string task_id = 1 [(validate.rules).string.min_len = 1, (kalix.field).entity_key = true];
+}
+
+message TaskResultRequest {
+    string task_id = 1 [(validate.rules).string.min_len = 1, (kalix.field).entity_key = true];
+}
+
+// Responses
+
+message TaskResultResponse {
+    string task_id = 1 [(validate.rules).string.min_len = 1];
+    domain.TaskRunResult result = 2;
+}
+
+// Actions / Controllers
+
+service TaskTrackerService {
+    option (kalix.codegen).action = {
+        name: "com.example.scheduler.api.TaskTrackerServiceImpl"
+    };
+
+    rpc GetTaskStatus (TaskStatusRequest) returns (domain.TaskStatus);
+    rpc GetLastTaskRunResult (TaskResultRequest) returns (TaskResultResponse);
+}

@@ -75,3 +75,8 @@ lazy val extensions = project
   .settings(
     Compile / run / fork := false
   )
+
+lazy val `scheduled-tasks` = project
+  .in(file("scheduled-tasks"))
+  .configure(Config.Kalix.service)
+  .configure(Config.Kalix.dependsOn(boundedContext))

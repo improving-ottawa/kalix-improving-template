@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package com.example.scheduler.services;
+
+// Domain imports
+import "com/example/scheduler/domain/task_tracker_domain.proto";
+
+// Other imports
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+
+service DoNothing1Service {
+    option (kalix.service).acl.allow = {service: "scheduled-tasks"};
+    option (kalix.codegen).action = {
+        name: "com.example.scheduler.services.DoNothing1ServiceImpl"
+    };
+
+    rpc Start (google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc Run (google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc RunForTest (google.protobuf.Empty) returns (domain.TaskRunResult);
+}

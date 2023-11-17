@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package com.example.scheduler.domain;
+
+// Common imports
+import "com/example/common/timestamp.proto";
+
+// Other imports
+import "scalapb/scalapb.proto";
+
+message TaskStatus {
+    string task_id = 1;
+    TaskState state = 2;
+}
+
+enum TaskState {
+    TASK_STATE_NOT_SCHEDULED = 0;
+    TASK_STATE_SCHEDULED = 1;
+    TASK_STATE_RUNNING = 2;
+}
+
+message TaskRunResult {
+    oneof value {
+        TaskRunSuccess success = 1;
+        TaskRunFailure failure = 2;
+    }
+}
+
+message TaskRunSuccess {
+    common.Timestamp start_time = 1 [(scalapb.field).required = true];
+    common.Timestamp end_time = 2 [(scalapb.field).required = true];
+}
+
+message TaskRunFailure {
+    common.Timestamp start_time = 1 [(scalapb.field).required = true];
+    common.Timestamp end_time = 2 [(scalapb.field).required = true];
+
+    string error_message = 3;
+}
