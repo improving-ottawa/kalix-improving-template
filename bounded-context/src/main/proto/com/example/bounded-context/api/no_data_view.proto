@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package com.example.boundedContext.api;
+
+import "com/example/bounded-context/domain/service1_domain.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+
+// *********
+// * Views *
+// *********
+
+service NoData1 {
+    option (kalix.codegen) = {
+        view: {}
+    };
+
+    rpc ProcessNothing (domain.DoNothingCommand1) returns (google.protobuf.Empty) {
+        option (kalix.method).eventing.in = {
+            event_sourced_entity: "service1"
+        };
+
+        option (kalix.method).view.update = {
+            table: "nothing"
+            transform_updates: true
+        };
+    }
+
+    // Single query (only one allowed per view!!)
+
+    rpc GetNothing (google.protobuf.Empty) returns (stream google.protobuf.Empty) {
+        option (kalix.method).view.query = {
+            query: "SELECT * FROM nothing"
+        };
+    }
+
+}

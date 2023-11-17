@@ -19,12 +19,15 @@ object Main {
     // and is kept up-to-date with any changes in your protobuf definitions.
     // If you prefer, you may remove this and manually register these components in a
     // `Kalix()` instance.
-    KalixFactory.withComponents(
-      new Service1Entity(_),
-      new PingPong(_),
-      new Service1Impl(_),
-      new Service2Impl(_)
-    )
+    KalixFactory
+      .withComponents(
+        new Service1Entity(_),
+        new NoData1View(_),
+        new PingPong(_),
+        new Service1Impl(_),
+        new Service2Impl(_)
+      )
+
   }
 
   def main(args: Array[String]): Unit = {
