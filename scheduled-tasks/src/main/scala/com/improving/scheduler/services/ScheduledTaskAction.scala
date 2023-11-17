@@ -1,13 +1,13 @@
-package com.example.scheduler.services
+package com.improving.scheduler.services
 
-import com.example.scheduler._
-import com.example.scheduler.api._
-import com.example.scheduler.domain._
-import com.example.scheduler.entity._
 import com.example.utils._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.protobuf.empty.Empty
+import com.improving.scheduler.api.TaskStatusRequest
+import com.improving.scheduler.{domain, entity, Components}
+import com.improving.scheduler.domain.{TaskRunFailure, TaskRunResult, TaskRunSuccess, TaskState, TaskStatus}
+import com.improving.scheduler.entity.{TaskCommand, TaskCompletedCommand}
 import kalix.javasdk.impl.GrpcClients
 import kalix.scalasdk.DeferredCall
 import kalix.scalasdk.action.Action
@@ -158,7 +158,7 @@ trait ScheduledTaskAction extends Action with FutureUtils { self =>
 
   private def markTaskComplete(startTime: Instant): Future[TaskRunResult] = {
     val runSuccess = TaskRunSuccess(startTime, SystemClock.currentInstant)
-    val result     = TaskRunResult(TaskRunResult.Value.Success(runSuccess))
+    val result     = domain.TaskRunResult(TaskRunResult.Value.Success(runSuccess))
 
     components.taskTrackerEntity
       .markTaskCompleted(TaskCompletedCommand(taskKey, result))
@@ -168,10 +168,10 @@ trait ScheduledTaskAction extends Action with FutureUtils { self =>
 
   private def markTaskFailed(startTime: Instant, error: Throwable): Future[TaskRunResult] = {
     val runFailure = TaskRunFailure(startTime, SystemClock.currentInstant, error.getMessage)
-    val result     = TaskRunResult(TaskRunResult.Value.Failure(runFailure))
+    val result     = domain.TaskRunResult(TaskRunResult.Value.Failure(runFailure))
 
     components.taskTrackerEntity
-      .markTaskCompleted(TaskCompletedCommand(taskKey, result))
+      .markTaskCompleted(entity.TaskCompletedCommand(taskKey, result))
       .execute()
       .map(_ => result)
   }

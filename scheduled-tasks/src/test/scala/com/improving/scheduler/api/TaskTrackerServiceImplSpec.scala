@@ -1,6 +1,6 @@
-package com.example.scheduler.api
+package com.improving.scheduler.api
 
-import com.example.scheduler.domain.TaskStatus
+import com.improving.scheduler.domain.TaskStatus
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.testkit.ActionResult
 import org.scalatest.matchers.should.Matchers
@@ -11,9 +11,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class TaskTrackerServiceImplSpec
-    extends AnyWordSpec
-    with Matchers {
+class TaskTrackerServiceImplSpec extends AnyWordSpec with Matchers {
 
   "TaskTrackerServiceImpl" must {
 
@@ -29,13 +27,13 @@ class TaskTrackerServiceImplSpec
 
     "handle command GetTaskStatus" in {
       val service = TaskTrackerServiceImplTestKit(new TaskTrackerServiceImpl(_))
-          pending
+      pending
       // val result = service.getTaskStatus(TaskStatusRequest(...))
     }
 
     "handle command GetLastTaskRunResult" in {
       val service = TaskTrackerServiceImplTestKit(new TaskTrackerServiceImpl(_))
-          pending
+      pending
       // val result = service.getLastTaskRunResult(TaskResultRequest(...))
     }
 

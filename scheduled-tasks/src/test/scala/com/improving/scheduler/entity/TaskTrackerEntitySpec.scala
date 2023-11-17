@@ -1,17 +1,9 @@
-package com.example.scheduler.entity
+package com.improving.scheduler.entity
 
-import com.google.protobuf.empty.Empty
-import com.example.scheduler.api.TaskStatusRequest
-import com.example.scheduler.domain.TaskStatus
-import com.example.scheduler.entity
-import kalix.scalasdk.testkit.ValueEntityResult
-import kalix.scalasdk.valueentity.ValueEntity
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TaskTrackerEntitySpec
-    extends AnyWordSpec
-    with Matchers {
+class TaskTrackerEntitySpec extends AnyWordSpec with Matchers {
 
   "TaskTrackerEntity" must {
 

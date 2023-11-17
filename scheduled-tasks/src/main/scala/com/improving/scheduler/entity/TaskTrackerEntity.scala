@@ -1,9 +1,9 @@
-package com.example.scheduler.entity
+package com.improving.scheduler.entity
 
-import com.example.scheduler.api._
-import com.example.scheduler.domain._
-
+import com.improving.scheduler.api._
+import com.improving.scheduler.domain._
 import com.google.protobuf.empty.Empty
+import com.improving.scheduler.entity
 import kalix.scalasdk.valueentity.ValueEntity
 import kalix.scalasdk.valueentity.ValueEntityContext
 
@@ -15,7 +15,7 @@ import kalix.scalasdk.valueentity.ValueEntityContext
 class TaskTrackerEntity(context: ValueEntityContext) extends AbstractTaskTrackerEntity {
 
   override def emptyState: TaskTrackerState =
-    TaskTrackerState(
+    entity.TaskTrackerState(
       taskId = context.entityId,
       state = TaskState.TASK_STATE_NOT_SCHEDULED,
       lastResult = None

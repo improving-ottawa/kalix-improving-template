@@ -1,7 +1,7 @@
-package com.example.scheduler.services
+package com.improving.scheduler.services
 
-import com.example.scheduler.domain.TaskRunResult
 import com.google.protobuf.empty.Empty
+import com.improving.scheduler.domain.TaskRunResult
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.testkit.ActionResult
 import org.scalatest.matchers.should.Matchers
@@ -12,9 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class DoNothing1ServiceImplSpec
-    extends AnyWordSpec
-    with Matchers {
+class DoNothing1ServiceImplSpec extends AnyWordSpec with Matchers {
 
   "DoNothing1ServiceImpl" must {
 
@@ -30,19 +28,19 @@ class DoNothing1ServiceImplSpec
 
     "handle command Start" in {
       val service = DoNothing1ServiceImplTestKit(new DoNothing1ServiceImpl(_))
-          pending
+      pending
       // val result = service.start(Empty(...))
     }
 
     "handle command Run" in {
       val service = DoNothing1ServiceImplTestKit(new DoNothing1ServiceImpl(_))
-          pending
+      pending
       // val result = service.run(Empty(...))
     }
 
     "handle command RunForTest" in {
       val service = DoNothing1ServiceImplTestKit(new DoNothing1ServiceImpl(_))
-          pending
+      pending
       // val result = service.runForTest(Empty(...))
     }
 

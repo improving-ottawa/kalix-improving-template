@@ -1,12 +1,11 @@
-package com.example.scheduler
+package com.improving.scheduler
 
-import com.example.scheduler.api.TaskTrackerServiceImpl
-import com.example.scheduler.entity.TaskTrackerEntity
-import com.example.scheduler.services.DoNothing1ServiceImpl
 import com.example.utils.FutureUtils.RetrySettings
-import com.example.scheduler.services._
+import com.improving.scheduler.services._
 import com.example.utils.FutureUtils
 import com.google.protobuf.empty.Empty
+import com.improving.scheduler.api._
+import com.improving.scheduler.entity._
 import kalix.scalasdk.{Kalix, WrappedKalix}
 import kalix.javasdk.impl.ProxyInfoHolder
 import org.slf4j.LoggerFactory

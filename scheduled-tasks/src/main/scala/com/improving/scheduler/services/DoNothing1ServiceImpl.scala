@@ -1,4 +1,4 @@
-package com.example.scheduler.services
+package com.improving.scheduler.services
 
 import akka.NotUsed
 import akka.stream.scaladsl._

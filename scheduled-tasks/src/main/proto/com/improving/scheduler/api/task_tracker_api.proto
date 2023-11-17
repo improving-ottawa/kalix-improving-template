@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package com.example.scheduler.api;
+package com.improving.scheduler.api;
 
 // Domain imports
-import "com/example/scheduler/domain/task_tracker_domain.proto";
+import "com/improving/scheduler/domain/task_tracker_domain.proto";
 
 // Other imports
 import "kalix/annotations.proto";
@@ -30,7 +30,7 @@ message TaskResultResponse {
 
 service TaskTrackerService {
     option (kalix.codegen).action = {
-        name: "com.example.scheduler.api.TaskTrackerServiceImpl"
+        name: "com.improving.scheduler.api.TaskTrackerServiceImpl"
     };
 
     rpc GetTaskStatus (TaskStatusRequest) returns (domain.TaskStatus);

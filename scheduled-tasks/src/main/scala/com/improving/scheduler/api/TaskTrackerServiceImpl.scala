@@ -1,6 +1,6 @@
-package com.example.scheduler.api
+package com.improving.scheduler.api
 
-import com.example.scheduler.domain.TaskStatus
+import com.improving.scheduler.domain.TaskStatus
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.action.ActionCreationContext
 

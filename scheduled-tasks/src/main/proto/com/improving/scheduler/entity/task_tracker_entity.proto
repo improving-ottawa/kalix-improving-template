@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package com.example.scheduler.entity;
+package com.improving.scheduler.entity;
 
-import "com/example/scheduler/api/task_tracker_api.proto";
-import "com/example/scheduler/domain/task_tracker_domain.proto";
+import "com/improving/scheduler/api/task_tracker_api.proto";
+import "com/improving/scheduler/domain/task_tracker_domain.proto";
 
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
@@ -33,8 +33,8 @@ service TaskTracker {
     option (kalix.codegen) = {
         value_entity: {
             entity_type: "task-tracker"
-            name: "com.example.scheduler.entity.TaskTrackerEntity"
-            state: "com.example.scheduler.entity.TaskTrackerState"
+            name: "com.improving.scheduler.entity.TaskTrackerEntity"
+            state: "com.improving.scheduler.entity.TaskTrackerState"
         }
     };
 

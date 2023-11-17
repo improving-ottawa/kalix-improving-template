@@ -1,10 +1,10 @@
-package com.example.scheduler.entity
+package com.improving.scheduler.entity
 
 import akka.actor.ActorSystem
 import com.google.protobuf.empty.Empty
-import com.example.scheduler.Main
-import com.example.scheduler.api.TaskStatusRequest
-import com.example.scheduler.domain.TaskStatus
+import com.improving.scheduler.Main
+import com.improving.scheduler.api.TaskStatusRequest
+import com.improving.scheduler.domain.TaskStatus
 import kalix.scalasdk.testkit.KalixTestKit
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
@@ -19,11 +19,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class TaskTrackerIntegrationSpec
-    extends AnyWordSpec
-    with Matchers
-    with BeforeAndAfterAll
-    with ScalaFutures {
+class TaskTrackerIntegrationSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
 
   implicit private val patience: PatienceConfig =
     PatienceConfig(Span(5, Seconds), Span(500, Millis))
@@ -46,4 +42,5 @@ class TaskTrackerIntegrationSpec
     testKit.stop()
     super.afterAll()
   }
+
 }
