@@ -1,0 +1,14 @@
+application ksoTemplateApp is {
+  include "pages/blogEntry"
+  include "pages/blogHome"
+  include "pages/dashboard"
+  include "pages/orderConfirmation"
+  include "pages/orderReview"
+  include "pages/payment"
+  include "pages/pricing"
+  include "pages/shippingAddress"
+  include "pages/signin"
+  include "pages/signup"
+}
+
+include "userStories/createUser"

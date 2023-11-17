@@ -1,0 +1,76 @@
+name: Deploy RIDDL Design to GitHub Pages
+
+# Simple workflow for deploying static content to GitHub Pages
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  pull_request:
+    branches: [ "main", "deploy-riddl-doc" ]
+    paths:
+      - .github/workflows/riddl.yml
+      - design/src/main/riddl/**.riddl
+      - design/src/main/riddl/**.conf
+
+  # Runs on pushes targeting the default branch if specific files change
+  push:
+    branches: ["main"]
+    paths:
+      - design/src/main/riddl/**
+      - .github/workflows/riddl.yml
+
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy_pages.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Get the riddlc program
+        uses: reactific/riddl/actions/get-riddlc@main
+
+      - name: Generate Hugo input from RIDDL source
+        run: riddlc from "design/src/main/riddl/example.conf" hugo
+
+      - name: Generate Static HTML Site Using Hugo
+        run: |
+          cd design/target/hugo 
+          hugo --minify -D -v --baseURL "https://improving-ottawa.github.com/kalix-improving-template" --printMemoryUsage --noBuildLock
+
+      - name: Prepare Site Artifact
+        uses: actions/upload-pages-artifact@v2 # or the latest "vX.X.X" version tag for this action
+        with:
+          path: design/target/hugo/public
+
+      - name: Deploy GitHub Pages Artifact
+        uses: actions/deploy-pages@v2.0.3 # or the latest "vX.X.X" version tag for this action
+        id: deploy_pages
+        with:
+          token: ${{ secrets.GITHUB_TOKEN}}

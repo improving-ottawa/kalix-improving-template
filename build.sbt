@@ -3,7 +3,7 @@ ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-name := "example"
+name := "kalix-improving-template"
 
 organization         := "improving"
 organizationHomepage := Some(url("https://www.improving.com/"))
@@ -30,7 +30,7 @@ lazy val root = project
     // Publish containers + deploy services (combo command)
     KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
-  .aggregate(design, common, utils, boundedContext, gateway)
+  .aggregate(design, common, utils, boundedContext, gateway, extensions)
 
 lazy val design: Project = project
   .in(file("design"))
@@ -42,13 +42,13 @@ lazy val utils: Project = project
   .configure(Config.withDeps(Dependencies.kalixScalaSdk))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
   .configure(Config.withDepsPackage(Dependencies.httpDepsPackage))
+  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
 
 lazy val common: Project = project
   .in(file("common"))
   .configure(Config.Kalix.baseLibrary)
   .configure(Config.Kalix.dependsOn(utils))
   .configure(Config.withDeps(Dependencies.javaLibRecur))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
 lazy val extensions: Project = project
@@ -69,3 +69,13 @@ lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(boundedContext))
+
+lazy val extensions = project
+  .in(file("extensions"))
+  .configure(Config.Kalix.kalixLibrary)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.Kalix.dependsOn(utils))
+  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
+  .settings(
+    Compile / run / fork := false
+  )

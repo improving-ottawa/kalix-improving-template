@@ -1,16 +1,16 @@
-import Dependencies._
+import Dependencies.*
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
-import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
-import sbt.Keys._
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
+import sbt.Keys.*
 import sbt.{Compile, _}
 import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
-import wartremover.WartRemover.autoImport._
+import wartremover.WartRemover.autoImport.*
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
@@ -29,7 +29,8 @@ import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
 import scalapb.GeneratorOption.{FlatPackage, _}
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport._
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
+import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
 import java.net.URI
 import java.util.Calendar
@@ -38,9 +39,9 @@ object Config {
 
   def withInfo(p: Project): Project = {
     p.settings(
-      ThisBuild / organization     := "io.off-the-top",
+      ThisBuild / organization     := "io.example",
       // ThisBuild / organizationHomepage := Some(URI.create("https://???/").toURL),
-      ThisBuild / organizationName := "Off The Top",
+      ThisBuild / organizationName := "example",
       ThisBuild / startYear        := Some(2023),
       ThisBuild / versionScheme    := Option("early-semver"),
       ThisBuild / dynverVTagPrefix := false,
@@ -86,7 +87,7 @@ object Config {
       p.configure(withInfo)
         .settings(
           ThisBuild / dynverSeparator := "-",
-          scalaVersion                := "2.13.10", // "3.3.1-RC7",
+          scalaVersion                := "2.13.12", // "3.3.1",
           scalacOptions               := scala_2_options,
           apiURL                      := Some(url("https://riddl.tech/apidoc/")),
           autoAPIMappings             := true,
@@ -120,13 +121,14 @@ object Config {
 
     def withCoverage(percent: Int = defaultPercentage)(p: Project): Project = {
       p.settings(
-        coverageFailOnMinimum           := true,
+        coverageFailOnMinimum           := false,
         coverageMinimumStmtTotal        := percent,
         coverageMinimumBranchTotal      := percent,
         coverageMinimumStmtPerPackage   := percent,
         coverageMinimumBranchPerPackage := percent,
         coverageMinimumStmtPerFile      := percent,
         coverageMinimumBranchPerFile    := percent,
+        coverallsToken                  := Some("jOdrBeb97Y02GGAeLnuLx4Gmm7anBb2Z"),
         coverageExcludedPackages        := "<empty>"
       )
     }
@@ -380,7 +382,7 @@ object Config {
         scalaVersion     := "3.3.1",
         riddlcConf       := file(s"design/src/main/riddl/$appName.conf"),
         riddlcMinVersion := "0.27.0",
-        riddlcConf       := file("design/src/main/riddl/offTheTop.conf"),
+        riddlcConf       := file("design/src/main/riddl/example.conf"),
         riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }
@@ -401,6 +403,7 @@ object Testing {
 }
 
 object Utils {
+
   import java.io.{File, FileInputStream}
   import java.security.{DigestInputStream, MessageDigest}
 

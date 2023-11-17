@@ -1,11 +1,11 @@
 package com.example.gateway.utils
 
-import com.example.utils._
 import com.example.gateway._
 import com.example.boundedContext
 import akka.actor.{ActorSystem, ClassicActorSystemProvider}
 import akka.grpc.scaladsl.AkkaGrpcClient
 import com.example.common.{PingThroughRequest, PingThroughResponse}
+import com.example.utils.SystemClock
 import kalix.javasdk.impl.GrpcClients
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -127,8 +127,8 @@ object ServiceOnlineUtil {
     import com.typesafe.config.ConfigFactory
     try {
       val config = ConfigFactory.load()
-      if (config.hasPath("com.ott.gateway.health-check.use-local")) {
-        config.getBoolean("com.ott.gateway.health-check.use-local")
+      if (config.hasPath("com.example.gateway.health-check.use-local")) {
+        config.getBoolean("com.example.gateway.health-check.use-local")
       } else false
     } catch {
       case scala.util.control.NonFatal(_) =>
