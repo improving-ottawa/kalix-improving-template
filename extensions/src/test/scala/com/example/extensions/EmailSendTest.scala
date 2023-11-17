@@ -60,12 +60,7 @@ object EmailSendTest extends IOApp {
       _      <- sendEmails(emails)
     } yield ExitCode.Success
   }
-
-  case class DummyCompanyInfo(name: String)
-
-  private def createDummyEmailBody(contact: Contact): IO[EmailBody] =
-    IO.pure(EmailBody.text("This is a test."))
-
+  
   private def createEmailHtml(contact: Contact): IO[EmailBody] = {
     val substitutions  = Map(
       "loginLink" -> "https://example.io/",

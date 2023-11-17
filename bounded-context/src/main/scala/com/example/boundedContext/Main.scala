@@ -2,6 +2,7 @@ package com.example.boundedContext
 
 import com.example.boundedContext.api._
 import com.example.boundedContext.entity._
+import com.example.service3.api.{NoData3Service, NoData3ServiceProvider, Service3Service, Service3ServiceProvider}
 import kalix.scalasdk.Kalix
 import org.slf4j.LoggerFactory
 
@@ -24,7 +25,9 @@ object Main {
       new PingPong(_),
       new Service1Impl(_),
       new Service2Impl(_)
-    )
+    ).register(Service3ServiceProvider(new Service3Service(_)))
+    .register(NoData3ServiceProvider(new NoData3Service(_)))
+
   }
 
   def main(args: Array[String]): Unit = {

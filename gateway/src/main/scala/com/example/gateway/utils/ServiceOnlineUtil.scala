@@ -142,8 +142,7 @@ object ServiceOnlineUtil {
 
   // Note: Add other deployed services to this list (and to the public `healthChecks()` function above).
   final val healthCheckEndpoints = Map(
-    "company-charity" -> ServiceMapping("company-charity", 9001),
-    "donation"        -> ServiceMapping("donation", 9002),
+    "bounded-context" -> ServiceMapping("bounded-context", 9001),
   )
 
   final case class ServiceMapping(hostingService: String, grpcPort: Int)

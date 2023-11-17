@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package com.example.service3.api;
+
+import "com/example/service3/domain/service3_domain.proto";
+import "kalix/annotations.proto";
+
+service Service3 {
+    option (kalix.codegen) = {
+        event_sourced_entity: {
+            name: "com.example.service3.api.Service3Service"
+            entity_type: "service3-service"
+            state: "com.example.service3.domain.NoState3"
+            events: [
+                "com.example.service3.domain.DoNothingResponse3"
+            ]
+        }
+    };
+
+    rpc DoNothing (domain.DoNothingCommand3) returns (domain.DoNothingResponse3) {
+        option (kalix.method).entity.key_generator = VERSION_4_UUID;
+        option (kalix.method).acl.allow = {principal: ALL};
+    }
+}
