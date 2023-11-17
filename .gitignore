@@ -10,3 +10,6 @@ project/project
 /www/.hugo_build.lock
 /www/themes/small-apps/node_modules/
 /www/themes/small-apps/package-lock.json
+.metals/metals.lock.db
+.metals/metals.mv.db
+.vscode/settings.json
