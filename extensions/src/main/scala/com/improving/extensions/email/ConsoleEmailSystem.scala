@@ -1,4 +1,4 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import cats.effect._
 import cats.syntax.all._
@@ -12,9 +12,7 @@ object ConsoleEmailSystem extends EmailSystem {
 
   val checkCanSendEmails: IO[Boolean] = IO.pure(true)
 
-  def sendEmail(email: Email): IO[Seq[SendResult]] = IO
-  /** EndMarker */
-  {
+  def sendEmail(email: Email): IO[Seq[SendResult]] = IO {
     val consoleWriteBody =
       s"""(FAKE) Email send from: ${email.from}
          |(FAKE) Email subject: ${email.subject}, to: ${email.recipients.map(_.toString).mkString_(", ")}

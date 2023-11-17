@@ -1,4 +1,4 @@
-package com.example.extensions.email.template
+package com.improving.extensions.email.template
 
 import cats.data.{NonEmptyChain, Validated}
 

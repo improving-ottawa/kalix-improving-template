@@ -57,6 +57,12 @@ lazy val service3 = project
   .configure(Config.Kalix.dependsOn(common))
   .configure(Config.Kalix.dependsOn(utils))
 
+lazy val extensions: Project = project
+  .in(file("extensions"))
+  .configure(Config.Kalix.baseLibrary)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
+
 lazy val `bounded-context` = project
   .in(file("bounded-context"))
   .configure(Config.Kalix.kalixLibrary)
@@ -64,21 +70,9 @@ lazy val `bounded-context` = project
   .configure(Config.Kalix.dependsOn(utils))
   .configure(Config.Kalix.dependsOn(service3))
   .configure(Config.withDepsPackage(Dependencies.csvParsingDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )
+  .settings(Compile / run / fork := false)
 
 lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(`bounded-context`))
-
-lazy val extensions = project
-  .in(file("extensions"))
-  .configure(Config.Kalix.kalixLibrary)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )

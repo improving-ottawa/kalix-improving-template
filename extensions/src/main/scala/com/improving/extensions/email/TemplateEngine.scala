@@ -1,15 +1,16 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import cats.data.{NonEmptyChain, Validated}
 import cats.effect._
-import cats.effect.kernel.Resource
 import cats.effect.unsafe.IORuntime
 import cats.instances.all._
 import cats.syntax.all._
 
 import scala.concurrent._
+
 import java.io._
 import java.net.URI
+
 import template._
 
 sealed trait TemplateSource extends Iterator[String] with AutoCloseable {

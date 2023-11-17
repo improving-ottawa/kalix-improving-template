@@ -1,4 +1,4 @@
-package com.example.extensions.email
+package com.improving.extensions.email
 
 import cats.data.NonEmptyList
 import io.circe._

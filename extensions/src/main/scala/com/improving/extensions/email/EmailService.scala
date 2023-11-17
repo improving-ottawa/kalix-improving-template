@@ -1,10 +1,10 @@
-package com.example.extensions.email
+package com.improving.extensions.email
+
+import com.example.common.common.domain.Contact
 
 import cats.data.NonEmptyList
 import cats.effect._
 import cats.effect.unsafe.IORuntime
-import com.example.extensions.email._
-import com.example.common.common.domain.Contact
 import org.slf4j.LoggerFactory
 
 import scala.concurrent._
@@ -49,9 +49,11 @@ final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens
       )
     }
 
-    val sendIO     = emailBody.flatMap(sendSingleEmailIO(_, "admin login"))
-    val logTokenIO =
-      IO(logAuthTokens).ifM(IO(logger.info(s"Login token for '${recipient.emailAddress}' is '$loginToken'")), IO.unit)
+    val sendIO = emailBody.flatMap(sendSingleEmailIO(_, "admin login"))
+
+    val logTokenIO = IO(logAuthTokens)
+      .ifM(IO(logger.info(s"Login token for '${recipient.emailAddress}' is '$loginToken'")), IO.unit)
+
     (sendIO <* logTokenIO).unsafeToFuture()
   }
 
