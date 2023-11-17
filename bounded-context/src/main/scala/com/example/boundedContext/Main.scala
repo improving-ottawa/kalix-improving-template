@@ -24,6 +24,7 @@ object Main {
     KalixFactory
       .withComponents(
         new Service1Entity(_),
+        new NoData1View(_),
         new PingPong(_),
         new Service1Impl(_),
         new Service2Impl(_)

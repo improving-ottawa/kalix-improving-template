@@ -128,10 +128,7 @@ object LoginTokenService {
   final val tokenValidDuration    = java.time.Duration.ofHours(1)
   final val tokenIssuer           = "example.io"
 
-  /** EndMarker */
-
   private def createExpirationTimestamp: Instant = SystemClock.currentInstant
-    /** EndMarker */
     .plus(tokenValidDuration)
     .plus(tokenValidDuration)
 
