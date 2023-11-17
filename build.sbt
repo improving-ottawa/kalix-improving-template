@@ -12,7 +12,7 @@ organizationHomepage := Some(url("https://www.improving.com/"))
 // docker images built and they are deployable to the Kalix cloud.
 // Note: if you write a new Kalix service, make sure it is added to this list!
 lazy val kalixServices = List[Project](
-  boundedContext,
+  `bounded-context`,
   gateway
 )
 
@@ -30,7 +30,7 @@ lazy val root = project
     // Publish containers + deploy services (combo command)
     KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
-  .aggregate(design, common, utils, boundedContext, gateway, extensions)
+  .aggregate(design, common, utils, service3, `bounded-context`, gateway, extensions)
 
 lazy val design: Project = project
   .in(file("design"))
@@ -51,27 +51,33 @@ lazy val common: Project = project
   .configure(Config.withDeps(Dependencies.javaLibRecur))
   .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
 
-lazy val boundedContext = project
+lazy val service3 = project
+  .in(file("service3"))
+  .configure(Config.Kalix.kalixLibrary)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.Kalix.dependsOn(utils))
+
+lazy val extensions: Project = project
+  .in(file("extensions"))
+  .configure(Config.Kalix.baseLibrary)
+  .configure(Config.Kalix.dependsOn(common))
+  .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
+
+lazy val `bounded-context` = project
   .in(file("bounded-context"))
   .configure(Config.Kalix.kalixLibrary)
   .configure(Config.Kalix.dependsOn(common))
   .configure(Config.Kalix.dependsOn(utils))
+  .configure(Config.Kalix.dependsOn(service3))
   .configure(Config.withDepsPackage(Dependencies.csvParsingDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )
+  .settings(Compile / run / fork := false)
 
 lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.Kalix.service)
-  .configure(Config.Kalix.dependsOn(boundedContext))
+  .configure(Config.Kalix.dependsOn(`bounded-context`))
 
-lazy val extensions = project
-  .in(file("extensions"))
-  .configure(Config.Kalix.kalixLibrary)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )
+lazy val `scheduled-tasks` = project
+  .in(file("scheduled-tasks"))
+  .configure(Config.Kalix.service)
+  .configure(Config.Kalix.dependsOn(`bounded-context`))

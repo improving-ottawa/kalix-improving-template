@@ -7,8 +7,6 @@ import com.example.gateway.domain.CreateLoginTokenRequest
 import com.example.gateway.domain.CreateLoginTokenResponse
 import com.example.gateway.domain.LoginTokenState
 import com.google.protobuf.empty.Empty
-import kalix.scalasdk.testkit.ValueEntityResult
-import kalix.scalasdk.valueentity.ValueEntity
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

@@ -24,7 +24,6 @@ trait JwtAuthorization extends Action {
 
     // claims.foldLeft(Authorization()) { case (jwt, (key, value)) =>
     //  key match {
-    //    case "company_id" => jwt.copy(companyId = Some(value))
     //    case "usage"      => jwt.copy(usage = Some(parseUsage(value)))
     //    case _            => jwt
     //  }
@@ -54,7 +53,6 @@ trait JwtAuthorization extends Action {
 object JwtAuthorization {
 
   final case class Authorization(
-    companyId: Option[String] = None,
     // usage: Option[LoginTokenUsage] = None
   )
 
@@ -84,7 +82,7 @@ object JwtAuthorization {
 
     val requiresAuthorization: Authorizer =
       Authorizer(
-        auth => auth.companyId.exists(_.nonEmpty),
+        auth => auth.productIterator.nonEmpty,
         auth => s"Action requires authorization, but claims were invalid (got: $auth)."
       )
 
