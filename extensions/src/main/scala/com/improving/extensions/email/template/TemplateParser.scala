@@ -32,7 +32,7 @@ sealed trait TemplateParser extends HandlebarParsers {
     parseSections(initialContext, List.empty, List.empty, List.empty)
   }
 
-  final private def parsingSuccess[A](value: List[A]): ParsingResult[A]                                  = Validated.valid(value)
+  final private def parsingSuccess[A](value: List[A]): ParsingResult[A] = Validated.valid(value)
 
   final private def parsingFailure(error: String, otherErrors: Iterable[String]): ParsingResult[Nothing] =
     Validated.invalid(NonEmptyChain(error, otherErrors.toSeq: _*))
