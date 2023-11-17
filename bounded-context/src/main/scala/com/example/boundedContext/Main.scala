@@ -2,7 +2,8 @@ package com.example.boundedContext
 
 import com.example.boundedContext.api._
 import com.example.boundedContext.entity._
-import com.example.service3.api.{NoData3Service, NoData3ServiceProvider, Service3Service, Service3ServiceProvider}
+import com.example.service3.api.{NoData3Service, NoData3ServiceProvider}
+import com.example.service3.entity.{Service3Entity, Service3EntityProvider}
 import kalix.scalasdk.Kalix
 import org.slf4j.LoggerFactory
 
@@ -20,13 +21,15 @@ object Main {
     // and is kept up-to-date with any changes in your protobuf definitions.
     // If you prefer, you may remove this and manually register these components in a
     // `Kalix()` instance.
-    KalixFactory.withComponents(
-      new Service1Entity(_),
-      new PingPong(_),
-      new Service1Impl(_),
-      new Service2Impl(_)
-    ).register(Service3ServiceProvider(new Service3Service(_)))
-    .register(NoData3ServiceProvider(new NoData3Service(_)))
+    KalixFactory
+      .withComponents(
+        new Service1Entity(_),
+        new PingPong(_),
+        new Service1Impl(_),
+        new Service2Impl(_)
+      )
+      .register(Service3EntityProvider(new Service3Entity(_)))
+      .register(NoData3ServiceProvider(new NoData3Service(_)))
 
   }
 

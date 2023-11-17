@@ -5,7 +5,7 @@ import com.example.boundedContext.domain._
 import com.example.gateway.HealthCheckResponse
 import com.example.gateway.domain.{DoNothingTwiceCommand, DoNothingTwiceResponse}
 import com.example.gateway.utils.ServiceOnlineUtil
-import com.example.service3.api.{Service3, Service3Service}
+import com.example.service3.api.Service3
 import com.google.protobuf.empty.Empty
 import com.typesafe.config.{Config, ConfigFactory}
 import kalix.javasdk.impl.GrpcClients

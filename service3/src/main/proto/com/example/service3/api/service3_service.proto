@@ -7,13 +7,10 @@ import "kalix/annotations.proto";
 
 service Service3 {
     option (kalix.codegen) = {
-        event_sourced_entity: {
-            name: "com.example.service3.api.Service3Service"
-            entity_type: "service3-service"
+        value_entity: {
+            name: "com.example.service3.entity.Service3Entity"
+            entity_type: "service3-entity"
             state: "com.example.service3.domain.NoState3"
-            events: [
-                "com.example.service3.domain.DoNothingResponse3"
-            ]
         }
     };
 

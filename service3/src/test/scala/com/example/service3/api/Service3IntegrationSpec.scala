@@ -1,5 +1,6 @@
 package com.example.service3.api
 
+import com.example.service3.Main
 import kalix.scalasdk.testkit.KalixTestKit
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures

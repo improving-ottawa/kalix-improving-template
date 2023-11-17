@@ -6,8 +6,6 @@ import "com/example/service3/domain/service3_domain.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
-import "validate/validate.proto";
-
 
 // ****************
 // * View Service *
@@ -22,7 +20,7 @@ service NoData3 {
 
     rpc ProcessDoNothing3 (domain.DoNothingCommand3) returns (google.protobuf.Empty) {
         option (kalix.method).eventing.in = {
-            event_sourced_entity: "service3-service"
+            value_entity: "service3-entity"
         };
 
         option (kalix.method).view.update = {
@@ -33,7 +31,7 @@ service NoData3 {
 
     rpc IgnoreOtherEvents (google.protobuf.Any) returns (google.protobuf.Empty) {
         option (kalix.method).eventing.in = {
-            event_sourced_entity: "service3-service"
+            value_entity: "service3-entity"
             ignore: true
         };
     }

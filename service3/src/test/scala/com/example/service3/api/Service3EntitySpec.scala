@@ -1,5 +1,6 @@
 package com.example.service3.api
 
+import com.example.service3.entity.{Service3Entity, Service3EntityTestKit}
 import kalix.scalasdk.eventsourcedentity.EventSourcedEntity
 import kalix.scalasdk.testkit.EventSourcedResult
 import org.scalatest.matchers.should.Matchers
@@ -10,10 +11,10 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class Service3ServiceSpec extends AnyWordSpec with Matchers {
-  "The Service3Service" should {
+class Service3EntitySpec extends AnyWordSpec with Matchers {
+  "The Service3Entity" should {
     "have example test that can be removed" in {
-      val testKit = Service3ServiceTestKit(new Service3Service(_))
+      val testKit = Service3EntityTestKit(new Service3Entity(_))
       pending
       // use the testkit to execute a command:
       // val result: EventSourcedResult[R] = testKit.someOperation(SomeRequest("id"));
@@ -28,7 +29,7 @@ class Service3ServiceSpec extends AnyWordSpec with Matchers {
     }
 
     "correctly process commands of type DoNothing3" in {
-      val testKit = Service3ServiceTestKit(new Service3Service(_))
+      val testKit = Service3EntityTestKit(new Service3Entity(_))
       pending
       // val result: EventSourcedResult[CompanyCreated] = testKit.doCreateCompany(CreateCompany(...))
     }
