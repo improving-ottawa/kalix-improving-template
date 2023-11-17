@@ -6,8 +6,8 @@ import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
 import sbt.Keys.*
-import sbt.{Compile, *}
-import scoverage.ScoverageKeys.{coverageFailOnMinimum, *}
+import sbt.{Compile, _}
+import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
 import wartremover.WartRemover.autoImport.*
@@ -28,7 +28,7 @@ import sbtbuildinfo.BuildInfoOption.ToMap
 import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
-import scalapb.GeneratorOption.{FlatPackage, *}
+import scalapb.GeneratorOption.{FlatPackage, _}
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
 import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
