@@ -16,12 +16,12 @@ sealed trait SmtpServerContainer {
 }
 
 object SmtpServerContainer {
-  private final val smtp = 1025
-  private final val http = 8025
+  final private val smtp = 1025
+  final private val http = 8025
 
   def create(): SmtpServerContainer = {
-    val username = Username("pencil")
-    val password = Password("pencil1234")
+    val username    = Username("pencil")
+    val password    = Password("pencil1234")
     val credentials = Credentials(username, password)
 
     val container = new GenericContainer(DockerImageName.parse("axllent/mailpit"))
@@ -36,6 +36,7 @@ object SmtpServerContainer {
   }
 
   private case class Impl(container: GenericContainer[_], credentials: Credentials) extends SmtpServerContainer {
+
     def start(): Unit = {
       container.start()
       container.waitingFor(Wait.forListeningPort())

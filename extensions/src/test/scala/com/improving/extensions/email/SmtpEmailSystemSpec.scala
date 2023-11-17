@@ -11,25 +11,26 @@ class SmtpEmailSystemSpec extends AnyWordSpec with Matchers with BeforeAndAfterA
   val testContainer = SmtpServerContainer.create()
 
   override def beforeAll(): Unit = testContainer.start()
+
   override def afterAll(): Unit = testContainer.stop()
 
   "SmtpEmailSystem" should {
 
     "be able to login to an SMTP server" in {
       val (username, password) = (testContainer.credentials.username.value, testContainer.credentials.password.value)
-      val system = SmtpEmailSystem(testContainer.socketAddress, username, password, insecure = true)
+      val system               = SmtpEmailSystem(testContainer.socketAddress, username, password, insecure = true)
 
       val didLogin = system.checkCanSendEmails.unsafeRunSync()
       didLogin mustBe true
 
-      val badSystem = SmtpEmailSystem(testContainer.socketAddress, username, "invalid-password")
+      val badSystem   = SmtpEmailSystem(testContainer.socketAddress, username, "invalid-password", insecure = true)
       val didNotLogin = !badSystem.checkCanSendEmails.unsafeRunSync()
       didNotLogin mustBe true
     }
 
     "be able to send a SMTP MIME email" in {
       val (username, password) = (testContainer.credentials.username.value, testContainer.credentials.password.value)
-      val system = SmtpEmailSystem(testContainer.socketAddress, username, password, insecure = true)
+      val system               = SmtpEmailSystem(testContainer.socketAddress, username, password, insecure = true)
 
       val sendResults = system.sendEmail(SmtpEmailSystemSpec.testEmail).unsafeRunSync()
       sendResults.size mustBe 1

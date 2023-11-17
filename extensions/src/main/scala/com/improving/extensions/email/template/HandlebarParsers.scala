@@ -8,7 +8,7 @@ trait HandlebarParsers {
   protected def parseHandlebarsLine(line: TextLine, readAhead: => LazyList[TextLine]): ParseResult[HandlebarsToken] = {
     foreachBlockStartRegex.findFirstMatchIn(line.text) match {
       case Some(regexMatch) =>
-        val start = ForeachBlockStart(regexMatch.group(1), regexMatch.group(2))
+        val start                             = ForeachBlockStart(regexMatch.group(1), regexMatch.group(2))
         val remainingLineText: Option[String] = {
           val remainingText = line.text.replace(regexMatch.matched, "")
           if (remainingText.isBlank) None else Some(remainingText)
@@ -30,16 +30,16 @@ trait HandlebarParsers {
 
   private def parseHandlebarsReplacements(textLine: TextLine): ParseResult[LineReplacements] = {
     @tailrec def parseLineRec(line: String, acc: List[Replacement]): ParseResult[List[Replacement]] = {
-      def nameMatch = nameRegex.findFirstMatchIn(line) map { regexMatch =>
-          val nextLine = line.replace(regexMatch.matched, "")
-          val replacement = Replacement(regexMatch.matched, regexMatch.group(1))
-          (nextLine, replacement)
+      def nameMatch = nameRegex.findFirstMatchIn(line).map { regexMatch =>
+        val nextLine    = line.replace(regexMatch.matched, "")
+        val replacement = Replacement(regexMatch.matched, regexMatch.group(1))
+        (nextLine, replacement)
       }
 
-      def propertyMatch = propertyRegex.findFirstMatchIn(line) map { regexMatch =>
-          val nextLine = line.replace(regexMatch.matched, "")
-          val replacement = Replacement(regexMatch.matched, regexMatch.group(1))
-          (nextLine, replacement)
+      def propertyMatch = propertyRegex.findFirstMatchIn(line).map { regexMatch =>
+        val nextLine    = line.replace(regexMatch.matched, "")
+        val replacement = Replacement(regexMatch.matched, regexMatch.group(1))
+        (nextLine, replacement)
       }
 
       val matched = nameMatch.orElse(propertyMatch)
@@ -51,8 +51,8 @@ trait HandlebarParsers {
     }
 
     parseLineRec(textLine.text, List.empty) match {
-      case ParseSuccess(list)     => ParseSuccess(LineReplacements(list))
-      case failure: ParseFailure  => failure
+      case ParseSuccess(list)    => ParseSuccess(LineReplacements(list))
+      case failure: ParseFailure => failure
     }
   }
 
@@ -64,8 +64,8 @@ trait HandlebarParsers {
     @tailrec def parseRec(reader: LazyList[TextLine], acc: List[TextLine]): ParseResult[List[TextLine]] =
       reader match {
         case line #:: _ if foreachBlockEndRegex.findFirstIn(line.text).nonEmpty => ParseSuccess(acc.reverse)
-        case line #:: next  => parseRec(next, line :: acc)
-        case _              => ParseFailure(startLineNumber, "no matching '{{/foreach}} block end found to terminate foreach block.")
+        case line #:: next                                                      => parseRec(next, line :: acc)
+        case _                                                                  => ParseFailure(startLineNumber, "no matching '{{/foreach}} block end found to terminate foreach block.")
       }
 
     val reader: LazyList[TextLine] = remainingLineText match {
@@ -77,8 +77,6 @@ trait HandlebarParsers {
   }
 
 }
-
-
 
 object HandlebarParsers {
 
@@ -95,19 +93,19 @@ object HandlebarParsers {
     templateLines: List[TextLine]
   ) extends HandlebarsToken
 
-  private val nameRegexExpr = """([a-zA-Z]\w+)"""
+  private val nameRegexExpr     = """([a-zA-Z]\w+)"""
   private val propertyRegexExpr = """(([a-zA-Z]\w+)(?:\.([a-zA-Z]\w+))*)"""
 
   private val handlebarsCaptureRegex = """\{\{\s*(.+)\s*}}""".r
-  private val nameRegex = handlebarsRegexExpr(nameRegexExpr).r
-  private val propertyRegex = handlebarsRegexExpr(propertyRegexExpr).r
+  private val nameRegex              = handlebarsRegexExpr(nameRegexExpr).r
+  private val propertyRegex          = handlebarsRegexExpr(propertyRegexExpr).r
 
   private val foreachStartRegexExpr = s"""#foreach\\s+$nameRegexExpr\\s*:\\s*$propertyRegexExpr"""
-  private val foreachEndRegexExpr = s"\\/foreach"
+  private val foreachEndRegexExpr   = s"\\/foreach"
 
   private def handlebarsRegexExpr(captureExpr: String): String = s"\\{\\{\\s*$captureExpr\\s*}}"
 
   private val foreachBlockStartRegex = s"\\{\\{\\s*$foreachStartRegexExpr\\s*}}".r
-  private val foreachBlockEndRegex = handlebarsRegexExpr(foreachEndRegexExpr).r
+  private val foreachBlockEndRegex   = handlebarsRegexExpr(foreachEndRegexExpr).r
 
 }

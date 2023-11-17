@@ -69,13 +69,3 @@ lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(boundedContext))
-
-lazy val extensions = project
-  .in(file("extensions"))
-  .configure(Config.Kalix.kalixLibrary)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
-  .settings(
-    Compile / run / fork := false
-  )

@@ -5,15 +5,18 @@ import cats.data.{NonEmptyChain, Validated}
 import scala.annotation.tailrec
 
 sealed trait TemplateSection
+
 object TemplateSection {
-  case class TextSection(lines: List[String]) extends TemplateSection
+  case class TextSection(lines: List[String])                                       extends TemplateSection
   case class HandlebarsSection(textLine: TextLine, replacements: List[Replacement]) extends TemplateSection
+
   case class ForeachSection(
     startLine: TextLine,
     blockPropertyName: String,
     iteratorName: String,
     nestedSections: List[TemplateSection]
   ) extends TemplateSection
+
 }
 
 sealed trait TemplateParser extends HandlebarParsers {
@@ -21,8 +24,7 @@ sealed trait TemplateParser extends HandlebarParsers {
   import HandlebarParsers._
 
   final def apply(source: Iterable[String]): ParsingResult[TemplateSection] = {
-    val textLineSource = source.view
-      .zipWithIndex
+    val textLineSource = source.view.zipWithIndex
       .map { case (line, index) => TextLine(index + 1, line) }
       .to(Iterable)
 
@@ -30,9 +32,10 @@ sealed trait TemplateParser extends HandlebarParsers {
     parseSections(initialContext, List.empty, List.empty, List.empty)
   }
 
-  private final def parsingSuccess[A](value: List[A]): ParsingResult[A] = Validated.valid(value)
-  private final def parsingFailure(error: String, otherErrors: Iterable[String]): ParsingResult[Nothing] =
-    Validated.invalid(NonEmptyChain(error, otherErrors.toSeq:_*))
+  final private def parsingSuccess[A](value: List[A]): ParsingResult[A]                                  = Validated.valid(value)
+
+  final private def parsingFailure(error: String, otherErrors: Iterable[String]): ParsingResult[Nothing] =
+    Validated.invalid(NonEmptyChain(error, otherErrors.toSeq: _*))
 
   private def parseNestedSections(lines: Iterable[TextLine]): ParsingResult[TemplateSection] = {
     val nestedContext = new ParsingContext(lines)
@@ -51,11 +54,12 @@ sealed trait TemplateParser extends HandlebarParsers {
       case None if textLines.nonEmpty =>
         parseSections(context, List.empty, TextSection(textLines.reverse) :: sections, errors)
 
-      case None => errors.reverse match {
-        case head :: tail             => parsingFailure(head, tail)
-        case Nil if sections.isEmpty  => Validated.invalid(NonEmptyChain.one("Template contains no content."))
-        case Nil                      => parsingSuccess(sections.reverse)
-      }
+      case None =>
+        errors.reverse match {
+          case head :: tail            => parsingFailure(head, tail)
+          case Nil if sections.isEmpty => Validated.invalid(NonEmptyChain.one("Template contains no content."))
+          case Nil                     => parsingSuccess(sections.reverse)
+        }
 
       case Some(textLine) =>
         parseHandlebarsLine(textLine, context.readAhead) match {
@@ -63,9 +67,9 @@ sealed trait TemplateParser extends HandlebarParsers {
 
           case ParseSuccess(LineReplacements(replacements)) =>
             if (textLines.nonEmpty) {
-              val textSection = TextSection(textLines.reverse)
+              val textSection        = TextSection(textLines.reverse)
               val replacementSection = HandlebarsSection(textLine, replacements)
-              parseSections(context, List.empty,  replacementSection :: textSection :: sections, errors)
+              parseSections(context, List.empty, replacementSection :: textSection :: sections, errors)
             } else {
               val replacementSection = HandlebarsSection(textLine, replacements)
               parseSections(context, List.empty, replacementSection :: sections, errors)
@@ -79,14 +83,15 @@ sealed trait TemplateParser extends HandlebarParsers {
 
             val nestedSectionsResult = parseNestedSections(templateLines)
             nestedSectionsResult match {
-              case failure@Validated.Invalid(_) => failure
+              case failure @ Validated.Invalid(_)  => failure
               case Validated.Valid(nestedSections) =>
-                val foreachSection = ForeachSection(textLine, start.blockPropertyName, start.iteratorName, nestedSections)
+                val foreachSection =
+                  ForeachSection(textLine, start.blockPropertyName, start.iteratorName, nestedSections)
                 context.skipLines(templateLines.length + 1)
                 parseSections(context, List.empty, foreachSection :: nextSections, errors)
             }
 
-          case error@ParseFailure(_, _) => parseSections(context, textLines, sections, error.toError :: errors)
+          case error @ ParseFailure(_, _) => parseSections(context, textLines, sections, error.toError :: errors)
         }
     }
   }
@@ -94,11 +99,11 @@ sealed trait TemplateParser extends HandlebarParsers {
 }
 
 object TemplateParser extends TemplateParser {
-  private final type ParsingResult[A] = Validated[NonEmptyChain[String], List[A]]
+  final private type ParsingResult[A] = Validated[NonEmptyChain[String], List[A]]
 
   private class ParsingContext(source: Iterable[TextLine]) {
     private val lineIterator: Iterator[TextLine] = source.iterator
-    private[this] var readLines = 0
+    private[this] var readLines                  = 0
 
     def nextLine: Option[TextLine] =
       if (lineIterator.hasNext) {

@@ -13,7 +13,8 @@ import org.typelevel.log4cats.slf4j.Slf4jLogger
 import java.time.Instant
 import java.util.UUID
 
-final class SmtpEmailSystem private(sockAddr: SocketAddress[Host], creds: Option[data.Credentials], insecure: Boolean) extends EmailSystem {
+final class SmtpEmailSystem private (sockAddr: SocketAddress[Host], creds: Option[data.Credentials], insecure: Boolean)
+    extends EmailSystem {
   import pencil.protocol._
 
   private val logger = Slf4jLogger.getLoggerFromClass[IO](classOf[SmtpEmailSystem])
@@ -45,7 +46,7 @@ final class SmtpEmailSystem private(sockAddr: SocketAddress[Host], creds: Option
           _   <- login(rep)
         } yield ()
 
-      Smtp.startTls[IO]() flatMap { _ =>
+      Smtp.startTls[IO]().flatMap { _ =>
         Smtp.local((req: Request[IO]) =>
           Request(
             req.email,
@@ -59,18 +60,19 @@ final class SmtpEmailSystem private(sockAddr: SocketAddress[Host], creds: Option
     }
 
     def canLogin(rep: Replies, smtpTlsSocket: SmtpSocket[IO]) = {
-      val doLoginTls = Smtp.liftF(logger.info("Logging in via TLS...")) *> loginTls(smtpTlsSocket)
+      val doLoginTls       = Smtp.liftF(logger.info("Logging in via TLS...")) *> loginTls(smtpTlsSocket)
       val doLoginPlainText = Smtp.liftF(logger.info("Logging in insecurely...")) *> login(rep)
 
       (if (supportTLS(rep)) doLoginTls else doLoginPlainText)
         .map(_ => true)
         .handleErrorWith { error =>
-          Smtp.liftF(logger.error(error)(s"Login to SMTP server failed @ $sockAddr due to an error:"))
+          Smtp
+            .liftF(logger.error(error)(s"Login to SMTP server failed @ $sockAddr due to an error:"))
             .map(_ => false)
         }
     }
 
-    netResources use { case (smtpSocket, smtpTlsSocket) =>
+    netResources.use { case (smtpSocket, smtpTlsSocket) =>
       val smtpRequest =
         for {
           _   <- Smtp.init[IO]()
@@ -81,7 +83,10 @@ final class SmtpEmailSystem private(sockAddr: SocketAddress[Host], creds: Option
       val dummyEmail = data.Email.TextEmail(
         data.From(data.Mailbox("", "")),
         data.To(data.Mailbox("", "")),
-        None, None, None, None
+        None,
+        None,
+        None,
+        None
       )
 
       smtpRequest.run(
@@ -103,7 +108,7 @@ final class SmtpEmailSystem private(sockAddr: SocketAddress[Host], creds: Option
       client  <- IO.pure(Client[IO](sockAddr, creds)(tlsCtx, logger))
       replies <- client.send(pEmail)
     } yield {
-      replies.replies.zip(email.recipients.toList) map { case (reply, reAddr) =>
+      replies.replies.zip(email.recipients.toList).map { case (reply, reAddr) =>
         pencilReplyToSendResult(reAddr, reply)
       }
     }
@@ -141,7 +146,12 @@ object SmtpEmailSystem {
 
   def apply(sockAddr: SocketAddress[Host]): SmtpEmailSystem = new SmtpEmailSystem(sockAddr, None, false)
 
-  def apply(sockAddr: SocketAddress[Host], username: String, password: String, insecure: Boolean = false): SmtpEmailSystem =
+  def apply(
+    sockAddr: SocketAddress[Host],
+    username: String,
+    password: String,
+    insecure: Boolean = false
+  ): SmtpEmailSystem =
     new SmtpEmailSystem(
       sockAddr,
       Some(data.Credentials(data.Username(username), data.Password(password))),
