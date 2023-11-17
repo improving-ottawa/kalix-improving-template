@@ -13,17 +13,17 @@ type PostalCode is one of { CAPostalCode, USPostalCode }
   briefly "Either a USA or Canadian postal code"
 
 type Address is {
-    line1: String,
-    line2: String,
-    city: String,
-    stateProvince: String,
-    country: String,
+    line1: String(5,50),
+    line2: String(0,)?,
+    city: String(5,50),
+    stateProvince: String(2,20),
+    country: String(2,50),
     postalCode: PostalCode
 } briefly "A generalized north american postal address"
 
 type Contact is {
-    firstName: String,
-    lastName: String,
+    firstName: String(2,30),
+    lastName: String(2,30),
     emailAddress: ksoTemplateAppDomain.EmailAddress,
     phone: MobileNumber
 } briefly "Contact information for an individual"

@@ -5,9 +5,9 @@ type SignupParameters is {
   password: String
 }
 
-type FirstName: String
-type LastName: String
-type Password: String
+type FirstName: String(2,30)
+type LastName: String(2,30)
+type Password: String(10,40)
 
 command CreateUser is {user: ksoTemplateAppDomain.ksoTemplateApp.SignupParameters}
 command CreateUserUsingFacebook is {???}
