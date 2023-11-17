@@ -1,1 +1,26 @@
-page PricingPage {???}
+type ProductDisplayInfo is {
+  productName: String,
+  productCost: Number,
+  productDescription: String
+}
+
+record ProductList is {
+  products: ksoTemplateAppDomain.ksoTemplateApp.ProductDisplayInfo*
+}
+
+record ProductOfferingText is {
+  ProductInformationTitle: String briefly "Title element introducing products",
+  ProductInformationText: String briefly "High-level description of the product offering"
+}
+
+command RedirectUserToDashboard is {???}
+command RedirectUserToBlogHome is {???}
+command AddProductToOrder is {???}
+
+page PricingPage {
+  output PricingPageText showsksoTemplateAppDomain.ksoTemplateApp. ProductOfferingText
+  output ProductListDisplay shows ksoTemplateAppDomain.ksoTemplateApp.ProductList
+  text DashboardLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToDashboard
+  text BlogLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToBlogHome
+  button BuyProductButton initiates command ksoTemplateAppDomain.ksoTemplateApp.AddProductToOrder
+}
