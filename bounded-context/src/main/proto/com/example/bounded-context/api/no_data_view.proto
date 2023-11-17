@@ -2,10 +2,7 @@ syntax = "proto3";
 
 package com.example.boundedContext.api;
 
-import "com/example/common/rrule.proto";
-import "com/example/common/domain/uniqueid.proto";
-
-import "google/protobuf/any.proto";
+import "com/example/bounded-context/domain/service1_domain.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
@@ -18,9 +15,9 @@ service NoData1 {
         view: {}
     };
 
-    rpc ProcessNothing (google.protobuf.Empty) returns (google.protobuf.Empty) {
+    rpc ProcessNothing (domain.DoNothingCommand1) returns (google.protobuf.Empty) {
         option (kalix.method).eventing.in = {
-            event_sourced_entity: "bounded-context"
+            event_sourced_entity: "service1"
         };
 
         option (kalix.method).view.update = {
@@ -33,7 +30,7 @@ service NoData1 {
 
     rpc GetNothing (google.protobuf.Empty) returns (stream google.protobuf.Empty) {
         option (kalix.method).view.query = {
-            query: ""
+            query: "SELECT * FROM nothing"
         };
     }
 

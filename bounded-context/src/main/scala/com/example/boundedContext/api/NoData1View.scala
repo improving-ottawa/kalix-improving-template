@@ -1,5 +1,6 @@
 package com.example.boundedContext.api
 
+import com.example.boundedContext.domain.DoNothingCommand1
 import com.google.protobuf.empty.Empty
 import kalix.scalasdk.view.View.UpdateEffect
 import kalix.scalasdk.view.ViewContext
@@ -15,7 +16,7 @@ class NoData1View(context: ViewContext) extends AbstractNoData1View {
 
   override def processNothing(
     state: Empty,
-    empty: Empty
-  ): UpdateEffect[Empty] = effects.updateState(empty)
+    doNothingCommand1: DoNothingCommand1
+  ): UpdateEffect[Empty] = effects.updateState(Empty.defaultInstance)
 
 }
