@@ -1,1 +1,39 @@
-page PaymentPage {???}
+record PaymentInfo is {
+  nameOnCard: String,
+  cardNumber: String,
+  expiration: Date,
+  billingAddress: ksoTemplateAppDomain.Address,
+  savePaymentInfoToProfile: Boolean,
+  copyPaymentAddressFromBillingAddress: Boolean
+} described as "Credit Card info to make payment. CVV CANNOT be stored. Ideally, the card number would be a token provided by the credit card processor."
+
+type NameOnCard: String
+type CardNumber: String briefly "Ideally, the card number would be a token provided by the credit card processor"
+type ExpirationDate: Date
+type SavePaymentInfoToProfile: Boolean
+type CopyPaymentInfoFromBillingInfo: Boolean
+
+command CopyShippingAddressToBillingAddress is {???}
+command AddPaymentInfoToProfile is {???}
+command AddPaymentInfoToOrder is {???}
+command NavigateStepperToStep is {???}
+
+page PaymentPage {
+  contains CheckoutFlowStepperWidget as group ksoTemplateAppDomain.ksoTemplateApp.CheckoutFlowStepper
+  form PaymentInfoForm acquires record ksoTemplateAppDomain.ksoTemplateApp.PaymentInfo {
+    input nameOnCard accepts ksoTemplateAppDomain.ksoTemplateApp.NameOnCard
+    input cardNumber accepts ksoTemplateAppDomain.ksoTemplateApp.CardNumber
+    input expirationDate accepts ksoTemplateAppDomain.ksoTemplateApp.ExpirationDate
+    input address1 accepts ksoTemplateAppDomain.ksoTemplateApp.Address1
+    input address2 accepts ksoTemplateAppDomain.ksoTemplateApp.Address2
+    input city accepts ksoTemplateAppDomain.ksoTemplateApp.City
+    input stateProvince accepts ksoTemplateAppDomain.ksoTemplateApp.StateProvince
+    input country accepts ksoTemplateAppDomain.ksoTemplateApp.Country
+    input postalCode accepts ksoTemplateAppDomain.ksoTemplateApp.PostalCode
+    selector savePaymentInfoToProfile accepts ksoTemplateAppDomain.ksoTemplateApp.SavePaymentInfoToProfile
+    selector copyPaymentAddressFromBillingAddress accepts ksoTemplateAppDomain.ksoTemplateApp.CopyShippingAddressToBillingAddress
+  }
+  button SavePaymentInfoToOrderButton initiates command ksoTemplateAppDomain.ksoTemplateApp.AddPaymentInfoToOrder
+  text BackToShippingInfoLink initiates command ksoTemplateAppDomain.ksoTemplateApp.NavigateStepperToStep
+  button NavigateToShippingInfoPageButton initiates command ksoTemplateAppDomain.ksoTemplateApp.NavigateStepperToStep
+}
