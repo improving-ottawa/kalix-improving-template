@@ -1,1 +1,46 @@
-page ShippingAddressPage {???}
+record ShippingInformation is {
+  firstName: String,
+  lastName: String,
+  address: ksoTemplateAppDomain.Address,
+  copyAddressToPayment: Boolean,
+  saveAddressToProfile: Boolean
+}
+
+type Address1: String(5,50)
+type Address2: String (0,50)
+type City: String (2,30)
+type StateProvince: String (5,30)
+type Country: String (2,30)
+type PostalCode: ksoTemplateAppDomain.PostalCode
+type CopyAddressToPayment: Boolean
+type SaveAddressToProfile: Boolean
+
+command SaveShippingInfoToOrder is {???}
+
+page ShippingAddressPage {
+  contains CheckoutFlowStepperWidget as group ksoTemplateAppDomain.ksoTemplateApp.CheckoutFlowStepper
+  form OrderShippingAddressForm acquires record ksoTemplateAppDomain.ksoTemplateApp.ShippingInformation {
+    input firstName accepts ksoTemplateAppDomain.ksoTemplateApp.FirstName
+    input lastName accepts ksoTemplateAppDomain.ksoTemplateApp.LastName
+    input address1 accepts ksoTemplateAppDomain.ksoTemplateApp.Address1
+    input address2 accepts ksoTemplateAppDomain.ksoTemplateApp.Address2
+    input city accepts ksoTemplateAppDomain.ksoTemplateApp.City
+    input stateProvince accepts ksoTemplateAppDomain.ksoTemplateApp.StateProvince
+    input country accepts ksoTemplateAppDomain.ksoTemplateApp.Country
+    input postalCode accepts ksoTemplateAppDomain.ksoTemplateApp.PostalCode
+    selector copyAddressToPayment accepts ksoTemplateAppDomain.ksoTemplateApp.CopyAddressToPayment
+    selector saveAddressToProfile accepts ksoTemplateAppDomain.ksoTemplateApp.SaveAddressToProfile
+  }
+  button SaveShippingInfoButton initiates command ksoTemplateAppDomain.ksoTemplateApp.SaveShippingInfoToOrder
+}
+
+//FEATURE: I wish we could capture a sequence of commands as a function. i.e.
+//  CreateOrder
+//  SaveAddressToProfile
+//  RedirectUserToPaymentPage
+// function CompleteOrderAddress is {
+//  initiate command CreateOrder
+//  initiate command SaveAddressToUserProfile
+//  initiate command RedirectUserToPaymentPage
+//}
+// button SaveShippingInfoButton calls function ksoTemplateAppDomain.ksoTemplateApp.CompleteOrderAddress

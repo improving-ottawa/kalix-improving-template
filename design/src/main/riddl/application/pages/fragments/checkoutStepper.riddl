@@ -1,0 +1,13 @@
+type ActiveStep is any of {SHIP, PAY, CONFIRM}
+
+type CheckoutStepper is {
+  ship: String briefly "text indicating the user is on the shipping info step",
+  pay: String briefly "text indicating the user is on the payment info step",
+  confirm: String briefly "text indicating the user is on the order confirmation step",
+  activeStep: ksoTemplateAppDomain.ksoTemplateApp.ActiveStep briefly "which step is the user on in the checkout process"
+}
+
+group CheckoutFlowStepper is {
+  output CheckoutStepperProgress shows ksoTemplateAppDomain.ksoTemplateApp.ActiveStep briefly "which step in the checkout flow is the user in?"
+  input CheckoutStepperSelection takes ksoTemplateAppDomain.ksoTemplateApp.ActiveStep briefly "which step in the checkout flow would the user like to revisit?"
+}

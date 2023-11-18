@@ -18,12 +18,12 @@ type Address is {
     city: String(5,50),
     stateProvince: String(2,20),
     country: String(2,50),
-    postalCode: PostalCode
+    postalCode: ksoTemplateAppDomain.PostalCode
 } briefly "A generalized north american postal address"
 
 type Contact is {
     firstName: String(2,30),
     lastName: String(2,30),
     emailAddress: ksoTemplateAppDomain.EmailAddress,
-    phone: MobileNumber
+    phone: ksoTemplateAppDomain.MobileNumber
 } briefly "Contact information for an individual"

@@ -9,6 +9,7 @@ application ksoTemplateApp is {
   include "pages/shippingAddress"
   include "pages/signin"
   include "pages/signup"
+  include "pages/fragments/checkoutStepper"
 }
 
 include "userStories/createUser"
