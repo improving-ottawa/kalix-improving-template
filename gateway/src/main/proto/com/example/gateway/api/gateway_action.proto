@@ -8,6 +8,7 @@ import "com/example/gateway/domain/gateway_commands.proto";
 import "com/example/gateway/domain/gateway_responses.proto";
 import "com/example/gateway/domain/login_token.proto";
 import "com/example/gateway/messages/online_check_messages.proto";
+import "com/example/service3/domain/service3_domain.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
@@ -69,14 +70,21 @@ service Gateway {
     // * Bounded Context Routes *
     // **************************
 
-    rpc DoNothingService1 (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1) {
+    rpc DoNothing1 (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1) {
         option (kalix.method).jwt = {
             validate: BEARER_TOKEN
             bearer_token_issuer: "example.io"
         };
     }
 
-    rpc DoNothingService2 (boundedContext.domain.DoNothingCommand2) returns (boundedContext.domain.DoNothingResponse2) {
+    rpc DoNothing2 (boundedContext.domain.DoNothingCommand2) returns (boundedContext.domain.DoNothingResponse2) {
+        option (kalix.method).jwt = {
+            validate: BEARER_TOKEN
+            bearer_token_issuer: "example.io"
+        };
+    }
+
+    rpc DoNothing3 (service3.domain.DoNothingCommand3) returns (service3.domain.DoNothingResponse3) {
         option (kalix.method).jwt = {
             validate: BEARER_TOKEN
             bearer_token_issuer: "example.io"

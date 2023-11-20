@@ -380,9 +380,8 @@ object Config {
       .enablePlugins(RiddlSbtPlugin)
       .settings(
         scalaVersion     := "3.3.1",
-        riddlcConf       := file(s"design/src/main/riddl/$appName.conf"),
-        riddlcMinVersion := "0.27.0",
-        riddlcConf       := file("design/src/main/riddl/example.conf"),
+        riddlcMinVersion := "0.27.7",
+        riddlcConf       := file("design/src/main/riddl/ksoapp.conf"),
         riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }

@@ -15,6 +15,10 @@ on:
       - '**.conf'
       - '**.sbt'
       - '**.sh'
+      - '**.tsx'
+      - '**.ts'
+      - '**.scss'
+      - '**.css'
 
   push:
     branches:
@@ -26,6 +30,10 @@ on:
       - '**.conf'
       - '**.sbt'
       - '**.sh'
+      - '**.tsx'
+      - '**.ts'
+      - '**.scss'
+      - '**.css'
 
 permissions:
   contents: read

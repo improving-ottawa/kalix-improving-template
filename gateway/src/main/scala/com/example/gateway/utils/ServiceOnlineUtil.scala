@@ -3,7 +3,6 @@ package com.example.gateway.utils
 import com.example.gateway._
 import com.example.boundedContext
 import akka.actor.{ActorSystem, ClassicActorSystemProvider}
-import akka.grpc.scaladsl.AkkaGrpcClient
 import com.example.common.{PingThroughRequest, PingThroughResponse}
 import com.example.utils.SystemClock
 import kalix.javasdk.impl.GrpcClients
@@ -142,8 +141,7 @@ object ServiceOnlineUtil {
 
   // Note: Add other deployed services to this list (and to the public `healthChecks()` function above).
   final val healthCheckEndpoints = Map(
-    "company-charity" -> ServiceMapping("company-charity", 9001),
-    "donation"        -> ServiceMapping("donation", 9002),
+    "bounded-context" -> ServiceMapping("bounded-context", 9001),
   )
 
   final case class ServiceMapping(hostingService: String, grpcPort: Int)

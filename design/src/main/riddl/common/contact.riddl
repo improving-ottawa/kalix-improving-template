@@ -21,9 +21,13 @@ type Address is {
     postalCode: PostalCode
 } briefly "A generalized north american postal address"
 
+type FirstName: String(2,30)
+type LastName: String(2,30)
+type Password: String(10,40)
+
 type Contact is {
-    firstName: String(2,30),
-    lastName: String(2,30),
+    firstName: FirstName,
+    lastName: LastName,
     emailAddress: ksoTemplateAppDomain.EmailAddress,
     phone: MobileNumber
 } briefly "Contact information for an individual"
