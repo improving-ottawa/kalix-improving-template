@@ -1,1 +1,28 @@
-page SigninPage {???}
+type RememberMe: Boolean
+
+type LoginParameters is {
+  emailAddress: EmailAddress,
+  password: Password,
+  rememberMe: RememberMe
+}
+
+command LoginManually is {loginInfo: ksoTemplateAppDomain.ksoTemplateApp.LoginParameters}
+command LoginWithFacebook is {???}
+command LoginWithGitHub is {???}
+command LoginWithGmail is {???}
+command RemindUserOfPassword is {email: EmailAddress}
+command RedirectUserToSignupPage is {???}
+
+page SigninPage {
+  form SigninForm acquires ksoTemplateApp.LoginParameters is {
+    input signinEmailAddress accepts ksoTemplateAppDomain.EmailAddress
+    input signinPassword accepts ksoTemplateAppDomain.Password
+    selector rememberMeOption accepts ksoTemplateApp.RememberMe
+  }
+  button SignInButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginManually
+  button SignInWithFacebookButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginWithFacebook
+  button SignInWithGitHubButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginWithGitHub
+  button SignInWithGmailButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginWithGmail
+  text ForgotPasswordLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RemindUserOfPassword
+  text SignupLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToSignupPage
+}

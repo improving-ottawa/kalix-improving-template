@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package com.example.service3.api;
+
+import "com/example/service3/domain/service3_domain.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+
+// ****************
+// * View Service *
+// ****************
+
+service NoData3 {
+    option (kalix.codegen) = {
+        view: {
+            name: "com.example.service3.api.NoData3Service"
+        }
+    };
+
+    rpc ProcessDoNothing3 (domain.DoNothingCommand3) returns (google.protobuf.Empty) {
+        option (kalix.method).eventing.in = {
+            value_entity: "service3-entity"
+        };
+
+        option (kalix.method).view.update = {
+            table: "nothing"
+            transform_updates: true
+        };
+    }
+
+    rpc IgnoreOtherEvents (google.protobuf.Any) returns (google.protobuf.Empty) {
+        option (kalix.method).eventing.in = {
+            value_entity: "service3-entity"
+            ignore: true
+        };
+    }
+
+    rpc GetNothing3 (google.protobuf.Empty) returns (stream google.protobuf.Empty) {
+        option (kalix.method).view.query = {
+            query: "SELECT * FROM nothing"
+        };
+    }
+
+}

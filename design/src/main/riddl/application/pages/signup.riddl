@@ -1,30 +1,27 @@
+
 type SignupParameters is {
-  firstName: String,
-  lastName: String,
-  emailAddress: ksoTemplateAppDomain.EmailAddress,
-  password: String
+  firstName: FirstName,
+  lastName: LastName,
+  emailAddress: EmailAddress,
+  password: Password
 }
 
-type FirstName: String(2,30)
-type LastName: String(2,30)
-type Password: String(10,40)
-
-command CreateUser is {user: ksoTemplateAppDomain.ksoTemplateApp.SignupParameters}
+command CreateUser is {user: SignupParameters}
 command CreateUserUsingFacebook is {???}
 command CreateUserUsingGitHub is {???}
 command CreateUserUsingGmail is {???}
 command RedirectUserToSigninPage is {???}
 
 page SignupPage {
-  form NewUserForm is {
-    input firstName accepts ksoTemplateAppDomain.ksoTemplateApp.FirstName
-    input lastName accepts ksoTemplateAppDomain.ksoTemplateApp.LastName
-    input emailAddress accepts ksoTemplateAppDomain.EmailAddress
-    input password accepts ksoTemplateAppDomain.ksoTemplateApp.Password
+  form NewUserForm acquires SignupParameters is {
+    input firstName accepts FirstName
+    input lastName accepts LastName
+    input emailAddress accepts EmailAddress
+    input password accepts ksoTemplateAppDomain.Password
   }
-  button SignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUser
-  button FacebookSignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUserUsingFacebook
-  button GitHubSignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUserUsingGitHub
-  button GmailSignupButton initiates command ksoTemplateAppDomain.ksoTemplateApp.CreateUserUsingGmail
-  text SigninLink takes command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToSigninPage
+  button SignupButton initiates command CreateUser
+  button FacebookSignupButton initiates command CreateUserUsingFacebook
+  button GitHubSignupButton initiates command CreateUserUsingGitHub
+  button GmailSignupButton initiates command CreateUserUsingGmail
+  text SigninLink initiates command RedirectUserToSigninPage
 }
