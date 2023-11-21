@@ -2,12 +2,10 @@ record ShippingInformation is {
   firstName: FirstName, 
   lastName: LastName, 
   address: Address,
-  copyAddressToPayment: CopyAddressToPayment,
-  saveAddressToProfile: SaveAddressToProfile
+  copyAddressToPayment: CopyAddressToPayment
 }
 
 type CopyAddressToPayment: Boolean
-type SaveAddressToProfile: Boolean
 
 command SaveShippingInfoToOrder is {???}
 
@@ -23,7 +21,6 @@ page ShippingAddressPage {
     input country accepts Country
     input postalCode accepts PostalCode
     selector copyAddressToPayment accepts CopyAddressToPayment
-    selector saveAddressToProfile accepts SaveAddressToProfile
   }
   button SaveShippingInfoButton initiates command SaveShippingInfoToOrder
 }

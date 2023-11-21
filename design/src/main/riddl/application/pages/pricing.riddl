@@ -1,6 +1,6 @@
 type ProductDisplayInfo is {
   productName: String(1,30),
-  productCost: range(1,100),
+  productCost: range(1,1000),
   productDescription: String(5,100)
 }
 

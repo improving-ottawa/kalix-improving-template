@@ -3,18 +3,15 @@ record PaymentInfo is {
   cardNumberToken: CardNumberToken briefly "Ideally the card number is a token provided by the credit card processor.",
   expiration: ExpirationDate,
   billingAddress: Address,
-  savePaymentInfoToProfile: SavePaymentInfoToProfile,
   copyPaymentAddressFromBillingAddress: CopyPaymentInfoFromBillingInfo
 } described as "Credit Card info to make payment. CVV CANNOT be stored. Ideally, the card number would be a token provided by the credit card processor. Not storing CVV and storing a token rather than the actual number keeps us out of PCI scope."
 
 type NameOnCard: String (5,50)
 type CardNumberToken: String briefly "Ideally, the card number would be a token provided by the credit card processor"
 type ExpirationDate is Pattern("[0-9]{2}/[0-9]{4}")
-type SavePaymentInfoToProfile: Boolean
 type CopyPaymentInfoFromBillingInfo: Boolean
 
 command CopyShippingAddressToBillingAddress is {???}
-command AddPaymentInfoToProfile is {???}
 command AddPaymentInfoToOrder is {???}
 command NavigateStepperToStep is {???}
 
@@ -30,7 +27,6 @@ page PaymentPage {
     input stateProvince accepts StateProvince
     input country accepts Country
     input postalCode accepts PostalCode
-    selector savePaymentInfoToProfile accepts SavePaymentInfoToProfile
     selector copyPaymentAddressFromBillingAddress accepts CopyShippingAddressToBillingAddress
   }
   button SavePaymentInfoToOrderButton initiates command AddPaymentInfoToOrder
