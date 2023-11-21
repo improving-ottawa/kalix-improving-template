@@ -1,12 +1,11 @@
-type RememberMe: Boolean
-
 type LoginParameters is {
   emailAddress: EmailAddress,
-  password: Password,
-  rememberMe: RememberMe
+  password: Password
 }
 
-command LoginManually is {loginInfo: ksoTemplateAppDomain.ksoTemplateApp.LoginParameters}
+type RememberMe: Boolean
+
+command LoginManually is {loginInfo: LoginParameters}
 command LoginWithFacebook is {???}
 command LoginWithGitHub is {???}
 command LoginWithGmail is {???}
@@ -14,15 +13,15 @@ command RemindUserOfPassword is {email: EmailAddress}
 command RedirectUserToSignupPage is {???}
 
 page SigninPage {
-  form SigninForm acquires ksoTemplateApp.LoginParameters is {
-    input signinEmailAddress accepts ksoTemplateAppDomain.EmailAddress
-    input signinPassword accepts ksoTemplateAppDomain.Password
-    selector rememberMeOption accepts ksoTemplateApp.RememberMe
+  form SigninForm acquires record LoginParameters {
+    input signinEmailAddress accepts EmailAddress
+    input signinPassword accepts Password
+    selector rememberMeOption accepts RememberMe
   }
-  button SignInButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginManually
-  button SignInWithFacebookButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginWithFacebook
-  button SignInWithGitHubButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginWithGitHub
-  button SignInWithGmailButton initiates command ksoTemplateAppDomain.ksoTemplateApp.LoginWithGmail
-  text ForgotPasswordLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RemindUserOfPassword
-  text SignupLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToSignupPage
+  button SignInButton initiates command LoginManually
+  button SignInWithFacebookButton initiates command LoginWithFacebook
+  button SignInWithGitHubButton initiates command LoginWithGitHub
+  button SignInWithGmailButton initiates command LoginWithGmail
+  text ForgotPasswordLink initiates command RemindUserOfPassword
+  text SignupLink initiates command RedirectUserToSignupPage
 }

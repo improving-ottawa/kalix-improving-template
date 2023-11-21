@@ -12,22 +12,26 @@ type USPostalCode is Pattern("\\d{5}(-\\d{4})?")
 type PostalCode is one of { CAPostalCode, USPostalCode }
   briefly "Either a USA or Canadian postal code"
 
+type Address1 is String(5,50)
+type Address2 is String (0,)
+type City is String(5,50)
+type StateProvince is String (2,20)
+type Country is String (2,50)
+
 type Address is {
-    line1: String(5,50),
-    line2: String(0,)?,
-    city: String(5,50),
-    stateProvince: String(2,20),
-    country: String(2,50),
+    line1: Address1,
+    line2: Address2?,
+    city: City,
+    stateProvince: StateProvince,
+    country: Country,
     postalCode: PostalCode
 } briefly "A generalized north american postal address"
 
-type FirstName: String(2,30)
-type LastName: String(2,30)
-type Password: String(10,40)
-
+type FirstName is String (2,30)
+type LastName is String (2,30)
 type Contact is {
     firstName: FirstName,
     lastName: LastName,
-    emailAddress: ksoTemplateAppDomain.EmailAddress,
+    emailAddress: EmailAddress,
     phone: MobileNumber
 } briefly "Contact information for an individual"

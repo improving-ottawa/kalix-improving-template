@@ -1,1 +1,26 @@
-page PricingPage {???}
+type ProductDisplayInfo is {
+  productName: String(1,30),
+  productCost: range(1,1000),
+  productDescription: String(5,100)
+}
+
+record ProductList is {
+  products: ProductDisplayInfo*
+}
+
+record ProductOfferingText is {
+  ProductInformationTitle: String(5,20) briefly "Title element introducing products",
+  ProductInformationText: String(5,100) briefly "High-level description of the product offering"
+}
+
+command RedirectUserToDashboard is {???}
+command RedirectUserToBlogHome is {???}
+command AddProductToOrder is {???}
+
+page PricingPage {
+  output PricingPageText shows record ProductOfferingText
+  output ProductListDisplay shows ProductList
+  text DashboardLink initiates command RedirectUserToDashboard
+  text BlogLink initiates command RedirectUserToBlogHome
+  button BuyProductButton initiates command AddProductToOrder
+}
