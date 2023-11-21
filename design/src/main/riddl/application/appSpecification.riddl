@@ -1,4 +1,4 @@
-application ksoTemplateApp is {
+application exampleApp is {
   include "pages/blogEntry"
   include "pages/blogHome"
   include "pages/dashboard"
