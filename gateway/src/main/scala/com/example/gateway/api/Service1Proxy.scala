@@ -1,6 +1,7 @@
 package com.example.gateway.api
 
 import com.example.boundedContext.domain._
+import com.example.common.api.JwtAuthorization
 import kalix.scalasdk.action.Action
 
 trait Service1Proxy extends GatewayProxyBase with JwtAuthorization {

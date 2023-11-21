@@ -1,6 +1,7 @@
 package com.example.gateway.api
 
 import com.example.boundedContext.domain.{DoNothingCommand2, DoNothingResponse2}
+import com.example.common.api.JwtAuthorization
 import kalix.scalasdk.action.Action
 
 trait Service2Proxy extends GatewayProxyBase with JwtAuthorization {

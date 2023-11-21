@@ -2,6 +2,7 @@ package com.example.gateway.api
 
 import com.example.boundedContext.api._
 import com.example.boundedContext.domain._
+import com.example.common.api.JwtAuthorization
 import com.example.gateway.HealthCheckResponse
 import com.example.gateway.domain.{DoNothingTwiceCommand, DoNothingTwiceResponse}
 import com.example.gateway.utils.ServiceOnlineUtil

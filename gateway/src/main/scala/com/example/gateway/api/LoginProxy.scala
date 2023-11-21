@@ -1,5 +1,6 @@
 package com.example.gateway.api
 
+import com.example.common.api.JwtAuthorization
 import com.example.gateway.domain._
 import kalix.scalasdk.action.Action
 

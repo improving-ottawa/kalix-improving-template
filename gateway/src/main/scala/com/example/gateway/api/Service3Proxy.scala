@@ -1,5 +1,6 @@
 package com.example.gateway.api
 
+import com.example.common.api.JwtAuthorization
 import com.example.service3.domain.{DoNothingCommand3, DoNothingResponse3}
 import kalix.scalasdk.action.Action
 

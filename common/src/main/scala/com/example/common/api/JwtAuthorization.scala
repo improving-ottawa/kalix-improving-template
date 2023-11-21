@@ -1,4 +1,4 @@
-package com.example.gateway.api
+package com.example.common.api
 
 import cats.data.{NonEmptyChain, Validated}
 import kalix.scalasdk.action.Action
