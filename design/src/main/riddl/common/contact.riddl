@@ -27,6 +27,8 @@ type Address is {
     postalCode: PostalCode
 } briefly "A generalized north american postal address"
 
+type FirstName is String (2,30)
+type LastName is String (2,30)
 type Contact is {
     firstName: FirstName,
     lastName: LastName,

@@ -1,5 +1,3 @@
-type RememberMe: Boolean
-
 type LoginParameters is {
   emailAddress: EmailAddress,
   password: Password
