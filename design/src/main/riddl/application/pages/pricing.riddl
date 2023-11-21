@@ -1,16 +1,16 @@
 type ProductDisplayInfo is {
-  productName: String,
-  productCost: Number,
-  productDescription: String
+  productName: String(1,30),
+  productCost: range(1,100),
+  productDescription: String(5,100)
 }
 
 record ProductList is {
-  products: ksoTemplateAppDomain.ksoTemplateApp.ProductDisplayInfo*
+  products: ProductDisplayInfo*
 }
 
 record ProductOfferingText is {
-  ProductInformationTitle: String briefly "Title element introducing products",
-  ProductInformationText: String briefly "High-level description of the product offering"
+  ProductInformationTitle: String(5,20) briefly "Title element introducing products",
+  ProductInformationText: String(5,100) briefly "High-level description of the product offering"
 }
 
 command RedirectUserToDashboard is {???}
@@ -18,9 +18,9 @@ command RedirectUserToBlogHome is {???}
 command AddProductToOrder is {???}
 
 page PricingPage {
-  output PricingPageText showsksoTemplateAppDomain.ksoTemplateApp. ProductOfferingText
-  output ProductListDisplay shows ksoTemplateAppDomain.ksoTemplateApp.ProductList
-  text DashboardLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToDashboard
-  text BlogLink initiates command ksoTemplateAppDomain.ksoTemplateApp.RedirectUserToBlogHome
-  button BuyProductButton initiates command ksoTemplateAppDomain.ksoTemplateApp.AddProductToOrder
+  output PricingPageText shows record ksoTemplateApp. ProductOfferingText
+  output ProductListDisplay shows ProductList
+  text DashboardLink initiates command RedirectUserToDashboard
+  text BlogLink initiates command RedirectUserToBlogHome
+  button BuyProductButton initiates command AddProductToOrder
 }
