@@ -4,6 +4,7 @@ import kalix.scalasdk.{testkit => kalixTestkit}
 
 package object testkit {
 
+  // Defined which type of Kalix eventing support is being used.
   final type EventingSupport = kalixTestkit.KalixTestKit.Settings.EventingSupport
 
   object EventingSupport {

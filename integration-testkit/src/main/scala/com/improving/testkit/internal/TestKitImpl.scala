@@ -12,19 +12,21 @@ import scala.concurrent._
 import scala.concurrent.duration._
 
 private[testkit] final class TestKitImpl private() extends KalixServiceManager
-  with TestKitBuilder with BuildableTestKitBuilder with IntegrationTestKitApi {
+  with TestKitBuilder with BuildableTestKitBuilder with IntegrationTestKit {
   import TestKitImpl._
 
   private[this] var currentState: State = BuildingState
 
   private val log = LoggerFactory.getLogger("com.improving.testkit.IntegrationTestKit")
 
+  /* TestKitBuilder/BuildableTestKitBuilder Implementation */
+
   def withKalixService(service: KalixService): BuildableTestKitBuilder = {
     registerService(service.toEntry)
     this
   }
 
-  def buildKit: IntegrationTestKitApi =
+  def buildKit: IntegrationTestKit =
     currentState match {
       case BuildingState =>
         log.info("Starting TestKit...")
@@ -55,7 +57,18 @@ private[testkit] final class TestKitImpl private() extends KalixServiceManager
 
   implicit def executionContext: ExecutionContext = currentState.executionContext
 
-  def stop(): Unit =
+  def getPortForService(serviceName: String): Option[Int] =
+    if (hasRegisteredService(serviceName)) Some(kalixProxyPortMappings(serviceName)) else None
+
+  def getGrpcClient[T](clientClass: Class[T], serviceName: String): T =
+    getPortForService(serviceName) match {
+      case Some(port) => currentState.grpcClients.getGrpcClient(clientClass, serviceName, port)
+      case None       => throw new IntegrationTestError(s"No registered service for name: $serviceName")
+    }
+
+  /* Internal Implementation */
+
+  private[internal] def stop(): Unit =
     currentState match {
       case RunningState(system, _) =>
         log.info("Stopping TestKit...")
@@ -67,15 +80,6 @@ private[testkit] final class TestKitImpl private() extends KalixServiceManager
         }
 
       case _ => ()
-    }
-
-  def getPortForService(serviceName: String): Option[Int] =
-    if (hasRegisteredService(serviceName)) Some(kalixProxyPortMappings(serviceName)) else None
-
-  def getGrpcClient[T](clientClass: Class[T], serviceName: String): T =
-    getPortForService(serviceName) match {
-      case Some(port) => currentState.grpcClients.getGrpcClient(clientClass, serviceName, port)
-      case None       => throw new IntegrationTestError(s"No registered service for name: $serviceName")
     }
 
 }

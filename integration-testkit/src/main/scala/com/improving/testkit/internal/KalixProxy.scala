@@ -14,7 +14,6 @@ private[testkit] class KalixProxy private(
   proxyPort: Int,
   eventingPort: Int
 ) extends GenericContainer[KalixProxy](DockerImageName.parse(imageName)) {
-  import KalixProxy._
 
   withEnv("USER_FUNCTION_HOST", "host.testcontainers.internal")
   withEnv("USER_FUNCTION_PORT", String.valueOf(userFunctionPort))

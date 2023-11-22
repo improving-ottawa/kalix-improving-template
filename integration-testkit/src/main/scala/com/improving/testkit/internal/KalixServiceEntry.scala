@@ -14,8 +14,8 @@ private[testkit] final class KalixServiceEntry(
   advancedViews: Boolean,
   eventingSupport: EventingSupport
 ) extends KalixService(serviceName, kalix, stopTimeout, aclEnabled, advancedViews, eventingSupport) {
-  @volatile private[this] var _jvmServicePort: Int = 0
-  @volatile private[this] var _kalixProxyPort: Int = 0
+  private[this] var _jvmServicePort: Int = 0
+  private[this] var _kalixProxyPort: Int = 0
 
   def jvmServicePort: Int = _jvmServicePort
   def kalixProxyPort: Int = _kalixProxyPort

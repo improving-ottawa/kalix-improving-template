@@ -19,7 +19,7 @@ class IntegrationTestSpecTest extends IntegrationTestSpec with AnyWordSpecLike w
   implicit private val patience: PatienceConfig = PatienceConfig(Span(5, Seconds), Span(500, Millis))
 
   // Setup the required Kalix services for this test spec.
-  protected def configureTestKit(builder: TestKitBuilder): IntegrationTestKitApi =
+  protected def configureTestKit(builder: TestKitBuilder): IntegrationTestKit =
     builder
       .withKalixService(KalixServiceManagerSpec.gatewayService)
       .withKalixService(KalixServiceManagerSpec.boundedContextService)
@@ -33,8 +33,8 @@ class IntegrationTestSpecTest extends IntegrationTestSpec with AnyWordSpecLike w
       val onlineCheckResult = client.onlineCheck(Empty.of()).futureValue
       onlineCheckResult mustNot be (null)
 
-      val healthCheckResponse = client.healthCheck(Empty.of()).futureValue
-      healthCheckResponse.isHealthy mustBe true
+      val healthCheckIsHealthy = client.healthCheck(Empty.of()).map(_.isHealthy).futureValue
+      healthCheckIsHealthy mustBe true
     }
 
   }

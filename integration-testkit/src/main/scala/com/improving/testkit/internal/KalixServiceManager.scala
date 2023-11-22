@@ -18,7 +18,7 @@ import java.io.IOException
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicReference
 
-/** Keeps track of registered [[KalixService Kalix services]], port mappings, etc. */
+/** Keeps track of registered [[KalixService Kalix services]], [[KalixProxy Kalix proxies]], port mappings, etc. */
 private[testkit] abstract class KalixServiceManager {
   import KalixServiceManager._
 

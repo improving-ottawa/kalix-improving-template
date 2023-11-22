@@ -14,7 +14,7 @@ abstract private[testkit] class IntegrationTestSpecImpl extends TestSuite { self
 
   @volatile private[this] var _testKitImpl: Option[TestKitImpl] = None
 
-  private[testkit] def getTestKit: Option[IntegrationTestKitApi] = _testKitImpl
+  private[testkit] def getTestKit: Option[IntegrationTestKit] = _testKitImpl
 
   private final def registerKit(): Unit = {
     val testKit = configureTestKit(TestKitImpl.emptyBuilder)
