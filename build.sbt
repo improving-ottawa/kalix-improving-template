@@ -30,7 +30,7 @@ lazy val root = project
     // Publish containers + deploy services (combo command)
     KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
-  .aggregate(design, common, utils, service3, `bounded-context`, gateway, extensions)
+  .aggregate(design, common, utils, `integration-testkit`, service3, `bounded-context`, gateway, extensions)
 
 lazy val design: Project = project
   .in(file("design"))
@@ -43,6 +43,20 @@ lazy val utils: Project = project
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
   .configure(Config.withDepsPackage(Dependencies.httpDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
+
+lazy val `integration-testkit`: Project = project
+  .in(file("integration-testkit"))
+  .configure(Config.Kalix.baseLibrary)
+  .configure(Config.Kalix.dependsOn(utils))
+  .configure(Config.withDeps(Dependencies.testContainers, Dependencies.kalixScalaTestkit))
+  .configure(Config.withDeps(Dependencies.scalatestCore))
+
+lazy val `integration-testkit-tests`: Project = project
+  .in(file("integration-testkit-tests"))
+  .configure(Config.Kalix.kalixLibrary)
+  .configure(Config.Kalix.dependsOn(`integration-testkit`))
+  .configure(Config.Kalix.dependsOn(`bounded-context`))
+  .configure(Config.Kalix.dependsOn(gateway))
 
 lazy val common: Project = project
   .in(file("common"))
@@ -65,7 +79,7 @@ lazy val extensions: Project = project
 
 lazy val `bounded-context` = project
   .in(file("bounded-context"))
-  .configure(Config.Kalix.kalixLibrary)
+  .configure(Config.Kalix.service)
   .configure(Config.Kalix.dependsOn(common))
   .configure(Config.Kalix.dependsOn(utils))
   .configure(Config.Kalix.dependsOn(service3))

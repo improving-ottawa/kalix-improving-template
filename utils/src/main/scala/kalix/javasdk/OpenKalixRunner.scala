@@ -9,7 +9,7 @@ import akka.actor._
 import akka.http.scaladsl._
 import akka.http.scaladsl.model._
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import kalix.devtools.impl.DockerComposeUtils
 import kalix.javasdk.impl._
 import kalix.javasdk.impl.eventsourcedentity._
@@ -28,7 +28,7 @@ import kalix.protocol.workflow_entity.WorkflowEntitiesHandler
 import org.slf4j.LoggerFactory
 
 // Copied from `kalix.javasdk.KalixRunner` but need no bullshit from Kalix API!
-final class OpenKalixRunner private (
+final class OpenKalixRunner private(
   _system: ActorSystem,
   serviceFactories: Map[String, java.util.function.Function[ActorSystem, Service]],
   aclDescriptor: Option[FileDescriptorProto],
@@ -130,7 +130,7 @@ final class OpenKalixRunner private (
     bound.onComplete {
       case Success(binding) =>
         val address = binding.localAddress
-        system.log.debug("gRPC server started {}:{}", address.getHostString, address.getPort)
+        system.log.info("gRPC server started {}:{}", address.getHostString, address.getPort)
       case Failure(ex)      =>
         system.log.error(
           "Failed to bind gRPC server {}:{}, terminating system. {}",
@@ -168,14 +168,15 @@ object OpenKalixRunner {
   private[this] val kalixClass = classOf[kalix.javasdk.Kalix]
   private type JavaHashMap[A, B] = java.util.HashMap[A, B]
 
-  def apply(instance: kalix.javasdk.Kalix): OpenKalixRunner = {
+  def apply(instance: kalix.javasdk.Kalix, maybeConfig: Option[Config] = None): OpenKalixRunner = {
 
     val services       = getPrivateField[JavaHashMap[java.lang.String, java.util.function.Function[ActorSystem, Service]]](
       "services"
     )(instance)
     val aclDescriptors = getPrivateField[java.util.Optional[FileDescriptorProto]]("aclDescriptor")(instance)
     val sdkName        = kalix.javasdk.BuildInfo.name
-    val system         = ActorSystem("kalix", KalixRunner.prepareConfig(ConfigFactory.load()))
+    val kalixConfig    = maybeConfig.fold(ConfigFactory.load())(loadAndMergeConfig)
+    val system         = ActorSystem("kalix", KalixRunner.prepareConfig(kalixConfig))
 
     new OpenKalixRunner(
       system,
@@ -183,6 +184,11 @@ object OpenKalixRunner {
       scala.jdk.javaapi.OptionConverters.toScala(aclDescriptors),
       sdkName
     )
+  }
+
+  private def loadAndMergeConfig(config: Config) = {
+    val baseConfig = ConfigFactory.load()
+    config.withFallback(baseConfig)
   }
 
   private def getPrivateField[A](name: String)(instance: kalix.javasdk.Kalix): A = {
