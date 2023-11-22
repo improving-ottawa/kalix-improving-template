@@ -1,1 +1,37 @@
-page ShippingAddressPage {???}
+record ShippingInformation is {
+  firstName: FirstName, 
+  lastName: LastName, 
+  address: Address,
+  copyAddressToPayment: CopyAddressToPayment
+}
+
+type CopyAddressToPayment: Boolean
+
+command SaveShippingInfoToOrder is {???}
+
+page ShippingAddressPage {
+  contains CheckoutFlowStepperWidget as group CheckoutFlowStepper
+  form OrderShippingAddressForm acquires record ShippingInformation {
+    input firstName accepts FirstName
+    input lastName accepts LastName
+    input address1 accepts Address1
+    input address2 accepts Address2
+    input city accepts City
+    input stateProvince accepts StateProvince
+    input country accepts Country
+    input postalCode accepts PostalCode
+    selector copyAddressToPayment accepts CopyAddressToPayment
+  }
+  button SaveShippingInfoButton initiates command SaveShippingInfoToOrder
+}
+
+//FEATURE: I wish we could capture a sequence of commands as a function. i.e.
+//  CreateOrder
+//  SaveAddressToProfile
+//  RedirectUserToPaymentPage
+// function CompleteOrderAddress is {
+//  initiate command CreateOrder
+//  initiate command SaveAddressToUserProfile
+//  initiate command RedirectUserToPaymentPage
+//}
+// button SaveShippingInfoButton calls function ksoTemplateAppDomain.ksoTemplateApp.CompleteOrderAddress
