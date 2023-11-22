@@ -6,7 +6,7 @@ import kalix.scalasdk.Kalix
 import scala.concurrent.duration.FiniteDuration
 
 /** Internal / implementation use only! Use [[KalixService]] to define your Kalix service. */
-private[testkit] final class KalixServiceEntry(
+final private[testkit] class KalixServiceEntry(
   serviceName: String,
   kalix: Kalix,
   stopTimeout: Option[FiniteDuration],
@@ -20,6 +20,6 @@ private[testkit] final class KalixServiceEntry(
   def jvmServicePort: Int = _jvmServicePort
   def kalixProxyPort: Int = _kalixProxyPort
 
-  def jvmServicePort_= (port: Int): Unit = _jvmServicePort = port
-  def kalixProxyPort_= (port: Int): Unit = _kalixProxyPort = port
+  def jvmServicePort_=(port: Int): Unit = _jvmServicePort = port
+  def kalixProxyPort_=(port: Int): Unit = _kalixProxyPort = port
 }

@@ -7,11 +7,12 @@ import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 /**
- * The full API for the [[IntegrationTestKit integration test kit]] available to you when using the
- * [[IntegrationTestSpec integration test spec]].
- *
- * @note No, you cannot extend or instantiate this trait from your code. Yes, that is intentional!
- */
+  * The full API for the [[IntegrationTestKit integration test kit]] available to you when using the
+  * [[IntegrationTestSpec integration test spec]].
+  *
+  * @note
+  *   No, you cannot extend or instantiate this trait from your code. Yes, that is intentional!
+  */
 trait IntegrationTestKit { self: internal.TestKitImpl =>
 
   def services: Iterable[KalixService]

@@ -19,14 +19,14 @@ import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicReference
 
 /** Keeps track of registered [[KalixService Kalix services]], [[KalixProxy Kalix proxies]], port mappings, etc. */
-private[testkit] abstract class KalixServiceManager {
+abstract private[testkit] class KalixServiceManager {
   import KalixServiceManager._
 
-  private[this] final val serviceRegistry = new AtomicReference[Map[String, KalixServiceEntry]](Map.empty)
-  private[this] final val instanceRegistry = scala.collection.mutable.Map.empty[String, KalixInstance]
-  private[this] final val eventingTestKits = new AtomicReference[Map[String, EventingTestKit]](Map.empty)
+  final private[this] val serviceRegistry  = new AtomicReference[Map[String, KalixServiceEntry]](Map.empty)
+  final private[this] val instanceRegistry = scala.collection.mutable.Map.empty[String, KalixInstance]
+  final private[this] val eventingTestKits = new AtomicReference[Map[String, EventingTestKit]](Map.empty)
 
-  @volatile private[this] var isRunning = false
+  @volatile private[this] var isRunning         = false
   @volatile private[this] var grpcClientsConfig = ConfigFactory.empty()
 
   private lazy val serviceManagerLog = LoggerFactory.getLogger("IntegrationTestKit.KalixServicesManager")
@@ -42,11 +42,11 @@ private[testkit] abstract class KalixServiceManager {
 
   /* Protected API */
 
-  protected final def getClientsConfig: Config = grpcClientsConfig
+  final protected def getClientsConfig: Config = grpcClientsConfig
 
-  @tailrec protected final def registerService(kalixService: KalixServiceEntry): Unit = {
+  @tailrec final protected def registerService(kalixService: KalixServiceEntry): Unit = {
     val registry = serviceRegistry.get()
-    val svcName = kalixService.serviceName
+    val svcName  = kalixService.serviceName
 
     // Check that we do not already have a service registered under the same name
     if (registry.contains(svcName)) {
@@ -58,9 +58,9 @@ private[testkit] abstract class KalixServiceManager {
     if (!serviceRegistry.compareAndSet(registry, updatedMap)) { registerService(kalixService) }
   }
 
-  @tailrec protected final def deregisterService(kalixService: KalixServiceEntry): Unit = {
+  @tailrec final protected def deregisterService(kalixService: KalixServiceEntry): Unit = {
     val registry = serviceRegistry.get()
-    val svcName = kalixService.serviceName
+    val svcName  = kalixService.serviceName
 
     if (!registry.contains(svcName)) ()
     else {
@@ -70,30 +70,30 @@ private[testkit] abstract class KalixServiceManager {
     }
   }
 
-  protected final def kalixProxyPortMappings: Map[String, Int] =
+  final protected def kalixProxyPortMappings: Map[String, Int] =
     serviceRegistry.get().map { case (key, entry) => (key, entry.kalixProxyPort) }
 
-  protected final def runningInstances: Iterable[KalixServiceEntry] =
+  final protected def runningInstances: Iterable[KalixServiceEntry] =
     instanceRegistry.keys.map(svcName => serviceRegistry.get()(svcName))
 
-  protected final def startAllInstances(): Unit = {
+  final protected def startAllInstances(): Unit = {
     val services = Map.from(serviceRegistry.get())
 
     @inline def serviceNotRunning(name: String): Boolean = !instanceRegistry.contains(name)
 
     def createInstance(serviceEntry: KalixServiceEntry): KalixInstance = {
-      val svcName = serviceEntry.serviceName
-      val svcPort = serviceEntry.jvmServicePort
+      val svcName       = serviceEntry.serviceName
+      val svcPort       = serviceEntry.jvmServicePort
       val proxyHostPort = serviceEntry.kalixProxyPort
-      val cfgString =
+      val cfgString     =
         s"""kalix.user-function-interface = 0.0.0.0
            |kalix.user-function-port = $svcPort
            |kalix.dev-mode.docker-compose-file = none
            |kalix.system.akka.coordinated-shutdown.exit-jvm = off""".stripMargin
 
-      val config = grpcClientsConfig.withFallback(ConfigFactory.parseString(cfgString))
+      val config  = grpcClientsConfig.withFallback(ConfigFactory.parseString(cfgString))
       val wrapped = WrappedKalix(serviceEntry.kalix)
-      val runner = wrapped.createRunner(Some(config))
+      val runner  = wrapped.createRunner(Some(config))
 
       serviceManagerLog.info(s"Starting Kalix service `$svcName` on TCP port $svcPort ...")
       Await.result(runner.run(), FiniteDuration(15, "seconds"))
@@ -114,64 +114,72 @@ private[testkit] abstract class KalixServiceManager {
       entry.kalixProxyPort = availableLocalPort()
     }
 
-    try synchronized {
-      // Make sure the services and proxies are not already running
-      if (isRunning)
-        throw new IntegrationTestError("IntegrationTestKit already running")
+    try
+      synchronized {
+        // Make sure the services and proxies are not already running
+        if (isRunning)
+          throw new IntegrationTestError("IntegrationTestKit already running")
 
-      // Start by assigning TCP ports for the `userFunctionPort` and `kalixProxyPort` for all services.
-      // This is necessary due to the fact we need all of the port mappings before creating any Kalix
-      // proxy containers.
-      serviceManagerLog.info("Assigning TCP ports for Kalix services and proxies...")
-      for (entry <- services.values) assignPorts(entry)
+        // Start by assigning TCP ports for the `userFunctionPort` and `kalixProxyPort` for all services.
+        // This is necessary due to the fact we need all of the port mappings before creating any Kalix
+        // proxy containers.
+        serviceManagerLog.info("Assigning TCP ports for Kalix services and proxies...")
+        for (entry <- services.values) assignPorts(entry)
 
-      // Create the gRPC Clients config, needed by Kalix services as well as the TestKit
-      grpcClientsConfig = createClientsConfig(kalixProxyPortMappings)
+        // Create the gRPC Clients config, needed by Kalix services as well as the TestKit
+        grpcClientsConfig = createClientsConfig(kalixProxyPortMappings)
 
-      // Next go through each service, start the JVM Kalix Service, then start the Kalix proxy for that service
-      for (entry <- services.values) {
-        if (serviceNotRunning(entry.serviceName)) {
-          val instance = createInstance(entry)
-          instanceRegistry += (entry.serviceName -> instance)
-        }
-      }
-
-      isRunning = true
-    } catch { case NonFatal(error) =>
-      stopAllServices()
-      throw new IntegrationTestError("Could not create one or more Kalix service(s)", Some(error))
-    }
-  }
-
-  protected final def stopAllServices(): Unit = {
-    val runningInstances = instanceRegistry.values
-
-    try synchronized {
-      for (instance <- runningInstances) {
-        val svcName = instance.serviceName
-        val kalixProxy = instance.kalixProxy
-
-        if (kalixProxy.isRunning) {
-          proxyManagerLog.info(s"Stopping Kalix proxy for service: $svcName ...")
-          try  {
-            kalixProxy.stop()
-            proxyManagerLog.info(s"Kalix proxy for service `$svcName` stopped.")
-          } catch { case e: Throwable =>
-            proxyManagerLog.error(s"Could not stop Kalix proxy container for service: $svcName", e)
+        // Next go through each service, start the JVM Kalix Service, then start the Kalix proxy for that service
+        for (entry <- services.values) {
+          if (serviceNotRunning(entry.serviceName)) {
+            val instance = createInstance(entry)
+            instanceRegistry += (entry.serviceName -> instance)
           }
         }
 
-        serviceManagerLog.info(s"Stopping Kalix service: $svcName ...")
-        try {
-          Await.result(instance.runner.terminate, FiniteDuration(15, "seconds"))
-          serviceManagerLog.info(s"Kalix service `$svcName` stopped.")
-        } catch { case NonFatal(error) =>
-          serviceManagerLog.error(s"Could not stop Kalix ActorSystem for service: $svcName", error)
-        }
+        isRunning = true
       }
+    catch {
+      case NonFatal(error) =>
+        stopAllServices()
+        throw new IntegrationTestError("Could not create one or more Kalix service(s)", Some(error))
+    }
+  }
 
-      isRunning = false
-    } catch { case NonFatal(error) =>
+  final protected def stopAllServices(): Unit = {
+    val runningInstances = instanceRegistry.values
+
+    try
+      synchronized {
+        for (instance <- runningInstances) {
+          val svcName    = instance.serviceName
+          val kalixProxy = instance.kalixProxy
+
+          if (kalixProxy.isRunning) {
+            proxyManagerLog.info(s"Stopping Kalix proxy for service: $svcName ...")
+            try {
+              kalixProxy.stop()
+              proxyManagerLog.info(s"Kalix proxy for service `$svcName` stopped.")
+            } catch {
+              case e: Throwable =>
+                proxyManagerLog.error(s"Could not stop Kalix proxy container for service: $svcName", e)
+            }
+          }
+
+          serviceManagerLog.info(s"Stopping Kalix service: $svcName ...")
+          try {
+            Await.result(instance.runner.terminate, FiniteDuration(15, "seconds"))
+            serviceManagerLog.info(s"Kalix service `$svcName` stopped.")
+          } catch {
+            case NonFatal(error) =>
+              serviceManagerLog.error(s"Could not stop Kalix ActorSystem for service: $svcName", error)
+          }
+        }
+
+        isRunning = false
+      }
+    catch {
+      case NonFatal(error) =>
         throw new IntegrationTestError("Could not stop one or more running Kalix service(s)", Some(error))
     }
 
@@ -179,12 +187,12 @@ private[testkit] abstract class KalixServiceManager {
 
   /* Internal Implementation */
 
-  private final def startKalixProxyFor(entry: KalixServiceEntry, runner: OpenKalixRunner): KalixProxy = {
-    val userFunctionPort = entry.jvmServicePort
-    val proxyPort = entry.kalixProxyPort
-    val svcName = entry.serviceName
+  final private def startKalixProxyFor(entry: KalixServiceEntry, runner: OpenKalixRunner): KalixProxy = {
+    val userFunctionPort    = entry.jvmServicePort
+    val proxyPort           = entry.kalixProxyPort
+    val svcName             = entry.serviceName
     val eventingBackendPort = getEventingBackendPort(entry, runner.system)
-    val proxyContainer = KalixProxy(entry.serviceName, userFunctionPort, proxyPort, eventingBackendPort)
+    val proxyContainer      = KalixProxy(entry.serviceName, userFunctionPort, proxyPort, eventingBackendPort)
 
     proxyContainer.addEnv("SERVICE_NAME", svcName)
     proxyContainer.addEnv("ACL_ENABLED", entry.aclEnabled.toString)
@@ -200,7 +208,8 @@ private[testkit] abstract class KalixServiceManager {
     } else if (entry.eventingSupport == EventingSupport.GooglePubSub) {
       javaOptions.add("-Dkalix.proxy.eventing.support=kafka")
       javaOptions.add(
-        "-Dkalix.proxy.eventing.kafka.bootstrap-servers=host.testcontainers.internal:" + eventingBackendPort)
+        "-Dkalix.proxy.eventing.kafka.bootstrap-servers=host.testcontainers.internal:" + eventingBackendPort
+      )
     }
 
     kalixProxyPortMappings.foreach { case (serviceName, hostPort) =>
@@ -213,16 +222,16 @@ private[testkit] abstract class KalixServiceManager {
     proxyContainer
   }
 
-  private final def getEventingBackendPort(entry: KalixServiceEntry, system: ActorSystem): Int =
+  final private def getEventingBackendPort(entry: KalixServiceEntry, system: ActorSystem): Int =
     entry.eventingSupport match {
       case EventingSupport.Kafka        => KalixProxyContainer.DEFAULT_KAFKA_PORT
       case EventingSupport.GooglePubSub => KalixProxyContainer.DEFAULT_GOOGLE_PUBSUB_PORT
       case _                            => startEventingTestKit(system, entry)
     }
 
-  private final def startEventingTestKit(system: ActorSystem, entry: KalixServiceEntry): Int = {
-    val port = availableLocalPort()
-    val codec = entry.kalix.getMessageCodec()
+  final private def startEventingTestKit(system: ActorSystem, entry: KalixServiceEntry): Int = {
+    val port    = availableLocalPort()
+    val codec   = entry.kalix.getMessageCodec()
     val svcName = entry.serviceName
 
     serviceManagerLog.info(s"Starting EventingTestKit for `$svcName` on port: " + port)
@@ -233,7 +242,7 @@ private[testkit] abstract class KalixServiceManager {
 
   private def createClientsConfig(portMapping: Map[String, Int]) = {
     val clientServiceConfigs = portMapping.map { case (svcName, port) => createServiceConfigEntry(svcName, port) }
-    val configText =
+    val configText           =
       s"""akka.grpc.client {
          |${clientServiceConfigs.mkString("\n")}
          |}""".stripMargin
@@ -252,21 +261,21 @@ private object KalixServiceManager {
     kalixProxy: KalixProxy
   )
 
-  private final def availableLocalPort(): Int = {
+  final private def availableLocalPort(): Int = {
     var socket: Option[ServerSocket] = None
     try {
       socket = Some(new ServerSocket(0))
       socket.get.getLocalPort
-    }
-    catch { case e: IOException =>
-      throw new IntegrationTestError("Could not get an available local port", Some(e))
+    } catch {
+      case e: IOException =>
+        throw new IntegrationTestError("Could not get an available local port", Some(e))
     } finally {
       // Cleanup: Always close the socket!
       socket.foreach(_.close())
     }
   }
 
-  private final def createServiceConfigEntry(serviceName: String, port: Int) =
+  final private def createServiceConfigEntry(serviceName: String, port: Int) =
     s"""  $serviceName {
        |    service-discovery {
        |      service-name = "$serviceName"

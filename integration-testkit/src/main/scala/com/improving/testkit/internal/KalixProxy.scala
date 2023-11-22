@@ -7,7 +7,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 
-private[testkit] class KalixProxy private(
+private[testkit] class KalixProxy private (
   imageName: String,
   serviceName: String,
   userFunctionPort: Int,
@@ -37,7 +37,7 @@ private[testkit] class KalixProxy private(
 }
 
 object KalixProxy {
-  final val proxyImageBaseName = "gcr.io/kalix-public/kalix-proxy"
+  final val proxyImageBaseName       = "gcr.io/kalix-public/kalix-proxy"
   final val defaultProxyImageVersion = "1.1.23"
 
   @volatile private[this] var proxyImageName = s"$proxyImageBaseName:$defaultProxyImageVersion"
@@ -46,7 +46,7 @@ object KalixProxy {
     proxyImageName = s"$proxyImageBaseName:$versionOnly"
   }
 
-  private[testkit] final def apply(
+  final private[testkit] def apply(
     serviceName: String,
     userFunctionPort: Int,
     proxyPort: Int,

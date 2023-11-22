@@ -11,8 +11,11 @@ import org.slf4j.LoggerFactory
 import scala.concurrent._
 import scala.concurrent.duration._
 
-private[testkit] final class TestKitImpl private() extends KalixServiceManager
-  with TestKitBuilder with BuildableTestKitBuilder with IntegrationTestKit {
+final private[testkit] class TestKitImpl private ()
+    extends KalixServiceManager
+    with TestKitBuilder
+    with BuildableTestKitBuilder
+    with IntegrationTestKit {
   import TestKitImpl._
 
   private[this] var currentState: State = BuildingState
@@ -35,11 +38,11 @@ private[testkit] final class TestKitImpl private() extends KalixServiceManager
 
           val clientsConfig = getClientsConfig
           val renderOptions = ConfigRenderOptions.concise().setJson(false).setFormatted(true)
-          val configText = clientsConfig.root().render(renderOptions)
+          val configText    = clientsConfig.root().render(renderOptions)
           log.info(s"Generated the following gRPC clients configuration:\n$configText")
 
           val systemConfig = clientsConfig.withFallback(testKitSystemConfig)
-          val actorSystem = ActorSystem("IntegrationTestKitSystem", systemConfig)
+          val actorSystem  = ActorSystem("IntegrationTestKitSystem", systemConfig)
           val materializer = Materializer(actorSystem)
           currentState = RunningState(actorSystem, materializer)(actorSystem.dispatcher)
           log.info("Testkit started.")
@@ -85,11 +88,11 @@ private[testkit] final class TestKitImpl private() extends KalixServiceManager
 }
 
 private[testkit] object TestKitImpl {
-  private final val testKitSystemConfig = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = true")
+  final private val testKitSystemConfig = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = true")
 
   private[internal] def emptyBuilder: TestKitBuilder = new TestKitImpl()
 
-  private sealed trait State {
+  sealed private trait State {
     def system: ActorSystem
 
     def materializer: Materializer
@@ -100,14 +103,15 @@ private[testkit] object TestKitImpl {
   }
 
   private case object BuildingState extends State {
-    def system: ActorSystem = throw new RuntimeException("TestKit not built")
-    def materializer: Materializer = throw new RuntimeException("TestKit not built")
-    def grpcClients: GrpcClients = throw new RuntimeException("TestKit not built")
+    def system: ActorSystem                         = throw new RuntimeException("TestKit not built")
+    def materializer: Materializer                  = throw new RuntimeException("TestKit not built")
+    def grpcClients: GrpcClients                    = throw new RuntimeException("TestKit not built")
     implicit def executionContext: ExecutionContext = ExecutionContext.global
   }
 
-  private case class RunningState(system: ActorSystem, materializer: Materializer)
-                                 (implicit val executionContext: ExecutionContext) extends State {
+  private case class RunningState(system: ActorSystem, materializer: Materializer)(implicit
+    val executionContext: ExecutionContext
+  ) extends State {
     val grpcClients: GrpcClients = GrpcClients(system)
   }
 

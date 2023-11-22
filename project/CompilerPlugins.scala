@@ -1,9 +1,11 @@
 import sbt._
+
 /**
- * [[CompilerPlugins]] shared/used by all Scala modules.
- * @note Defined here so that each module's meta-build project can import this file into the build source.
- *       In other words, this cannot be simply included in the plugin which gets attached to each module.
- */
+  * [[CompilerPlugins]] shared/used by all Scala modules.
+  * @note
+  *   Defined here so that each module's meta-build project can import this file into the build source. In other words,
+  *   this cannot be simply included in the plugin which gets attached to each module.
+  */
 object CompilerPlugins {
 
   // Compiler Plugin Versions
@@ -14,8 +16,8 @@ object CompilerPlugins {
   }
 
   // Compiler Plugins
-  val betterForComp   = "com.olegpy"            %% "better-monadic-for" % V.betterForComp
-  val kindProjector   = "org.typelevel"         %% "kind-projector"     % V.kindProjector cross CrossVersion.full
-  val scalaPBRuntime  = "com.thesamet.scalapb"  %% "scalapb-runtime"    % V.scalaProtobuf % "protobuf"
+  val betterForComp  = "com.olegpy"           %% "better-monadic-for" % V.betterForComp
+  val kindProjector  = ("org.typelevel"       %% "kind-projector"     % V.kindProjector).cross(CrossVersion.full)
+  val scalaPBRuntime = "com.thesamet.scalapb" %% "scalapb-runtime"    % V.scalaProtobuf % "protobuf"
 
 }

@@ -28,7 +28,7 @@ import kalix.protocol.workflow_entity.WorkflowEntitiesHandler
 import org.slf4j.LoggerFactory
 
 // Copied from `kalix.javasdk.KalixRunner` but need no bullshit from Kalix API!
-final class OpenKalixRunner private(
+final class OpenKalixRunner private (
   _system: ActorSystem,
   serviceFactories: Map[String, java.util.function.Function[ActorSystem, Service]],
   aclDescriptor: Option[FileDescriptorProto],

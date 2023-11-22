@@ -87,7 +87,7 @@ object Dependencies {
   lazy val slf4j      = "org.slf4j"              % "slf4j-nop"       % Versions.slf4j
   lazy val slf4jCats  = "org.typelevel"         %% "log4cats-slf4j"  % Versions.slf4jCats
 
-  lazy val scalatestCore = "org.scalatest"  %% "scalatest-core"  % Versions.scalatest
+  lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 
   lazy val grpc: Seq[ModuleID] = Seq(
     google_grpc,

@@ -16,7 +16,7 @@ abstract private[testkit] class IntegrationTestSpecImpl extends TestSuite { self
 
   private[testkit] def getTestKit: Option[IntegrationTestKit] = _testKitImpl
 
-  private final def registerKit(): Unit = {
+  final private def registerKit(): Unit = {
     val testKit = configureTestKit(TestKitImpl.emptyBuilder)
     _testKitImpl = Some(testKit.asInstanceOf[TestKitImpl])
   }
@@ -27,8 +27,7 @@ abstract private[testkit] class IntegrationTestSpecImpl extends TestSuite { self
         if (!args.runTestInNewInstance && (expectedTestCount(args.filter) > 0))
           registerKit()
         (super.run(testName, args), None)
-      }
-      catch {
+      } catch {
         case e: Exception => (FailedStatus, Some(e))
       }
 
@@ -36,26 +35,25 @@ abstract private[testkit] class IntegrationTestSpecImpl extends TestSuite { self
       val statusToReturn =
         if (!args.runTestInNewInstance && (expectedTestCount(args.filter) > 0)) {
           // runStatus may not be completed, call afterAll only after it is completed
-          runStatus withAfterEffect {
+          runStatus.withAfterEffect {
             try _testKitImpl.foreach(_.stop())
             catch {
-              case laterException: Exception if !anExceptionThatShouldCauseAnAbort(laterException) && thrownException.isDefined =>
+              case laterException: Exception
+                  if !anExceptionThatShouldCauseAnAbort(laterException) && thrownException.isDefined =>
               // We will swallow the exception thrown from after if it is not test-aborting and exception was already thrown by before or test itself.
             }
           }
-        }
-        else runStatus
+        } else runStatus
       thrownException match {
         case Some(e) => throw e
-        case None =>
+        case None    =>
       }
       statusToReturn
-    }
-    catch {
+    } catch {
       case laterException: Exception =>
         thrownException match { // If both before/run and after throw an exception, report the earlier exception
           case Some(earlierException) => throw earlierException
-          case None => throw laterException
+          case None                   => throw laterException
         }
     }
   }
@@ -64,19 +62,15 @@ abstract private[testkit] class IntegrationTestSpecImpl extends TestSuite { self
 
 private object IntegrationTestSpecImpl {
 
-  private final def anExceptionThatShouldCauseAnAbort(throwable: Throwable): Boolean =
+  final private def anExceptionThatShouldCauseAnAbort(throwable: Throwable): Boolean =
     throwable match {
-      case _: AnnotationFormatError |
-           _: CoderMalfunctionError |
-           _: FactoryConfigurationError |
-           _: LinkageError |
-           _: ThreadDeath |
-           _: TransformerFactoryConfigurationError |
-           _: VirtualMachineError => true
+      case _: AnnotationFormatError | _: CoderMalfunctionError | _: FactoryConfigurationError | _: LinkageError |
+          _: ThreadDeath | _: TransformerFactoryConfigurationError | _: VirtualMachineError =>
+        true
       // Don't use AWTError directly because it doesn't exist on Android, and a user
       // got ScalaTest to compile under Android.
       case e if e.getClass.getName == "java.awt.AWTError" => true
-      case _ => false
+      case _                                              => false
     }
 
 }

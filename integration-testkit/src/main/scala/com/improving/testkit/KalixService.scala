@@ -16,7 +16,7 @@ case class KalixService(
 
 object KalixService {
 
-  private[testkit] implicit class InternalExtensions(private val svc: KalixService) extends AnyVal {
+  implicit private[testkit] class InternalExtensions(private val svc: KalixService) extends AnyVal {
 
     def toEntry: internal.KalixServiceEntry =
       new internal.KalixServiceEntry(
