@@ -4,7 +4,7 @@ type ProductDescription: String (5, 100)
 type ProductPrice: range(1,1000)
 
 type Product is {
-  sku: String
+  sku: String,
   name: ProductName,
   shortDescription: ProductShortDescription,
   description: ProductDescription,
