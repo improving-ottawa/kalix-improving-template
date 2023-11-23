@@ -10,7 +10,6 @@ import com.example.gateway.domain.{
   LoginTokenState
 }
 import com.example.gateway.utils.GatewayKeyLoader
-import com.example.utils.{JwtService, SystemClock}
 import com.google.protobuf.empty.Empty
 import kalix.scalasdk.valueentity.{ValueEntity, ValueEntityContext}
 

@@ -1,7 +1,5 @@
 package com.improving.scheduler.services
 
-import com.example.utils.SystemClock
-
 import scala.concurrent.duration.FiniteDuration
 import java.time._
 

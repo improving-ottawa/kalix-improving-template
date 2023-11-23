@@ -1,12 +1,17 @@
 package com.example.utils
 
+import com.chatwork.scala.jwk.{AssymetricJWK, JWK}
+import com.example.utils.iam.cryptography.KeyLoader
 import pdi.jwt._
 
+import java.security.{PrivateKey, PublicKey}
 import scala.util._
-
 import java.time.Duration
 
-final class JwtService private (loader: KeyLoader, algorithm: algorithms.JwtAsymmetricAlgorithm) {
+final class JwtService[P <: PublicKey, V <: PrivateKey, K <: JWK with AssymetricJWK] private (
+  loader: KeyLoader[P, V, K],
+  algorithm: algorithms.JwtAsymmetricAlgorithm
+) {
 
   def createAuthorizationToken(
     issuer: String,

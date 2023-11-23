@@ -1,6 +1,5 @@
 package com.example.gateway.utils
 
-import com.example.utils.KeyLoader
 import com.typesafe.config.ConfigFactory
 
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}

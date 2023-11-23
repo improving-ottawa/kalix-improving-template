@@ -1,4 +1,4 @@
-import Dependencies.*
+import Dependencies.{bouncyCastleCryptoPackage, iamDependencies, _}
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
@@ -346,11 +346,12 @@ object Config {
         .configure(Scala.withWartRemover)
         .configure(Config.ScalaPB.protoGenValidate)
         .settings(
-          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage,
+          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage ++ iamDependencies ++ bouncyCastleCryptoPackage,
           libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",
           excludeDependencies ++= Seq(
             ExclusionRule("com.lightbend.akka.grpc"),
-          )
+          ),
+          resolvers += "Sonatype OSS Release Repository".at("https://oss.sonatype.org/content/repositories/releases/")
         )
 
     def kalixLibrary(proj: Project): Project = {
