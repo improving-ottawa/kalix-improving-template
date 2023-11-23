@@ -1,6 +1,6 @@
 type ProductDisplayInfo is {
   productName: ProductName,
-  productCost: ProductPrice,
+  productPrice: ProductPrice,
   productDescription: ProductDescription
 }
 
