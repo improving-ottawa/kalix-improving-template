@@ -50,17 +50,17 @@ class KalixServiceManagerSpec extends AnyWordSpec with Matchers with BeforeAndAf
       val expectedServiceNames = Seq(gatewayService.serviceName, boundedContextService.serviceName)
       manager.startAll()
 
-      val runningServices = manager.runningServices
+      val runningServices    = manager.runningServices
       val actualServiceNames = runningServices.map(_.serviceName)
 
-      actualServiceNames must contain theSameElementsAs(expectedServiceNames)
+      actualServiceNames must contain theSameElementsAs expectedServiceNames
 
       runningServices.map { service =>
         val jvmServicePort = service.jvmServicePort
-        val hostProxyPort = service.kalixProxyPort
+        val hostProxyPort  = service.kalixProxyPort
 
-        jvmServicePort mustNot be (0)
-        hostProxyPort mustNot be (0)
+        jvmServicePort mustNot be(0)
+        hostProxyPort mustNot be(0)
 
         checkSocketConnection(jvmServicePort) mustBe true
         checkSocketConnection(hostProxyPort) mustBe true

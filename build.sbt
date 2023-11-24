@@ -31,8 +31,15 @@ lazy val root = project
     KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
   .aggregate(
-    design, common, utils, `integration-testkit`, `integration-testkit-tests`,
-    service3, `bounded-context`, gateway, extensions
+    design,
+    common,
+    utils,
+    `integration-testkit`,
+    `integration-testkit-tests`,
+    service3,
+    `bounded-context`,
+    gateway,
+    extensions
   )
 
 lazy val design: Project = project
