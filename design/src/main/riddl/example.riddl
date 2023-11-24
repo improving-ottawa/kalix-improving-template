@@ -1,4 +1,5 @@
 domain ExampleDomain is {
   include "common/contact"
+  include "common/product"
   include "application/appSpecification.riddl"
 } described in file "example.md"
