@@ -1,1 +1,22 @@
-page OrderReviewPage {???}
+type LineItem is {
+  product: Product,
+  quantity: range(1,100)
+}
+
+type Order is {
+  productList: LineItem+,
+  shippingAddress: Address,
+  paymentInfo: PaymentInfo
+}
+
+command PlaceOrder is {???}
+command NavigateToPaymentDetailsPage is {???}
+
+page OrderReviewPage {
+  contains CheckoutFlowStepperWidget as group CheckoutFlowStepper
+  output OrderDetails shows record Order
+  button PlaceOrderButton initiates command PlaceOrder
+  text BackToPaymentDetailsLink initiates command NavigateToPaymentDetailsPage
+  button NavigateToPaymentDetailsButton initiates command NavigateStepperToStep
+  button NavigateToShippingInfoPageButton initiates command NavigateStepperToStep
+}
