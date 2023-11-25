@@ -1,7 +1,7 @@
 type ProductDisplayInfo is {
-  productName: String(1,30),
-  productCost: range(1,1000),
-  productDescription: String(5,100)
+  productName: ProductName,
+  productPrice: ProductPrice,
+  productDescription: ProductDescription
 }
 
 record ProductList is {
@@ -9,8 +9,8 @@ record ProductList is {
 }
 
 record ProductOfferingText is {
-  ProductInformationTitle: String(5,20) briefly "Title element introducing products",
-  ProductInformationText: String(5,100) briefly "High-level description of the product offering"
+  name: ProductName,
+  description: ProductDescription
 }
 
 command RedirectUserToDashboard is {???}
