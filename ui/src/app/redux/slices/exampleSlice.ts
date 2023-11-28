@@ -1,7 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import type {AppThunk, RootState} from '../store'
 import {sendDoNothingTwiceCommand} from "../api/exampleApi";
-import {DoNothingTwiceCommand} from "../../../generated/com/example/gateway/domain/gatewayCommands_pb";
+import {DoNothingTwiceCommand} from "../../../generated/com/example/gateway/domain/gateway_commands_pb";
 
 // Define a type for the slice state
 export interface ExampleState {
