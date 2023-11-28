@@ -1,6 +1,5 @@
-domain example is {
-  ???
-} briefly "example domain" described by {
-| This is an example of a domain in RIDDL design language
-| You should change this to your own design.
-}
+domain ExampleDomain is {
+  include "common/contact"
+  include "common/product"
+  include "application/appSpecification.riddl"
+} described in file "example.md"
