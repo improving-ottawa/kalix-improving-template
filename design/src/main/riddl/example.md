@@ -56,4 +56,6 @@ The basic function and flow of the application is as follows:
   - blog post on "Eventual Consistency"
   - blog post on "CQRS"
 
-Should we consider presenting the applicaiton in English and French?
+TODO: We need to present the applicaiton in English and French
+TODO: Demonstrate GDPR compliance (right to be forgotten)
+TODO: Demonstrate PII best practices -- encrypt PII for storage
