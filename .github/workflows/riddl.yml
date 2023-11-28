@@ -56,7 +56,7 @@ jobs:
         uses: reactific/riddl/actions/get-riddlc@main
 
       - name: Generate Hugo input from RIDDL source
-        run: riddlc from "design/src/main/riddl/ksoapp.conf" hugo
+        run: riddlc from "design/src/main/riddl/example.conf" hugo
 
       - name: Generate Static HTML Site Using Hugo
         run: |

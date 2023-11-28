@@ -6,6 +6,8 @@ type SignupParameters is {
   password: Password
 }
 
+type Password: String(10,40)
+
 command CreateUser is {user: SignupParameters}
 command CreateUserUsingFacebook is {???}
 command CreateUserUsingGitHub is {???}
@@ -13,11 +15,11 @@ command CreateUserUsingGmail is {???}
 command RedirectUserToSigninPage is {???}
 
 page SignupPage {
-  form NewUserForm acquires SignupParameters is {
+  form NewUserForm acquires record SignupParameters {
     input firstName accepts FirstName
     input lastName accepts LastName
     input emailAddress accepts EmailAddress
-    input password accepts ksoTemplateAppDomain.Password
+    input password accepts Password
   }
   button SignupButton initiates command CreateUser
   button FacebookSignupButton initiates command CreateUserUsingFacebook
