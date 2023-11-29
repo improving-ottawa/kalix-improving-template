@@ -1,0 +1,94 @@
+# Modified from https://github.com/lightbend/kalix-jvm-sdk/blob/main/.github/workflows/ci.yml
+
+name: SBT-CI
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/sbt-ci.yml
+      - '**.scala'
+      - '**.proto'
+      - '**.conf'
+      - '**.sbt'
+
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/sbt-ci.yml
+      - '**.scala'
+      - '**.proto'
+      - '**.conf'
+      - '**.sbt'
+
+permissions:
+  contents: read
+
+jobs:
+  scala-build-test:
+    name: sbt build, test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        # v3.1.0
+        uses: actions/checkout@v4
+
+      - name: Checkout GitHub merge
+        if: github.event.pull_request
+        run: |-
+          git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
+          git checkout scratch
+
+      - name: Cache Coursier cache
+        # https://github.com/actions/cache/releases
+        # v3.3.1
+        uses: actions/cache@v3.3.1
+        with:
+          path: |
+            ~/.cache/coursier
+            ~/.sbt
+            ~/.ivy2/cache
+          key: coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-${{ hashFiles('build.sbt', 'project/**.scala', 'project/**.sbt') }}
+          restore-keys: |
+            coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-${{ hashFiles('build.sbt', 'project/**.scala', 'project/**.sbt') }}
+            coursier-${{ hashFiles('project/plugins.sbt', 'project/build.properties') }}-
+            coursier-
+
+      - name: Set up JDK 17
+        # https://github.com/coursier/setup-action/releases
+        # v1.3.4
+        uses: coursier/setup-action@v1.3.4
+        with:
+          jvm: temurin:1.17
+
+      - name: Get riddl
+        uses: reactific/riddl/actions/get-riddlc@main
+
+      - name: Validate design
+        run: |
+          riddlc from "design/src/main/riddl/example.conf" validate
+
+      # TODO: Re-enable after a consistent version of .scalafmt.conf is available in main
+      #- name: Run scalafmt
+      #  run: sbt scalafmtCheckAll scalafmtSbtCheck
+
+      - name: Running unit tests
+        run: sbt -v clean coverage Test/compile test coverageAggregate coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: target/scala-2.12/scoverage-report
+
+
+      # TODO: uncomment when integration tests are complete
+      # - name: Running integration tests
+      #  run: sbt "integration-test/test"
+

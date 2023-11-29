@@ -1,0 +1,10 @@
+record OrderConfirmation{ 
+  thankYou: String,
+  orderNotification: String,
+  orderNumber: Pattern("[0-9]{8}")
+}
+
+page OrderConfirmationPage {
+  contains CheckoutFlowStepperWidget as group CheckoutFlowStepper
+  output OrderConfirmationText shows record OrderConfirmation
+}

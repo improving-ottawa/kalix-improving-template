@@ -1,0 +1,12 @@
+type ProductName: String(1, 30)
+type ProductShortDescription: String (1, 75)
+type ProductDescription: String (5, 100)
+type ProductPrice: range(1,1000)
+
+type Product is {
+  sku: String,
+  name: ProductName,
+  shortDescription: ProductShortDescription,
+  description: ProductDescription,
+  price: ProductPrice
+}

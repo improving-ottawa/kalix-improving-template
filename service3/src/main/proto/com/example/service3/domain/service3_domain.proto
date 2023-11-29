@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package com.example.service3.domain;
+
+import "scalapb/scalapb.proto";
+import "scalapb/validate.proto";
+
+option (scalapb.options) = {
+    scope: FILE
+    [scalapb.validate.file] {
+        validate_at_construction: false
+    }
+};
+
+//Records
+
+message DoNothingCommand3 {
+    DoNothing3 nothing = 1;
+}
+
+message DoNothingResponse3 {
+    DoNothing3 value = 1;
+}
+
+message DoNothing3 {}
+
+message NoState3 {}

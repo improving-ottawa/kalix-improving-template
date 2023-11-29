@@ -1,0 +1,27 @@
+type LoginParameters is {
+  emailAddress: EmailAddress,
+  password: Password
+}
+
+type RememberMe: Boolean
+
+command LoginManually is {loginInfo: LoginParameters}
+command LoginWithFacebook is {???}
+command LoginWithGitHub is {???}
+command LoginWithGmail is {???}
+command RemindUserOfPassword is {email: EmailAddress}
+command RedirectUserToSignupPage is {???}
+
+page SigninPage {
+  form SigninForm acquires record LoginParameters {
+    input signinEmailAddress accepts EmailAddress
+    input signinPassword accepts Password
+    selector rememberMeOption accepts RememberMe
+  }
+  button SignInButton initiates command LoginManually
+  button SignInWithFacebookButton initiates command LoginWithFacebook
+  button SignInWithGitHubButton initiates command LoginWithGitHub
+  button SignInWithGmailButton initiates command LoginWithGmail
+  text ForgotPasswordLink initiates command RemindUserOfPassword
+  text SignupLink initiates command RedirectUserToSignupPage
+}

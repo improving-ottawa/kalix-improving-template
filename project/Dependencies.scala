@@ -38,7 +38,7 @@ object Dependencies {
     val lang3           = "3.13.0"
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
-
+    val slf4jCats       = "2.5.0"
   }
 
   import Versions._
@@ -73,16 +73,21 @@ object Dependencies {
     "org.bouncycastle" % "bcpkix-jdk15on" % "1.70"
   )
 
+  lazy val pencilSmtp = "com.minosiants" %% "pencil" % "1.2.0"
+
   lazy val commons_io  = "commons-io"          % "commons-io"                 % Versions.commons_io
   lazy val google_grpc = "com.google.api.grpc" % "proto-google-common-protos" % Versions.google_grpc % "protobuf"
 
   lazy val lang3      = "org.apache.commons"     % "commons-lang3"   % Versions.lang3
   lazy val pureconfig = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureconfig
-  lazy val scalactic  = "org.scalactic"         %% "scalactic"       % Versions.scalatest  % "test"
+  lazy val scalactic  = "org.scalactic"         %% "scalactic"       % Versions.scalatest  % Test
   lazy val scalamock  = "org.scalamock"         %% "scalamock"       % Versions.scalamock  % Test
-  lazy val scalatest  = "org.scalatest"         %% "scalatest"       % Versions.scalatest  % "test"
-  lazy val scalacheck = "org.scalacheck"        %% "scalacheck"      % Versions.scalacheck % "test"
+  lazy val scalatest  = "org.scalatest"         %% "scalatest"       % Versions.scalatest  % Test
+  lazy val scalacheck = "org.scalacheck"        %% "scalacheck"      % Versions.scalacheck % Test
   lazy val slf4j      = "org.slf4j"              % "slf4j-nop"       % Versions.slf4j
+  lazy val slf4jCats  = "org.typelevel"         %% "log4cats-slf4j"  % Versions.slf4jCats
+
+  lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 
   lazy val grpc: Seq[ModuleID] = Seq(
     google_grpc,
@@ -97,8 +102,9 @@ object Dependencies {
 
   lazy val commons_codec = "commons-codec" % "commons-codec" % Versions.commons_codec
 
-  lazy val kalixScalaSdk: ModuleID   = "io.kalix" %% "kalix-scala-sdk-protobuf" % Versions.kalixSDK
-  lazy val kalixJvmCoreSdk: ModuleID = "io.kalix" %% "kalix-jvm-core-sdk"       % Versions.kalixSDK % "protobuf"
+  lazy val kalixScalaSdk     = "io.kalix" %% "kalix-scala-sdk-protobuf"         % Versions.kalixSDK
+  lazy val kalixJvmCoreSdk   = "io.kalix" %% "kalix-jvm-core-sdk"               % Versions.kalixSDK % "protobuf"
+  lazy val kalixScalaTestkit = "io.kalix" %% "kalix-scala-sdk-protobuf-testkit" % Versions.kalixSDK
 
   lazy val csvParsingDepsPackage: Seq[ModuleID] =
     functionalDepsPackage ++ Seq(
@@ -166,15 +172,17 @@ object Dependencies {
   )
 
   lazy val integrationTestDependencies: Seq[ModuleID] = Seq(
-    "org.testcontainers"  % "testcontainers"                                % testcontainers % Test,
-    "com.typesafe.akka"  %% "akka-testkit"                                  % akka           % Test,
-    "com.typesafe.akka"  %% "akka-actor-testkit-typed"                      % akka           % Test,
-    "com.typesafe.akka"  %% "akka-stream"                                   % akka           % Test,
-    "com.lightbend.akka" %% "akka-stream-alpakka-google-cloud-pub-sub-grpc" % alpakka        % Test,
-    "com.typesafe.akka"  %% "akka-stream-kafka"                             % akkaKafka      % Test,
-    "com.typesafe.akka"  %% "akka-http"                                     % akkaHttp       % Test,
-    "com.typesafe.akka"  %% "akka-http2-support"                            % akkaHttp       % Test
+    testContainers,
+    "com.typesafe.akka"  %% "akka-testkit"                                  % akka      % Test,
+    "com.typesafe.akka"  %% "akka-actor-testkit-typed"                      % akka      % Test,
+    "com.typesafe.akka"  %% "akka-stream"                                   % akka      % Test,
+    "com.lightbend.akka" %% "akka-stream-alpakka-google-cloud-pub-sub-grpc" % alpakka   % Test,
+    "com.typesafe.akka"  %% "akka-stream-kafka"                             % akkaKafka % Test,
+    "com.typesafe.akka"  %% "akka-http"                                     % akkaHttp  % Test,
+    "com.typesafe.akka"  %% "akka-http2-support"                            % akkaHttp  % Test
   )
+
+  lazy val testContainers = "org.testcontainers" % "testcontainers" % testcontainers % Test
 
   val loadTestDependencies: Seq[ModuleID] = Seq(
     "io.gatling.highcharts" % "gatling-charts-highcharts" % gatling % "test,it",

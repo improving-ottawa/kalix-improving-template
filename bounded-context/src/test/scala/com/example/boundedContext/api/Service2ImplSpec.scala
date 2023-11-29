@@ -2,8 +2,6 @@ package com.example.boundedContext.api
 
 import com.example.boundedContext.domain.DoNothingCommand2
 import com.example.boundedContext.domain.DoNothingResponse2
-import kalix.scalasdk.action.Action
-import kalix.scalasdk.testkit.ActionResult
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

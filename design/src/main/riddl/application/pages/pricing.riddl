@@ -1,0 +1,26 @@
+type ProductDisplayInfo is {
+  productName: ProductName,
+  productPrice: ProductPrice,
+  productDescription: ProductDescription
+}
+
+record ProductList is {
+  products: ProductDisplayInfo*
+}
+
+record ProductOfferingText is {
+  name: ProductName,
+  description: ProductDescription
+}
+
+command RedirectUserToDashboard is {???}
+command RedirectUserToBlogHome is {???}
+command AddProductToOrder is {???}
+
+page PricingPage {
+  output PricingPageText shows record ProductOfferingText
+  output ProductListDisplay shows ProductList
+  text DashboardLink initiates command RedirectUserToDashboard
+  text BlogLink initiates command RedirectUserToBlogHome
+  button BuyProductButton initiates command AddProductToOrder
+}

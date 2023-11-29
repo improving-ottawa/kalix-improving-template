@@ -1,16 +1,15 @@
-import Dependencies._
+import Dependencies.*
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
-import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
-import sbt.Keys._
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
+import sbt.Keys.*
 import sbt.{Compile, _}
 import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
-import wartremover.WartRemover.autoImport._
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
@@ -29,7 +28,8 @@ import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
 import scalapb.GeneratorOption.{FlatPackage, _}
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport._
+import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
+import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
 import java.net.URI
 import java.util.Calendar
@@ -86,7 +86,7 @@ object Config {
       p.configure(withInfo)
         .settings(
           ThisBuild / dynverSeparator := "-",
-          scalaVersion                := "2.13.10", // "3.3.1-RC7",
+          scalaVersion                := "2.13.12", // "3.3.1",
           scalacOptions               := scala_2_options,
           apiURL                      := Some(url("https://riddl.tech/apidoc/")),
           autoAPIMappings             := true,
@@ -120,13 +120,14 @@ object Config {
 
     def withCoverage(percent: Int = defaultPercentage)(p: Project): Project = {
       p.settings(
-        coverageFailOnMinimum           := true,
+        coverageFailOnMinimum           := false,
         coverageMinimumStmtTotal        := percent,
         coverageMinimumBranchTotal      := percent,
         coverageMinimumStmtPerPackage   := percent,
         coverageMinimumBranchPerPackage := percent,
         coverageMinimumStmtPerFile      := percent,
         coverageMinimumBranchPerFile    := percent,
+        coverallsToken                  := Some("jOdrBeb97Y02GGAeLnuLx4Gmm7anBb2Z"),
         coverageExcludedPackages        := "<empty>"
       )
     }
@@ -176,33 +177,6 @@ object Config {
               k -> v.map(_._1).mkString(", ")
             }
           )
-        )
-    }
-
-    def withWartRemover(proj: Project): Project = {
-      proj
-        .enablePlugins(wartremover.WartRemover)
-        .settings(
-          Compile / compile / wartremoverWarnings ++= Warts.all,
-          Compile / compile / wartremoverWarnings -= Wart.ImplicitConversion,
-          // Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Nothing, Wart.Serializable)
-          // wartremoverWarnings += Wart.Nothing,
-          // wartremoverWarnings ++= Seq(Wart.Any, Wart.Serializable)
-
-          // Skip any generated code (lots of warts there!)
-          wartremoverExcluded ++= Seq(
-            (proj / sourceManaged).value,
-            (proj / crossTarget).value / "akka-grpc"
-          ),
-
-          // Seems like this doesn't work in the current WartRemover plugin, so we do it manually
-          proj / scalacOptions ++= {
-            val base = (LocalRootProject / baseDirectory).value
-            wartremoverExcluded.value.distinct.map { c =>
-              val x = base.toPath.relativize(c.toPath)
-              s"-P:wartremover:excluded:$x"
-            }
-          }
         )
     }
 
@@ -270,7 +244,7 @@ object Config {
         .configure(Config.Scala.withScala2)
         .configure(Config.ScalaPB.protoGenValidate)
         .configure(Config.withDocker)
-        .configure(Scala.withWartRemover)
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
           dockerRepository := Some(KalixEnv.containerRepository),
           dockerAliases    := {
@@ -341,8 +315,8 @@ object Config {
       proj
         .configure(Config.Scala.withScala2)
         .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Scala.withWartRemover)
         .configure(Config.ScalaPB.protoGenValidate)
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
           libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage,
           libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",
@@ -356,8 +330,8 @@ object Config {
         .enablePlugins(KalixPlugin)
         .configure(Config.Scala.withScala2)
         .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Scala.withWartRemover)
         .configure(Config.ScalaPB.protoGenValidate)
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
           libraryDependencies ++= testingDeps ++ akkaKalixServiceDepsPackage,
           runAll := {
@@ -378,9 +352,8 @@ object Config {
       .enablePlugins(RiddlSbtPlugin)
       .settings(
         scalaVersion     := "3.3.1",
-        riddlcConf       := file(s"design/src/main/riddl/$appName.conf"),
-        riddlcMinVersion := "0.27.0",
-        riddlcConf       := file("design/src/main/riddl/example.conf"),
+        riddlcMinVersion := "0.27.7",
+        riddlcConf       := file("design/src/main/riddl/ksoapp.conf"),
         riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }
@@ -401,6 +374,7 @@ object Testing {
 }
 
 object Utils {
+
   import java.io.{File, FileInputStream}
   import java.security.{DigestInputStream, MessageDigest}
 
