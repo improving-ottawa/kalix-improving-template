@@ -37,7 +37,7 @@ final class JwtService private (algorithm: algorithms.JwtAsymmetricAlgorithm) {
       JwtCirce.decode(jwt, publicKey, Seq(algorithm))
     }
 
-  */
+   */
 }
 
 object JwtService {

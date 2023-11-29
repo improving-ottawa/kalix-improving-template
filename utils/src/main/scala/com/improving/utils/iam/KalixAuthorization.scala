@@ -10,14 +10,16 @@ import org.slf4j.Logger
 import scala.util.Try
 
 /**
- * Mixin trait for adding __authorization__ to your [[Action Kalix actions]]. The Authorization requires that gRPC
- * requests contain a [[AuthToken authorization token]] for each principal, encoded as a Json Web Token (JWT).
- *
- * @see [[KalixAuthorization.requiresRolesEffect]] to require one or more specific roles for an [[Action.Effect]].
- *
- * @see [[KalixAuthorization.requiresRolesStreaming]] to require one or more specific roles for a streaming
- *      [[Source]] of [[Action.Effect effects]].
- */
+  * Mixin trait for adding __authorization__ to your [[Action Kalix actions]]. The Authorization requires that gRPC
+  * requests contain a [[AuthToken authorization token]] for each principal, encoded as a Json Web Token (JWT).
+  *
+  * @see
+  *   [[KalixAuthorization.requiresRolesEffect]] to require one or more specific roles for an [[Action.Effect]].
+  *
+  * @see
+  *   [[KalixAuthorization.requiresRolesStreaming]] to require one or more specific roles for a streaming [[Source]] of
+  *   [[Action.Effect effects]].
+  */
 trait KalixAuthorization extends Action {
   import KalixAuthorization._
 
@@ -27,11 +29,12 @@ trait KalixAuthorization extends Action {
   /* Protected API */
 
   /** Type alias for Kalix streaming reply type. */
-  protected final type StreamingReply[R] = Source[Action.Effect[R], NotUsed]
+  final protected type StreamingReply[R] = Source[Action.Effect[R], NotUsed]
 
   /** Marks a [[Action Kalix Action]] function as requiring one (or more) specific authorization `roles`. */
-  protected final def requiresRolesEffect[R](role: String, others: String*)
-                                            (body: => Action.Effect[R]): Action.Effect[R] =
+  final protected def requiresRolesEffect[R](role: String, others: String*)(
+    body: => Action.Effect[R]
+  ): Action.Effect[R] =
     requiresRolesOrFail(
       (role +: others).toSet,
       _ => body,
@@ -39,8 +42,9 @@ trait KalixAuthorization extends Action {
     )
 
   /** Marks a [[Action Kalix Action]] streaming function as requiring one (or more) specific authorization `roles`. */
-  protected final def requiresRolesStreaming[R](role: String, others: String*)
-                                               (stream: => StreamingReply[R]): StreamingReply[R] =
+  final protected def requiresRolesStreaming[R](role: String, others: String*)(
+    stream: => StreamingReply[R]
+  ): StreamingReply[R] =
     requiresRolesOrFail(
       (role +: others).toSet,
       _ => stream,
@@ -49,7 +53,7 @@ trait KalixAuthorization extends Action {
 
   /* Internal Implementation */
 
-  private final def requiresRolesOrFail[Out](
+  final private def requiresRolesOrFail[Out](
     allRequiredRoles: Set[String],
     onAuthorized: AuthToken => Out,
     onUnauthorized: String => Out,
@@ -58,11 +62,11 @@ trait KalixAuthorization extends Action {
 
     authTokenAttempt
       .map { authToken =>
-        val missingRoles = allRequiredRoles removedAll authToken.roles
+        val missingRoles = allRequiredRoles.removedAll(authToken.roles)
 
         // If the `AuthToken` is missing any roles
         if (missingRoles.nonEmpty) {
-          val sub = authToken.subject
+          val sub      = authToken.subject
           val errorMsg =
             s"Action requires authorization, but authorization token for '$sub' is missing the following roles: " +
               missingRoles.mkString(", ")
@@ -87,11 +91,9 @@ trait KalixAuthorization extends Action {
 
 private object KalixAuthorization {
 
-  private[iam] final def extractAuthToken(context: ActionContext): Either[Throwable, AuthToken] = {
+  final private[iam] def extractAuthToken(context: ActionContext): Either[Throwable, AuthToken] = {
     // Rewrite the Kalix JWT claims from the metadata
-    val claims = context.metadata.map(entry =>
-      (entry.key.replace("_kalix-jwt-claim-", "").toLowerCase, entry.value)
-    )
+    val claims = context.metadata.map(entry => (entry.key.replace("_kalix-jwt-claim-", "").toLowerCase, entry.value))
 
     // Go through each claim and add it to an initially empty `JwtClaim` record
     val jwtClaim = Try {
@@ -104,21 +106,23 @@ private object KalixAuthorization {
           case "nbf" => claim.startsAt(value.toLong)
           case "iat" => claim.issuedAt(value.toLong)
           case "jti" => claim.withId(value)
-          case _ => claim + (key, value)
+          case _     => claim + (key, value)
         }
       }
     }
 
     // Extract an `AuthToken` from the `JwtClaim` record
-    jwtClaim.toEither flatMap AuthToken.fromClaim
+    jwtClaim.toEither.flatMap(AuthToken.fromClaim)
   }
 
-  private final def parseJsonArrayOrThrow(rawJson: String): Seq[String] =
-    parse(rawJson).map { json =>
-      json.asArray.map(_.map(_.noSpaces)).getOrElse(Seq(json.noSpaces))
-    }.fold(throw _, identity)
+  final private def parseJsonArrayOrThrow(rawJson: String): Seq[String] =
+    parse(rawJson)
+      .map { json =>
+        json.asArray.map(_.map(_.noSpaces)).getOrElse(Seq(json.noSpaces))
+      }
+      .fold(throw _, identity)
 
-  private final def getCurrentMethodName(): String = {
+  final private def getCurrentMethodName(): String = {
     val ste = Thread.currentThread().getStackTrace
     if (ste.isEmpty) "" else ste.last.getMethodName
   }

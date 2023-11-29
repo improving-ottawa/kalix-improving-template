@@ -40,8 +40,8 @@ class KeyLoaderSpec extends AnyWordSpec with Matchers {
     "be able to load a RSAKeyPair" in {
       val result = KeyLoader.load(rsaConfig)
       result match {
-        case Left(error)  => fail(error)
-        case Right(res)   => res.algorithm == rsaConfig.jwtAlgorithm
+        case Left(error) => fail(error)
+        case Right(res)  => res.algorithm == rsaConfig.jwtAlgorithm
       }
     }
 

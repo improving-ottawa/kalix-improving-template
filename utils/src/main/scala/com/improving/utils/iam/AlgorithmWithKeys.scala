@@ -23,7 +23,9 @@ sealed trait TypedKeyPair[Pub <: PublicKey, Priv <: PrivateKey, Algo <: JwtAsymm
 }
 
 final case class RSAKeyPair(publicKey: RSAPublicKey, privateKey: RSAPrivateKey, algorithm: JwtRSAAlgorithm)
-  extends AlgorithmWithKeys with TypedKeyPair[RSAPublicKey, RSAPrivateKey, JwtRSAAlgorithm]
+    extends AlgorithmWithKeys
+    with TypedKeyPair[RSAPublicKey, RSAPrivateKey, JwtRSAAlgorithm]
 
 final case class ECKeyPair(publicKey: ECPublicKey, privateKey: ECPrivateKey, algorithm: JwtECDSAAlgorithm)
-  extends AlgorithmWithKeys with TypedKeyPair[ECPublicKey, ECPrivateKey, JwtECDSAAlgorithm]
+    extends AlgorithmWithKeys
+    with TypedKeyPair[ECPublicKey, ECPrivateKey, JwtECDSAAlgorithm]

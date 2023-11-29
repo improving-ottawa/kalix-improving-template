@@ -8,7 +8,7 @@ import java.time.Instant
 import java.util.UUID
 
 /** Extension to [[JwtClaim]] to include the principal's roles explicitly. */
-case class AuthToken (
+case class AuthToken(
   jwtId: UUID,
   issuer: String,
   subject: String,
@@ -19,7 +19,6 @@ case class AuthToken (
   audience: Option[Set[String]],
   additionalClaims: Map[String, String]
 )
-
 
 /** Provides conversion to/from [[JwtClaim]] */
 object AuthToken {
@@ -37,18 +36,17 @@ object AuthToken {
       nbf   <- claim.notBefore.toRight(new scala.Error("Claim has no `nbf` field."))
       iat   <- claim.issuedAt.toRight(new scala.Error("Claim has no `iat` field."))
       extra  = json.asObject.map(_.filter { case (key, _) => key == "roles" })
-    } yield
-      AuthToken(
-        jwtId,
-        iss,
-        sub,
-        expiration = Instant.ofEpochSecond(exp),
-        notBefore = Instant.ofEpochSecond(nbf),
-        issuedAt = Instant.ofEpochSecond(iat),
-        roles = roles.toSet,
-        audience = claim.audience,
-        additionalClaims = extra.map(_.toMap.view.mapValues(Printer.noSpaces.print).toMap).getOrElse(Map.empty)
-      )
+    } yield AuthToken(
+      jwtId,
+      iss,
+      sub,
+      expiration = Instant.ofEpochSecond(exp),
+      notBefore = Instant.ofEpochSecond(nbf),
+      issuedAt = Instant.ofEpochSecond(iat),
+      roles = roles.toSet,
+      audience = claim.audience,
+      additionalClaims = extra.map(_.toMap.view.mapValues(Printer.noSpaces.print).toMap).getOrElse(Map.empty)
+    )
 
   /** Converts an [[AuthToken authorization token]] into a set of [[JwtClaim JWT claims]]. */
   def toClaims(token: AuthToken): JwtClaim = {
@@ -72,4 +70,3 @@ object AuthToken {
   }
 
 }
-

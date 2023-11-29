@@ -11,7 +11,7 @@ import scala.util._
 
 import java.io._
 import java.nio.file.{Files, Paths}
-import java.security.{Security, Provider}
+import java.security.{Provider, Security}
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 
 private object KeyLoaderImpl {
@@ -28,6 +28,7 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
 
   /* Cryptographic stuff (BouncyCastle) */
   final private val converter = new JcaPEMKeyConverter().setProvider(bcProvider)
+
   final protected def cryptoProvider: Provider = bcProvider
 
   /*
@@ -38,10 +39,11 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
       file    <- getFileFromText(filePath)
       _       <- checkFileExits(file)
       keySpec <- getFileExtension(file) match {
-        case "pem" => readPEMPrivateKey(file, password)
-        case "der" => readDERPrivateKey(file, password)
-        case other => Left(new UnsupportedOperationException(s"Cannot read keys from file with extension: $other"))
-      }
+                   case "pem" => readPEMPrivateKey(file, password)
+                   case "der" => readDERPrivateKey(file, password)
+                   case other =>
+                     Left(new UnsupportedOperationException(s"Cannot read keys from file with extension: $other"))
+                 }
     } yield keySpec
 
   protected def readFilePublicKey(filePath: String): Either[Throwable, X509EncodedKeySpec] =
@@ -49,10 +51,11 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
       file    <- getFileFromText(filePath)
       _       <- checkFileExits(file)
       keySpec <- getFileExtension(file) match {
-        case "pem" => readPEMPublicKey(file)
-        case "der" => readDERPublicKey(file)
-        case other => Left(new UnsupportedOperationException(s"Cannot read keys from file with extension: $other"))
-      }
+                   case "pem" => readPEMPublicKey(file)
+                   case "der" => readDERPublicKey(file)
+                   case other =>
+                     Left(new UnsupportedOperationException(s"Cannot read keys from file with extension: $other"))
+                 }
     } yield keySpec
 
   /*
@@ -84,17 +87,17 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
       // If a password is provided, assume encrypted private key
       password match {
         case Some(plainText) =>
-          val encKeyInfo = EncryptedPrivateKeyInfo.getInstance(fileBytes)
-          val encObj = new PKCS8EncryptedPrivateKeyInfo(encKeyInfo)
+          val encKeyInfo  = EncryptedPrivateKeyInfo.getInstance(fileBytes)
+          val encObj      = new PKCS8EncryptedPrivateKeyInfo(encKeyInfo)
           val decryptProv = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(plainText.toCharArray)
-          val keyInfo = encObj.decryptPrivateKeyInfo(decryptProv)
-          val privKey = converter.getPrivateKey(keyInfo)
+          val keyInfo     = encObj.decryptPrivateKeyInfo(decryptProv)
+          val privKey     = converter.getPrivateKey(keyInfo)
           new PKCS8EncodedKeySpec(privKey.getEncoded)
 
         case None =>
           new PKCS8EncodedKeySpec(fileBytes)
       }
-  }
+    }
 
   final private def extractDERPublicKey(fileBytes: Array[Byte]) =
     Try(new X509EncodedKeySpec(fileBytes))
@@ -103,14 +106,12 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
     usingResource(new PEMParser(reader))(pemParser => Try(handlePEMObject(pemParser.readObject, password)))
 
   final private def extractPEMPublicKey(reader: Reader) =
-    usingResource(new PemReader(reader))(pemReader =>
-      Try(new X509EncodedKeySpec(pemReader.readPemObject().getContent))
-    )
+    usingResource(new PemReader(reader))(pemReader => Try(new X509EncodedKeySpec(pemReader.readPemObject().getContent)))
 
   final private def handlePEMObject(pemObject: Object, password: Password) = {
     @inline def readEncrypted(ckp: PEMEncryptedKeyPair, plainTextPassword: String) = {
       val decryptor = new JcePEMDecryptorProviderBuilder().build(plainTextPassword.toCharArray)
-      val keyPair = converter.getKeyPair(ckp.decryptKeyPair(decryptor))
+      val keyPair   = converter.getKeyPair(ckp.decryptKeyPair(decryptor))
       new PKCS8EncodedKeySpec(keyPair.getPrivate.getEncoded)
     }
 
@@ -119,14 +120,14 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
       new PKCS8EncodedKeySpec(keyPair.getPrivate.getEncoded)
     }
 
-    lazy val encryptedNoPassword = "Tried to load an encrypted PEM object with no password provided."
+    lazy val encryptedNoPassword     = "Tried to load an encrypted PEM object with no password provided."
     lazy val unencryptedWithPassword = "Tried to load an unencrypted PEM object with a password provided."
 
     (pemObject, password) match {
-      case (ekp: PEMEncryptedKeyPair, Some(plainText))  => readEncrypted(ekp, plainText)
-      case (_: PEMEncryptedKeyPair, None)               => throw new RuntimeException(encryptedNoPassword)
-      case (kp: PEMKeyPair, None)                       => readUnencrypted(kp)
-      case (_: PEMEncryptedKeyPair, Some(_))            => throw new RuntimeException(unencryptedWithPassword)
+      case (ekp: PEMEncryptedKeyPair, Some(plainText)) => readEncrypted(ekp, plainText)
+      case (_: PEMEncryptedKeyPair, None)              => throw new RuntimeException(encryptedNoPassword)
+      case (kp: PEMKeyPair, None)                      => readUnencrypted(kp)
+      case (_: PEMEncryptedKeyPair, Some(_))           => throw new RuntimeException(unencryptedWithPassword)
     }
   }
 
@@ -142,7 +143,7 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
     if (path.startsWith("resource:"))
       Try {
         val resourcePath = path.stripPrefix("resource:")
-        val url = getClass.getResource(resourcePath)
+        val url          = getClass.getResource(resourcePath)
         new java.io.File(url.toURI)
       }.toEither
     else Try(Paths.get(path).toFile).toEither

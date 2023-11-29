@@ -10,7 +10,7 @@ import scala.util.Try
 import java.time._
 import java.util.UUID
 
-final class AuthTokenService private(data: AlgorithmWithKeys) {
+final class AuthTokenService private (data: AlgorithmWithKeys) {
 
   /**
     * Create a new Json Web Token (JWT) string from an [[AuthToken authorization token]] for application authorization.
@@ -24,8 +24,8 @@ final class AuthTokenService private(data: AlgorithmWithKeys) {
     overrideJwtId: Option[UUID] = None
   ): Either[Throwable, String] = {
     val nowInstant = SystemClock.currentInstant
-    val expiresOn = nowInstant.plus(validFor)
-    val jwtId = overrideJwtId.getOrElse(UUID.randomUUID)
+    val expiresOn  = nowInstant.plus(validFor)
+    val jwtId      = overrideJwtId.getOrElse(UUID.randomUUID)
 
     encodeToken(
       AuthToken(
@@ -56,6 +56,7 @@ final class AuthTokenService private(data: AlgorithmWithKeys) {
 }
 
 object AuthTokenService {
+
   def apply(data: AlgorithmWithKeys): AuthTokenService =
     new AuthTokenService(data)
 
