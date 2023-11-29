@@ -1,10 +1,10 @@
 package com.example.gateway.api
 
 import com.example.gateway.domain._
-import com.example.utils.SystemClock
 import com.improving.iam._
 
 import com.google.protobuf.empty.Empty
+import com.improving.utils.SystemClock
 import kalix.scalasdk.valueentity.{ValueEntity, ValueEntityContext}
 
 import java.time.Instant

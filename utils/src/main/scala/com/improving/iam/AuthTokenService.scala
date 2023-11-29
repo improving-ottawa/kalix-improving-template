@@ -1,8 +1,7 @@
 package com.improving.iam
 
-import com.example.utils.SystemClock
-
 import cats.data.NonEmptySet
+import com.improving.utils.SystemClock
 import pdi.jwt.JwtCirce
 
 import scala.util.Try

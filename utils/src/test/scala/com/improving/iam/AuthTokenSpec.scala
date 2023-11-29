@@ -1,6 +1,6 @@
 package com.improving.iam
 
-import com.example.utils.SystemClock
+import com.improving.utils.SystemClock
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
