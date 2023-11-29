@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package com.example.gateway.api;
 
-import "com/example/common/domain/login_token.proto";
+import "com/example/gateway/domain/login_token.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 

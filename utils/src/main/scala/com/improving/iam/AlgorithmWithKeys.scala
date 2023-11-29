@@ -22,6 +22,14 @@ sealed trait TypedKeyPair[Pub <: PublicKey, Priv <: PrivateKey, Algo <: JwtAsymm
   final override type Algorithm = Algo
 }
 
+object NoKeysPair extends AlgorithmWithKeys with TypedKeyPair[PublicKey, PrivateKey, JwtAsymmetricAlgorithm] {
+  final def publicKey: PublicKey = throw new RuntimeException("No public key loaded.")
+
+  final def privateKey: PrivateKey = throw new RuntimeException("No private key loaded.")
+
+  final def algorithm: JwtAsymmetricAlgorithm = throw new RuntimeException("No JWT algorithm specified.")
+}
+
 final case class RSAKeyPair(publicKey: RSAPublicKey, privateKey: RSAPrivateKey, algorithm: JwtRSAAlgorithm)
     extends AlgorithmWithKeys
     with TypedKeyPair[RSAPublicKey, RSAPrivateKey, JwtRSAAlgorithm]

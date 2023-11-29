@@ -1,20 +1,11 @@
 package com.example.gateway.api
 
-import com.example.gateway.domain.{
-  ClaimTokenFailure,
-  ClaimTokenRequest,
-  ClaimTokenResponse,
-  CreateLoginTokenRequest,
-  CreateLoginTokenResponse,
-  LoginTokenState
-}
-import com.example.gateway.utils.GatewayKeyLoader
+import com.example.gateway.domain._
 import com.example.utils.SystemClock
+import com.improving.iam._
+
 import com.google.protobuf.empty.Empty
-import com.improving.utils.iam.{AuthTokenService, KeyLoader, KeyLoaderConfig}
-import com.typesafe.config.ConfigFactory
 import kalix.scalasdk.valueentity.{ValueEntity, ValueEntityContext}
-import pdi.jwt.JwtAlgorithm
 
 import java.time.Instant
 
@@ -23,19 +14,12 @@ import java.time.Instant
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenService {
+class LoginTokenService(context: ValueEntityContext, jwtKeys: AlgorithmWithKeys) extends AbstractLoginTokenService {
   import LoginTokenService._
 
   private type Effect[T] = ValueEntity.Effect[T]
 
-  private val authTokenService = AuthTokenService(
-    (ConfigFactory.load().getString("com.example.gateway.auth.encryption") match {
-      case "RSA" =>
-        KeyLoader.load(KeyLoaderConfig(JwtAlgorithm.allRSA().tail.head, "", "", None))
-      case "EC"  =>
-        KeyLoader.load(KeyLoaderConfig(JwtAlgorithm.allECDSA().tail.head, "", "", None))
-    }).toTry.get
-  )
+  private val authTokenService = AuthTokenService(jwtKeys)
 
   import io.grpc.Status.{Code => StatusCode}
 
@@ -98,13 +82,10 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
   private def createSuccessResponse(currentState: LoginTokenState): Effect[ClaimTokenResponse] = {
     val token = authTokenService.createToken(
       tokenIssuer,
-//      currentState.userEmail,
+      currentState.userEmail,
       jwtTokenValidDuration,
-      java.util.UUID.randomUUID().toString,
-      Map(
-//        "usage" -> currentState.usage.toString(),
-        //      "field" -> currentState.field
-      )
+      cats.data.NonEmptySet.of("admin"),
+      Map.empty
     )
 
     val responseProgram = token.map { jwt =>
