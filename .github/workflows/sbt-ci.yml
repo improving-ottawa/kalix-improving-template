@@ -1,6 +1,6 @@
 # Modified from https://github.com/lightbend/kalix-jvm-sdk/blob/main/.github/workflows/ci.yml
 
-name: CI
+name: SBT-CI
 
 on:
   workflow_dispatch:
@@ -9,31 +9,21 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/ci.yml
+      - .github/workflows/sbt-ci.yml
       - '**.scala'
       - '**.proto'
       - '**.conf'
       - '**.sbt'
-      - '**.sh'
-      - '**.tsx'
-      - '**.ts'
-      - '**.scss'
-      - '**.css'
 
   push:
     branches:
       - main
     paths:
-      - .github/workflows/ci.yml
+      - .github/workflows/sbt-ci.yml
       - '**.scala'
       - '**.proto'
       - '**.conf'
       - '**.sbt'
-      - '**.sh'
-      - '**.tsx'
-      - '**.ts'
-      - '**.scss'
-      - '**.css'
 
 permissions:
   contents: read
@@ -101,37 +91,3 @@ jobs:
       # - name: Running integration tests
       #  run: sbt "integration-test/test"
 
-  ui-build-test:
-    name: npm ci, build and test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Checkout GitHub merge
-        if: github.event.pull_request
-        run: |-
-          git fetch origin pull/${{ github.event.pull_request.number }}/merge:scratch
-          git checkout scratch
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: protoGen for scala project
-        run: sbt protocGenerate
-
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v2
-        with:
-          version: "24.x"
-
-      - name: npm
-        working-directory: ui
-        run: |
-          npm install -g protoc-gen-js
-          npm ci
-          ./proto-gen.sh
-          # TODO: enable when tests are ready 
-          # npm test
