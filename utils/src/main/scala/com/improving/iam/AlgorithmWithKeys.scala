@@ -1,4 +1,4 @@
-package com.improving.utils.iam
+package com.improving.iam
 
 import pdi.jwt.algorithms._
 

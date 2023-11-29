@@ -1,4 +1,4 @@
-package com.improving.utils.iam
+package com.improving.iam
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -6,7 +6,7 @@ import pdi.jwt.JwtAlgorithm
 
 object KeyLoaderSpec {
 
-  private val ecConfig =
+  private[iam] val ecConfig =
     KeyLoaderConfig(
       JwtAlgorithm.ES256,
       "resource:/ec_test_pub.pem",

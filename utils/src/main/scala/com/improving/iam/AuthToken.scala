@@ -1,4 +1,4 @@
-package com.improving.utils.iam
+package com.improving.iam
 
 import io.circe._
 import io.circe.parser._
@@ -23,6 +23,20 @@ case class AuthToken(
 /** Provides conversion to/from [[JwtClaim]] */
 object AuthToken {
 
+  /** [[AuthToken]] constructor with default values. */
+  def apply(
+    jwtId: UUID,
+    issuer: String,
+    subject: String,
+    expiration: Instant,
+    notBefore: Instant,
+    issuedAt: Instant,
+    roles: Set[String],
+    audience: Option[Set[String]] = None,
+    additionalClaims: Map[String, String] = Map.empty
+  ): AuthToken =
+    new AuthToken(jwtId, issuer, subject, expiration, notBefore, issuedAt, roles, audience, additionalClaims)
+
   /** Attempt to convert [[JwtClaim JWT claims]] into an [[AuthToken authorization token]]. */
   def fromClaim(claim: JwtClaim): Either[Throwable, AuthToken] =
     for {
@@ -35,7 +49,7 @@ object AuthToken {
       exp   <- claim.expiration.toRight(new scala.Error("Claim has no `exp` field."))
       nbf   <- claim.notBefore.toRight(new scala.Error("Claim has no `nbf` field."))
       iat   <- claim.issuedAt.toRight(new scala.Error("Claim has no `iat` field."))
-      extra  = json.asObject.map(_.filter { case (key, _) => key == "roles" })
+      extra  = json.asObject.map(_.filter { case (key, _) => key != "roles" })
     } yield AuthToken(
       jwtId,
       iss,

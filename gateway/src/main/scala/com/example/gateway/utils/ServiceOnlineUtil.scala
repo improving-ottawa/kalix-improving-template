@@ -2,6 +2,8 @@ package com.example.gateway.utils
 
 import com.example.gateway._
 import com.example.boundedContext
+import com.example.utils.SystemClock
+
 import akka.actor.{ActorSystem, ClassicActorSystemProvider}
 import com.example.common.{PingThroughRequest, PingThroughResponse}
 import kalix.javasdk.impl.GrpcClients

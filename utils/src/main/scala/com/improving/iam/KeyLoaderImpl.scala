@@ -1,4 +1,4 @@
-package com.improving.utils.iam
+package com.improving.iam
 
 import org.bouncycastle.asn1.pkcs.EncryptedPrivateKeyInfo
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -123,11 +123,18 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
     lazy val encryptedNoPassword     = "Tried to load an encrypted PEM object with no password provided."
     lazy val unencryptedWithPassword = "Tried to load an unencrypted PEM object with a password provided."
 
+    @inline def failBecauseInvalid(): Nothing =
+      throw new RuntimeException(
+        "Error occurred while parsing PEM object. Expected either `PEMEncryptedKeyPair` or `PEMKeyPair` " +
+        s"but got: ${pemObject.getClass.getName}"
+      )
+
     (pemObject, password) match {
       case (ekp: PEMEncryptedKeyPair, Some(plainText)) => readEncrypted(ekp, plainText)
       case (_: PEMEncryptedKeyPair, None)              => throw new RuntimeException(encryptedNoPassword)
       case (kp: PEMKeyPair, None)                      => readUnencrypted(kp)
-      case (_: PEMEncryptedKeyPair, Some(_))           => throw new RuntimeException(unencryptedWithPassword)
+      case (_: PEMKeyPair, Some(_))                    => throw new RuntimeException(unencryptedWithPassword)
+      case (_, _)                                      => failBecauseInvalid()
     }
   }
 
