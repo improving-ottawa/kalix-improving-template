@@ -41,7 +41,7 @@ trait StringPrinter { self =>
     if (predicate) ifTrue(self) else ifFalse(self)
 
   final def printEachNext[A](iterator: Iterator[A])(printf: (A, Boolean) => PrinterEndo): StringPrinter = {
-    val elements = iterator.toList
+    val elements  = iterator.toList
     val lastIndex = elements.length - 1
     elements.zipWithIndex.foldLeft(self) { case (printer, (element, index)) =>
       val hasNext = index != lastIndex
@@ -64,12 +64,13 @@ object StringPrinter {
   final type PrinterEndo = StringPrinter => StringPrinter
 
   final val DefaultIndentSize = 2
+
   final val LineSeparator = System.lineSeparator()
 
   def apply(startingIndentLevel: Int = 0, indentSize: Int = DefaultIndentSize): StringPrinter =
     DefaultPrinter(None, Vector.empty, startingIndentLevel, indentSize)
 
-  private final case class DefaultPrinter(
+  final private case class DefaultPrinter(
     currentLine: Option[String],
     content: Vector[String],
     indentLevel: Int = 0,
@@ -77,7 +78,7 @@ object StringPrinter {
   ) extends StringPrinter {
     private lazy val prefix = " " * (indentLevel * indentSize)
 
-    def indent(level: Int): StringPrinter = copy(indentLevel = indentLevel + level)
+    def indent(level: Int): StringPrinter  = copy(indentLevel = indentLevel + level)
     def outdent(level: Int): StringPrinter = copy(indentLevel = if (indentLevel == 0) 0 else indentLevel - level)
 
     def append(text: String): StringPrinter =

@@ -43,7 +43,7 @@ class KeyLoaderConfigSpec extends AnyWordSpecLike with Matchers {
 
     "be able to `show` a KeyLoaderConfig instance" in {
       val instance = expectedConfig
-      val actual = ShowConfig.show(instance)
+      val actual   = ShowConfig.show(instance)
 
       val expectedText =
         """KeyLoaderConfig:

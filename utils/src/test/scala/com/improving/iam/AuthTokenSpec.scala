@@ -12,11 +12,11 @@ class AuthTokenSpec extends AnyWordSpecLike with Matchers {
   "AuthToken" should {
 
     "be convertable to `JwtClaim` and back to `AuthToken`" in {
-      val jwtId = UUID.randomUUID()
-      val fullNowInstant = SystemClock.currentInstant
-      val nowInstant = Instant.ofEpochSecond(fullNowInstant.getEpochSecond)
+      val jwtId             = UUID.randomUUID()
+      val fullNowInstant    = SystemClock.currentInstant
+      val nowInstant        = Instant.ofEpochSecond(fullNowInstant.getEpochSecond)
       val expirationInstant = nowInstant.plus(Duration.ofMinutes(90))
-      val expectedToken =
+      val expectedToken     =
         AuthToken(
           jwtId,
           "test.org",
@@ -27,7 +27,7 @@ class AuthTokenSpec extends AnyWordSpecLike with Matchers {
           Set("testing")
         )
 
-      val jwtClaim = AuthToken.toClaims(expectedToken)
+      val jwtClaim     = AuthToken.toClaims(expectedToken)
       val tokenAttempt = AuthToken.fromClaim(jwtClaim)
 
       tokenAttempt match {

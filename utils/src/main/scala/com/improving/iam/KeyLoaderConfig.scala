@@ -62,7 +62,7 @@ object KeyLoaderConfig {
       privKeyPass <- getString("private-key-password").optionally
     } yield KeyLoaderConfig(algo, pubKeyPath, privKeyPath, privKeyPass)
 
-    val readConfig = srcCfg andThenRead reader
+    val readConfig = srcCfg.andThenRead(reader)
     readConfig.runToEither(config)
   }
 

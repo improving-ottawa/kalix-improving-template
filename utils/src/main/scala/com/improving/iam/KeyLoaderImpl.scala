@@ -17,6 +17,7 @@ import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 private object KeyLoaderImpl {
   /* Cryptographic stuff (BouncyCastle) */
   final private type Password = Option[String]
+
   final private val bcProvider = new BouncyCastleProvider
 
   // Load the BouncyCastle provider on class instantiation
@@ -126,7 +127,7 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
     @inline def failBecauseInvalid(): Nothing =
       throw new RuntimeException(
         "Error occurred while parsing PEM object. Expected either `PEMEncryptedKeyPair` or `PEMKeyPair` " +
-        s"but got: ${pemObject.getClass.getName}"
+          s"but got: ${pemObject.getClass.getName}"
       )
 
     (pemObject, password) match {

@@ -18,7 +18,7 @@ object Main {
 
   def createKalix(): Kalix = {
     val algorithmWithKeys: AlgorithmWithKeys = NoKeysPair
-      // KeyLoader.load(keyLoaderConfig()).fold(throw _, identity)
+    // KeyLoader.load(keyLoaderConfig()).fold(throw _, identity)
 
     // The KalixFactory automatically registers any generated Actions, Views or Entities,
     // and is kept up-to-date with any changes in your protobuf definitions.
