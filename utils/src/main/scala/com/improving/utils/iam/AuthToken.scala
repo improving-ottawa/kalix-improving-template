@@ -1,8 +1,6 @@
 package com.improving.utils.iam
 
-import cats.syntax.all._
 import io.circe._
-import io.circe.syntax._
 import io.circe.parser._
 import pdi.jwt.JwtClaim
 
@@ -26,7 +24,8 @@ case class AuthToken (
 /** Provides conversion to/from [[JwtClaim]] */
 object AuthToken {
 
-  def toToken(claim: JwtClaim): Either[Throwable, AuthToken] =
+  /** Attempt to convert [[JwtClaim JWT claims]] into an [[AuthToken authorization token]]. */
+  def fromClaim(claim: JwtClaim): Either[Throwable, AuthToken] =
     for {
       json  <- parse(claim.content)
       roles <- json.hcursor.get[Seq[String]]("roles")
@@ -51,21 +50,24 @@ object AuthToken {
         additionalClaims = extra.map(_.toMap.view.mapValues(Printer.noSpaces.print).toMap).getOrElse(Map.empty)
       )
 
+  /** Converts an [[AuthToken authorization token]] into a set of [[JwtClaim JWT claims]]. */
+  def toClaims(token: AuthToken): JwtClaim = {
+    val args: Seq[(String, Any)] = (token.additionalClaims + ("roles" -> token.roles.toSeq)).toSeq
+
+    JwtClaim(
+      jwtId = Some(token.jwtId.toString),
+      issuer = Some(token.issuer),
+      subject = Some(token.subject),
+      expiration = Some(token.expiration.toEpochMilli / 1000L),
+      notBefore = Some(token.notBefore.toEpochMilli / 1000L),
+      issuedAt = Some(token.issuedAt.toEpochMilli / 1000L),
+      audience = token.audience
+    ) ++ (args: _*)
+  }
+
   implicit class ClaimExtensions(private val token: AuthToken) extends AnyVal {
 
-    def toClaim: JwtClaim = {
-      val args: Seq[(String, Any)] = (token.additionalClaims + ("roles" -> token.roles.toSeq)).toSeq
-
-      JwtClaim(
-        jwtId = Some(token.jwtId.toString),
-        issuer = Some(token.issuer),
-        subject = Some(token.subject),
-        expiration = Some(token.expiration.toEpochMilli / 1000L),
-        notBefore = Some(token.notBefore.toEpochMilli / 1000L),
-        issuedAt = Some(token.issuedAt.toEpochMilli / 1000L),
-        audience = token.audience
-      ) ++ (args: _*)
-    }
+    @inline final def toClaims: JwtClaim = AuthToken.toClaims(token)
 
   }
 

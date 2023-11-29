@@ -23,7 +23,7 @@ private object KeyLoaderImpl {
   Security.addProvider(bcProvider)
 }
 
-abstract class KeyLoaderImpl { self: KeyLoader =>
+abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
   import KeyLoaderImpl._
 
   /* Cryptographic stuff (BouncyCastle) */
@@ -138,7 +138,14 @@ abstract class KeyLoaderImpl { self: KeyLoader =>
       err => Try(resource.close()).flatMap(_ => Failure(err))
     )
 
-  final private def getFileFromText(path: String) = Try(Paths.get(path).toFile).toEither
+  final private def getFileFromText(path: String) =
+    if (path.startsWith("resource:"))
+      Try {
+        val resourcePath = path.stripPrefix("resource:")
+        val url = getClass.getResource(resourcePath)
+        new java.io.File(url.toURI)
+      }.toEither
+    else Try(Paths.get(path).toFile).toEither
 
   final private def checkFileExits(file: File) =
     if (file.exists) Right(file) else Left(new FileNotFoundException(file.getAbsolutePath))

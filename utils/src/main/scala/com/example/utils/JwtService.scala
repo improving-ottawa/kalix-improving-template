@@ -1,17 +1,15 @@
 package com.example.utils
 
 import com.chatwork.scala.jwk.{AssymetricJWK, JWK}
-import com.example.utils.iam.cryptography.KeyLoader
 import pdi.jwt._
 
 import java.security.{PrivateKey, PublicKey}
 import scala.util._
 import java.time.Duration
 
-final class JwtService[P <: PublicKey, V <: PrivateKey, K <: JWK with AssymetricJWK] private (
-  loader: KeyLoader[P, V, K],
-  algorithm: algorithms.JwtAsymmetricAlgorithm
-) {
+final class JwtService private (algorithm: algorithms.JwtAsymmetricAlgorithm) {
+
+  /*
 
   def createAuthorizationToken(
     issuer: String,
@@ -39,10 +37,11 @@ final class JwtService[P <: PublicKey, V <: PrivateKey, K <: JWK with Assymetric
       JwtCirce.decode(jwt, publicKey, Seq(algorithm))
     }
 
+  */
 }
 
 object JwtService {
   final val algorithm: algorithms.JwtAsymmetricAlgorithm = JwtAlgorithm.RS256
 
-  def apply(loader: KeyLoader): JwtService = new JwtService(loader, algorithm)
+  // def apply(loader: KeyLoader): JwtService = new JwtService(loader, algorithm)
 }

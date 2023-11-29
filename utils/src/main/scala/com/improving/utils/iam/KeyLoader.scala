@@ -8,78 +8,71 @@ import java.security.KeyFactory
 import java.security.interfaces._
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 
-trait KeyLoader {
+sealed trait KeyLoader[Algo <: AlgorithmWithKeys] {
+  final type Algorithm = Algo#Algorithm
 
   /* Public API */
 
-  /** Load [[AlgorithmWithKeys JWT signing algorithm and keys]] from a [[KeyLoaderConfig configuration]]. */
-  final def load(config: KeyLoaderConfig): Either[Throwable, AlgorithmWithKeys] =
-    loadKeys(
-      config.jwtAlgorithm,
-      config.publicKeyFilePath,
-      config.privateKeyFilePath,
-      config.privateKeyPassword
-    )
+  def load(
+    jwtAlgorithm: Algorithm,
+    publicKeyFilePath: String,
+    privateKeyFilePath: String,
+    privateKeyPassword: Option[String]
+  ): Either[Throwable, Algo]
+
+  final def loadFromConfig(jwtAlgorithm: Algorithm, config: KeyLoaderConfig): Either[Throwable, Algo] =
+    load(jwtAlgorithm, config.publicKeyFilePath, config.privateKeyFilePath, config.privateKeyPassword)
 
   /* Internal API */
   protected def readFilePrivateKey(filePath: String, password: Option[String]): Either[Throwable, PKCS8EncodedKeySpec]
 
   protected def readFilePublicKey(filePath: String): Either[Throwable, X509EncodedKeySpec]
 
-  protected def loadKeys(
-    jwtAlgorithm: JwtAsymmetricAlgorithm,
-    publicKeyFilePath: String,
-    privateKeyFilePath: String,
-    privateKeyPassword: Option[String]
-  ): Either[Throwable, AlgorithmWithKeys]
-
 }
 
 object KeyLoader {
 
   /** Load [[AlgorithmWithKeys JWT signing algorithm and keys]] from a [[KeyLoaderConfig configuration]]. */
-  def load(config: KeyLoaderConfig): Either[Throwable, AlgorithmWithKeys] =
+  final def load(config: KeyLoaderConfig): Either[Throwable, AlgorithmWithKeys] =
     config.jwtAlgorithm match {
-      case _: JwtRSAAlgorithm   => RSAKeyLoaderImpl.load(config)
-      case _: JwtECDSAAlgorithm => ECKeyLoaderImpl.load(config)
-      case invalid              => throw new RuntimeException(s"Cannot load key for JWT algorithm: $invalid")
+      case rsa: JwtRSAAlgorithm     => RSA.loadFromConfig(rsa, config)
+      case ecdsa: JwtECDSAAlgorithm => ECDSA.loadFromConfig(ecdsa, config)
+      case invalid                  => throw new RuntimeException(s"Cannot load key for JWT algorithm: $invalid")
     }
 
-  private object RSAKeyLoaderImpl extends KeyLoaderImpl with KeyLoader {
+  object RSA extends KeyLoaderImpl with KeyLoader[RSAKeyPair] {
     final private val keyFactory = KeyFactory.getInstance("RSA", cryptoProvider)
 
-    protected def loadKeys(
-      jwtAlgorithm: JwtAsymmetricAlgorithm,
+    def load(
+      jwtAlgo: JwtRSAAlgorithm,
       publicKeyFilePath: String,
       privateKeyFilePath: String,
       privateKeyPassword: Option[String]
-    ): Either[Throwable, AlgorithmWithKeys] =
+    ): Either[Throwable, RSAKeyPair] =
       for {
         privKeySpec <- readFilePrivateKey(privateKeyFilePath, privateKeyPassword)
         pubKeySpec  <- readFilePublicKey(publicKeyFilePath)
         rsaPubKey   <- Try(keyFactory.generatePublic(pubKeySpec)).map(_.asInstanceOf[RSAPublicKey]).toEither
         rsaPrivKey  <- Try(keyFactory.generatePrivate(privKeySpec)).map(_.asInstanceOf[RSAPrivateKey]).toEither
-        jwtRsaAlgo  <- Try(jwtAlgorithm.asInstanceOf[JwtRSAAlgorithm]).toEither
-      } yield RSAKeyPair(rsaPubKey, rsaPrivKey, jwtRsaAlgo)
+      } yield RSAKeyPair(rsaPubKey, rsaPrivKey, jwtAlgo)
 
   }
 
-  private object ECKeyLoaderImpl extends KeyLoaderImpl with KeyLoader {
+  object ECDSA extends KeyLoaderImpl with KeyLoader[ECKeyPair] {
     final private val keyFactory = KeyFactory.getInstance("ECDSA", cryptoProvider)
 
-    protected def loadKeys(
-      jwtAlgorithm: JwtAsymmetricAlgorithm,
+    def load(
+      jwtAlgo: JwtECDSAAlgorithm,
       publicKeyFilePath: String,
       privateKeyFilePath: String,
       privateKeyPassword: Option[String]
-    ): Either[Throwable, AlgorithmWithKeys] =
+    ): Either[Throwable, ECKeyPair] =
       for {
         privKeySpec <- readFilePrivateKey(privateKeyFilePath, privateKeyPassword)
         pubKeySpec  <- readFilePublicKey(publicKeyFilePath)
         ecPubKey    <- Try(keyFactory.generatePublic(pubKeySpec)).map(_.asInstanceOf[ECPublicKey]).toEither
         ecPrivKey   <- Try(keyFactory.generatePrivate(privKeySpec)).map(_.asInstanceOf[ECPrivateKey]).toEither
-        jwtECAlgo   <- Try(jwtAlgorithm.asInstanceOf[JwtECDSAAlgorithm]).toEither
-      } yield ECKeyPair(ecPubKey, ecPrivKey, jwtECAlgo)
+      } yield ECKeyPair(ecPubKey, ecPrivKey, jwtAlgo)
 
   }
 
