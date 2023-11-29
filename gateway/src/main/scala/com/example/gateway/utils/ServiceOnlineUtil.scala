@@ -4,6 +4,7 @@ import com.example.gateway._
 import com.example.boundedContext
 import akka.actor.{ActorSystem, ClassicActorSystemProvider}
 import com.example.common.{PingThroughRequest, PingThroughResponse}
+import com.example.utils.SystemClock
 import kalix.javasdk.impl.GrpcClients
 
 import scala.concurrent.{ExecutionContext, Future}
