@@ -4,14 +4,17 @@ import com.example.gateway.domain.{
   ClaimTokenFailure,
   ClaimTokenRequest,
   ClaimTokenResponse,
-  ClaimTokenSuccess,
   CreateLoginTokenRequest,
   CreateLoginTokenResponse,
   LoginTokenState
 }
 import com.example.gateway.utils.GatewayKeyLoader
+import com.example.utils.SystemClock
 import com.google.protobuf.empty.Empty
+import com.improving.utils.iam.{AuthTokenService, KeyLoader, KeyLoaderConfig}
+import com.typesafe.config.ConfigFactory
 import kalix.scalasdk.valueentity.{ValueEntity, ValueEntityContext}
+import pdi.jwt.JwtAlgorithm
 
 import java.time.Instant
 
@@ -24,7 +27,16 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
   import LoginTokenService._
 
   private type Effect[T] = ValueEntity.Effect[T]
-  private val jwtService = JwtService(GatewayKeyLoader)
+
+  private val authTokenService = AuthTokenService(
+    (ConfigFactory.load().getString("com.example.gateway.auth.encryption") match {
+      case "RSA" =>
+        KeyLoader.load(KeyLoaderConfig(JwtAlgorithm.allRSA().tail.head, "", "", None))
+      case "EC"  =>
+        KeyLoader.load(KeyLoaderConfig(JwtAlgorithm.allECDSA().tail.head, "", "", None))
+    }).toTry.get
+  )
+
   import io.grpc.Status.{Code => StatusCode}
 
   private[this] var token: Option[String] = None
@@ -84,7 +96,7 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
     )
 
   private def createSuccessResponse(currentState: LoginTokenState): Effect[ClaimTokenResponse] = {
-    val token = jwtService.createAuthorizationToken(
+    val token = authTokenService.createToken(
       tokenIssuer,
 //      currentState.userEmail,
       jwtTokenValidDuration,
@@ -128,6 +140,8 @@ object LoginTokenService {
   final val tokenIssuer           = "example.io"
 
   private def createExpirationTimestamp: Instant = SystemClock.currentInstant
+    .plus(tokenValidDuration)
+    /** EndMarker */
     .plus(tokenValidDuration)
     .plus(tokenValidDuration)
 
