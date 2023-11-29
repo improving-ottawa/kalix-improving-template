@@ -77,10 +77,10 @@ object Dependencies {
 
   lazy val pencilSmtp = "com.minosiants" %% "pencil" % "1.2.0"
 
-  lazy val commons_io = "commons-io" % "commons-io" % Versions.commons_io
+  lazy val commons_io  = "commons-io"          % "commons-io"                 % Versions.commons_io
   lazy val google_grpc = "com.google.api.grpc" % "proto-google-common-protos" % Versions.google_grpc % "protobuf"
 
-  lazy val lang3 = "org.apache.commons" % "commons-lang3" % Versions.lang3
+  lazy val lang3      = "org.apache.commons"     % "commons-lang3"   % Versions.lang3
   lazy val pureconfig = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureconfig
   lazy val scalactic  = "org.scalactic"         %% "scalactic"       % Versions.scalatest  % Test
   lazy val scalamock  = "org.scalamock"         %% "scalamock"       % Versions.scalamock  % Test
