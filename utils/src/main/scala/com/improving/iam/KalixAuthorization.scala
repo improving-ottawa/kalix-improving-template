@@ -2,8 +2,6 @@ package com.improving.iam
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import cats.data.NonEmptyChain
-import com.improving.api.JwtAuthorization.{Authorize, Authorizer}
 import io.circe.parser._
 import kalix.scalasdk.action.{Action, ActionContext}
 import pdi.jwt.JwtClaim
