@@ -1,6 +1,6 @@
 package com.example.common
 
-import com.example.utils.SystemClock
+import com.improving.utils.SystemClock
 
 /** Shared handler for [[PingThroughRequest]] handling. */
 object PingThroughHandler {
