@@ -7,6 +7,6 @@ import kalix.scalasdk.action.Action
 trait Service1Proxy extends GatewayProxyBase with KalixAuthorization {
 
   override def doNothing1(command: DoNothingCommand1): Action.Effect[DoNothingResponse1] =
-      effects.asyncReply(service1Client.doNothing(command))
+    effects.asyncReply(service1Client.doNothing(command))
 
 }
