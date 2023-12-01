@@ -60,7 +60,7 @@ object JWKClient {
   final private class CatsEffectJWKClient(cache: ClientCache[IO]) extends JWKClientImpl[IO](cache) {
     import CatsEffectJWKClient.backendResource
 
-    protected def sendRequest[T, R](request: Request[T, R]): IO[Response[T]] =
+    protected def sendRequest[T](request: Request[T, _ >: PE]): IO[Response[T]] =
       backendResource.use(backend => backend.send(request))
 
   }
@@ -69,7 +69,7 @@ object JWKClient {
       extends JWKClientImpl[Future](cache) {
     private val backend = HttpClientFutureBackend()
 
-    protected def sendRequest[T, R](request: Request[T, R]): Future[Response[T]] =
+    protected def sendRequest[T](request: Request[T, _ >: PE]): Future[Response[T]] =
       backend.send(request)
 
   }
@@ -115,8 +115,10 @@ object JWKClient {
 abstract private class JWKClientImpl[F[_] : MonadThrow](cache: JWKClient.ClientCache[F]) extends JWKClient[F] {
   import JWKClient._
 
+  protected final type PE = AnyRef with sttp.capabilities.Effect[F]
+
   // Depends on the particular `F[_]` implementation
-  protected def sendRequest[T, R](request: Request[T, R]): F[Response[T]]
+  protected def sendRequest[T](request: Request[T, _ >: PE]): F[Response[T]]
 
   final def retrieveJwks(clientId: String, jwksUri: Uri): F[JWKSet] =
     retrieveFromCache(clientId).flatMap {
@@ -125,7 +127,7 @@ abstract private class JWKClientImpl[F[_] : MonadThrow](cache: JWKClient.ClientC
     }
 
   final protected def retrieveFromCache(clientId: String): F[Option[JWKSet]] = {
-    val resultT =
+    val resultT: OptionT[F, JWKSet] =
       for {
         cachedSet <- OptionT(cache.get(clientId))
         resultSet <- if (allJWKsAreValid(cachedSet)) OptionT.pure(cachedSet) else OptionT.none

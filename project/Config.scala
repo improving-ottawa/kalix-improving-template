@@ -1,4 +1,3 @@
-import Dependencies.{bouncyCastleCryptoPackage, iamDependencies, _}
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
@@ -31,8 +30,9 @@ import scalapb.GeneratorOption.{FlatPackage, _}
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
 import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
-import java.net.URI
 import java.util.Calendar
+
+import Dependencies._
 
 object Config {
 
@@ -318,7 +318,7 @@ object Config {
         .configure(Config.ScalaPB.protoGenValidate)
         .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
-          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage ++ iamDependencies ++ bouncyCastleCryptoPackage,
+          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage ++ bouncyCastleCryptoPackage,
           libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",
           excludeDependencies ++= Seq(
             ExclusionRule("com.lightbend.akka.grpc"),

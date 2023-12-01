@@ -1,6 +1,6 @@
 package com.improving.extensions.oidc
 
-import sttp.model.{StatusCode, Uri}
+import sttp.model.Uri
 
 private[oidc] object CommonErrors {
 
