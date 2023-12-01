@@ -317,6 +317,7 @@ object Config {
         .configure(Config.Scala.withCoverage(minCoverage))
         .configure(Config.ScalaPB.protoGenValidate)
         .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
+        .settings(addCompilerPlugin(CompilerPlugins.kindProjector))
         .settings(
           libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage ++ bouncyCastleCryptoPackage,
           libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",

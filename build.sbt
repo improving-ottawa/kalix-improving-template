@@ -87,6 +87,7 @@ lazy val extensions: Project = project
   .configure(Config.Kalix.dependsOn(common))
   .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
   .configure(Config.withDepsPackage(Dependencies.iamDepsPackage))
+  .configure(Config.withDepsPackage(Dependencies.cachingDependencies))
 
 lazy val `bounded-context` = project
   .in(file("bounded-context"))

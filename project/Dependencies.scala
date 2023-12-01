@@ -20,6 +20,7 @@ object Dependencies {
     val oidc4s          = "0.11.0"
     val pureconfig      = "0.17.4"
     val scapegoat       = "2.1.0"
+    val scalaCache      = "1.0.0-M6"
     val scalalogging    = "3.9.5"
     val scalamock       = "5.2.0"
     val scalaJwk        = "1.2.24"
@@ -209,5 +210,10 @@ object Dependencies {
   val iamDepsPackage: Seq[ModuleID] = Seq(
     "com.chatwork" %% "scala-jwk" % scalaJwk
   ) ++ jwtSupportPackage
+
+  val cachingDependencies: Seq[ModuleID] = Seq(
+    "com.github.cb372" %% "scalacache-core"         % scalaCache,
+    "com.github.cb372" %% "scalacache-caffeine"     % scalaCache,
+  )
 
 }

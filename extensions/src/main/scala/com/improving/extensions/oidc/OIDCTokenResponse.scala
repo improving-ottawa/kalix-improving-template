@@ -13,7 +13,7 @@ import io.circe.syntax._
   * @param idToken
   *   The identity token received from the provider (contains user information)
   */
-final case class OIDCTokenResponse(accessToken: String, refreshToken: String, idToken: String)
+final case class OIDCTokenResponse(accessToken: Option[String], refreshToken: Option[String], idToken: String)
 
 object OIDCTokenResponse {
 
@@ -21,8 +21,8 @@ object OIDCTokenResponse {
   implicit final val fromJson: Decoder[OIDCTokenResponse] =
     (c: HCursor) =>
       for {
-        ackToken <- c.get[String]("access_token")
-        refToken <- c.get[String]("refresh_token")
+        ackToken <- c.get[Option[String]]("access_token")
+        refToken <- c.get[Option[String]]("refresh_token")
         idToken  <- c.get[String]("id_token")
       } yield OIDCTokenResponse(ackToken, refToken, idToken)
 
