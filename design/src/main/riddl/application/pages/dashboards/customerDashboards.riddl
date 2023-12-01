@@ -1,0 +1,3 @@
+type CustomerMetricSelector is any of {NEW, ACTIVE, LIFETIMEVALUE, LOCATION, ALL} //Where Active are customers who have bought in the last week
+
+page CustomersDashboardPage {???}

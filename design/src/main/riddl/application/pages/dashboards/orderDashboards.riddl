@@ -1,0 +1,89 @@
+type OrderMetricSelector is any of {AOV, TOTALSALES, GROSSMARGIN, ITEMSSOLD, LOCATION}
+type OrderMetricSelection: String
+
+record OrderDataRecord is {
+  orderId: String,
+  firstName: FirstName,
+  lastName: LastName,
+  address: Address,
+  orderTotal: Number
+}
+type OrderDataTable is OrderDataRecord*
+
+record AOVDataRecord is {
+  date: Date,
+  aov: Number briefly "The average value of all orders placed on a specific date"
+}
+type AOVData is AOVDataRecord*
+type AggregatedAOV is Number briefly "The average value of all orders placed in the time range of the report."
+
+page AOVDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output AOVGraph shows record AOVData briefly "As a line graph"
+  output AOVSummary shows record AggregatedAOV
+  output OrderDetails shows record OrderDataTable 
+  input TimeRangeSelector takes TimeRangeSelection
+  input OrderMetricSelector takes OrderMetricSelection
+}
+
+record TotalSalesDataRecord is {
+  date: Date,
+  totalSales: Number briefly "The total sales of all orders placed on a specific date"
+}
+type TotalSalesData is TotalSalesDataRecord*
+type AggregatedTotalSales is Number briefly "The total value of sales placed in the time range of the report."
+
+page TotalSalesDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output TotalSalesGraph shows record TotalSalesData briefly "As a bar graph"
+  output TotalSalesSummary shows record AggregatedTotalSales
+  output OrderDetails shows record OrderDataTable
+  input TimeRangeSelector takes TimeRangeSelection
+  input OrderMetricSelector takes OrderMetricSelection
+}
+
+record GrossMarginDataRecord is {
+  date: Date,
+  grossMargin: Number briefly "The gross margin of all sales placed on a specific date"
+}
+type GrossMarginData is GrossMarginDataRecord*
+type AggregatedGrossMargin is Number briefly "the total gross margin of all sales placed in the time range of the report."
+
+page GrossMarginDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output GrossMarginGraph shows record GrossMarginData briefly "As a bar graph with a trend line"
+  output GrossMarginSummary shows record AggregatedGrossMargin
+  output OrderDetails shows record OrderDataTable
+  input TimeRangeSelector takes TimeRangeSelection
+  input OrderMetricSelector takes OrderMetricSelection
+}
+
+record ItemsSoldDataRecord is {
+  date: Date,
+  itemsSold: Number briefly "The number of items sold on a specific date"
+}
+type ItemsSoldData is ItemsSoldDataRecord*
+type AggregatedItemsSold is Number briefly "The total number of items sold in the time range of the report."
+
+page ItemsSoldDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output ItemsSoldGraph shows record ItemsSoldData briefly "As a bar graph with a trend line"
+  output ItemsSoldSummary shows record AggregatedItemsSold
+  output OrderDetails shows record OrderDataTable
+  input TimeRangeSelector takes TimeRangeSelection
+  input OrderMetricSelector takes OrderMetricSelection
+}
+
+record OrderLocationRecord is {
+  city: String,
+  state: String,
+  numOrders: Number
+}
+type OrderLocationData is OrderLocationRecord*
+
+page SalesLocationsDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output OrderLocationMap shows record OrderLocationData briefly "As a geographical heat map"
+  input TimeRangeSelector takes TimeRangeSelection
+  input OrderMetricSelector takes OrderMetricSelection
+}

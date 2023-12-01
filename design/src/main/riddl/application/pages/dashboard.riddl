@@ -1,18 +1,15 @@
 include "fragments/dashboardNav"
+include "dashboards/orderDashboards"
+include "dashboards/customerDashboards"
 
-type TimeRangeSelector is any of {TODAY, LAST7DAYS, LAST30DAYS, LASTQUARTER, LASTYEAR, ALLTIME}
-type OrderMetricSelector is any of {AOV, TOTALSALES, GROSSMARGIN, ITEMSSOLD, LOCATION}
-type CustomerMetricSelector is any of {NEW, ACTIVE, LIFETIMEVALUE, LOCATION, ALL} //Where Active are customers who have bought in the last week
+type TimeRangeSelector is any of {LAST24HOURS, LAST7DAYS, LAST30DAYS, LASTQUARTER, LASTYEAR, ALLTIME}
+type TimeRangeSelection: String
+
 //type SessionsMetricSelector is any of {CURRENT, ALL}
 //type ConversionMetricSelector is any of {CONVERTED, LOST} //where conversion is a session that resulted in an order
 //type InventoryMetricSelector is any of {STOCKOUTS, STALE, SAFETYSTOCK, TURNS}
 
-page OrdersDashboardPage {
-  contains DashboardSideNav as group DashboardNav
-  output
-}
-
-page CustomersDashboardPage {???}
+command NavigateToPage is {???}
 
 page SessionsDashboardPage {???}
 
