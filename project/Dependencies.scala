@@ -8,6 +8,7 @@ object Dependencies {
     val akkaHttp        = "10.4.0"
     val akkaKafka       = "4.0.0"
     val alpakka         = "5.0.0"
+    val avro4s          = "5.0.7"
     val auth0           = "2.6.1"
     val chimney         = "0.6.2"
     val commonsCodec    = "1.15"
@@ -21,6 +22,7 @@ object Dependencies {
     val scapegoat       = "2.1.0"
     val scalalogging    = "3.9.5"
     val scalamock       = "5.2.0"
+    val scalaJwk        = "1.2.24"
     val scalapbCompiler = "0.11.13"
     val scalatest       = "3.2.16"
     val scalacheck      = "1.17.0"
@@ -39,8 +41,7 @@ object Dependencies {
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
-    val chatwork        = "1.2.24"
-    val avro4s          = "5.0.7"
+
   }
 
   import Versions._
@@ -60,15 +61,6 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttp,
     "com.typesafe.akka" %% "akka-http2-support"   % akkaHttp,
   )
-
-  lazy val authentication = Seq(
-    "com.auth0"     % "auth0"        % auth0,
-    "me.wojnowski" %% "oidc4s-core"  % oidc4s,
-    "me.wojnowski" %% "oidc4s-circe" % oidc4s,
-    "me.wojnowski" %% "oidc4s-sttp"  % oidc4s,
-  ) ++
-    httpDepsPackage ++
-    functionalDepsPackage
 
   lazy val bouncyCastleCryptoPackage = Seq(
     "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
@@ -214,9 +206,8 @@ object Dependencies {
     "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0"
   )
 
-  val iamDependencies: Seq[ModuleID] = Seq(
-    "com.chatwork" %% "scala-jwk" % chatwork,
-    // "com.sksamuel.avro4s" %% "avro4s-core" % avro4s
-  )
+  val iamDepsPackage: Seq[ModuleID] = Seq(
+    "com.chatwork" %% "scala-jwk" % scalaJwk
+  ) ++ jwtSupportPackage
 
 }
