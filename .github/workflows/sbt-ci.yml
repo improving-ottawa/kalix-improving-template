@@ -72,8 +72,9 @@ jobs:
         run: |
           riddlc from "design/src/main/riddl/example.conf" validate
 
-      - name: Run scalafmt
-        run: sbt scalafmtCheckAll scalafmtSbtCheck
+      # TODO: Re-enable after a consistent version of .scalafmt.conf is available in main
+      #- name: Run scalafmt
+      #  run: sbt scalafmtCheckAll scalafmtSbtCheck
 
       - name: Running unit tests
         run: sbt -v clean coverage Test/compile test coverageAggregate coveralls
