@@ -1,4 +1,4 @@
-import Dependencies.*
+import Dependencies.{bouncyCastleCryptoPackage, iamDependencies, _}
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
@@ -10,7 +10,6 @@ import sbt.{Compile, _}
 import scoverage.ScoverageKeys.{coverageFailOnMinimum, _}
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
 import sbtdynver.DynVerPlugin.autoImport.dynverVTagPrefix
-import wartremover.WartRemover.autoImport.*
 
 import scala.collection.immutable.Seq
 import kalix.sbt.KalixPlugin
@@ -181,33 +180,6 @@ object Config {
         )
     }
 
-    def withWartRemover(proj: Project): Project = {
-      proj
-        .enablePlugins(wartremover.WartRemover)
-        .settings(
-          Compile / compile / wartremoverWarnings ++= Warts.all,
-          Compile / compile / wartremoverWarnings -= Wart.ImplicitConversion,
-          // Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Nothing, Wart.Serializable)
-          // wartremoverWarnings += Wart.Nothing,
-          // wartremoverWarnings ++= Seq(Wart.Any, Wart.Serializable)
-
-          // Skip any generated code (lots of warts there!)
-          wartremoverExcluded ++= Seq(
-            (proj / sourceManaged).value,
-            (proj / crossTarget).value / "akka-grpc"
-          ),
-
-          // Seems like this doesn't work in the current WartRemover plugin, so we do it manually
-          proj / scalacOptions ++= {
-            val base = (LocalRootProject / baseDirectory).value
-            wartremoverExcluded.value.distinct.map { c =>
-              val x = base.toPath.relativize(c.toPath)
-              s"-P:wartremover:excluded:$x"
-            }
-          }
-        )
-    }
-
   }
 
   def withDocker(proj: Project): Project = {
@@ -272,7 +244,7 @@ object Config {
         .configure(Config.Scala.withScala2)
         .configure(Config.ScalaPB.protoGenValidate)
         .configure(Config.withDocker)
-        .configure(Scala.withWartRemover)
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
           dockerRepository := Some(KalixEnv.containerRepository),
           dockerAliases    := {
@@ -343,14 +315,15 @@ object Config {
       proj
         .configure(Config.Scala.withScala2)
         .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Scala.withWartRemover)
         .configure(Config.ScalaPB.protoGenValidate)
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
-          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage,
+          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage ++ iamDependencies ++ bouncyCastleCryptoPackage,
           libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",
           excludeDependencies ++= Seq(
             ExclusionRule("com.lightbend.akka.grpc"),
-          )
+          ),
+          resolvers += "Sonatype OSS Release Repository".at("https://oss.sonatype.org/content/repositories/releases/")
         )
 
     def kalixLibrary(proj: Project): Project = {
@@ -358,8 +331,8 @@ object Config {
         .enablePlugins(KalixPlugin)
         .configure(Config.Scala.withScala2)
         .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Scala.withWartRemover)
         .configure(Config.ScalaPB.protoGenValidate)
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
           libraryDependencies ++= testingDeps ++ akkaKalixServiceDepsPackage,
           runAll := {

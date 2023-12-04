@@ -1,6 +1,5 @@
 package com.improving.scheduler.services
 
-import com.example.utils._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.protobuf.empty.Empty

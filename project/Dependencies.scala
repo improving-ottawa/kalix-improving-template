@@ -39,6 +39,8 @@ object Dependencies {
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
+    val chatwork        = "1.2.24"
+    val avro4s          = "5.0.7"
   }
 
   import Versions._
@@ -80,12 +82,14 @@ object Dependencies {
 
   lazy val lang3      = "org.apache.commons"     % "commons-lang3"   % Versions.lang3
   lazy val pureconfig = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureconfig
-  lazy val scalactic  = "org.scalactic"         %% "scalactic"       % Versions.scalatest  % "test"
+  lazy val scalactic  = "org.scalactic"         %% "scalactic"       % Versions.scalatest  % Test
   lazy val scalamock  = "org.scalamock"         %% "scalamock"       % Versions.scalamock  % Test
-  lazy val scalatest  = "org.scalatest"         %% "scalatest"       % Versions.scalatest  % "test"
-  lazy val scalacheck = "org.scalacheck"        %% "scalacheck"      % Versions.scalacheck % "test"
+  lazy val scalatest  = "org.scalatest"         %% "scalatest"       % Versions.scalatest  % Test
+  lazy val scalacheck = "org.scalacheck"        %% "scalacheck"      % Versions.scalacheck % Test
   lazy val slf4j      = "org.slf4j"              % "slf4j-nop"       % Versions.slf4j
   lazy val slf4jCats  = "org.typelevel"         %% "log4cats-slf4j"  % Versions.slf4jCats
+
+  lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 
   lazy val grpc: Seq[ModuleID] = Seq(
     google_grpc,
@@ -100,8 +104,9 @@ object Dependencies {
 
   lazy val commons_codec = "commons-codec" % "commons-codec" % Versions.commons_codec
 
-  lazy val kalixScalaSdk: ModuleID   = "io.kalix" %% "kalix-scala-sdk-protobuf" % Versions.kalixSDK
-  lazy val kalixJvmCoreSdk: ModuleID = "io.kalix" %% "kalix-jvm-core-sdk"       % Versions.kalixSDK % "protobuf"
+  lazy val kalixScalaSdk     = "io.kalix" %% "kalix-scala-sdk-protobuf"         % Versions.kalixSDK
+  lazy val kalixJvmCoreSdk   = "io.kalix" %% "kalix-jvm-core-sdk"               % Versions.kalixSDK % "protobuf"
+  lazy val kalixScalaTestkit = "io.kalix" %% "kalix-scala-sdk-protobuf-testkit" % Versions.kalixSDK
 
   lazy val csvParsingDepsPackage: Seq[ModuleID] =
     functionalDepsPackage ++ Seq(
@@ -207,6 +212,11 @@ object Dependencies {
   val scalaPbGoogleCommonProtos: Seq[ModuleID] = Seq(
     "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0" % "protobuf",
     "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0"
+  )
+
+  val iamDependencies: Seq[ModuleID] = Seq(
+    "com.chatwork" %% "scala-jwk" % chatwork,
+    // "com.sksamuel.avro4s" %% "avro4s-core" % avro4s
   )
 
 }

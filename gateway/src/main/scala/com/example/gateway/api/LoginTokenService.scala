@@ -1,17 +1,10 @@
 package com.example.gateway.api
 
-import com.example.gateway.domain.{
-  ClaimTokenFailure,
-  ClaimTokenRequest,
-  ClaimTokenResponse,
-  ClaimTokenSuccess,
-  CreateLoginTokenRequest,
-  CreateLoginTokenResponse,
-  LoginTokenState
-}
-import com.example.gateway.utils.GatewayKeyLoader
-import com.example.utils.{JwtService, SystemClock}
+import com.example.gateway.domain._
+import com.improving.iam._
+
 import com.google.protobuf.empty.Empty
+import com.improving.utils.SystemClock
 import kalix.scalasdk.valueentity.{ValueEntity, ValueEntityContext}
 
 import java.time.Instant
@@ -21,11 +14,13 @@ import java.time.Instant
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenService {
+class LoginTokenService(context: ValueEntityContext, jwtKeys: AlgorithmWithKeys) extends AbstractLoginTokenService {
   import LoginTokenService._
 
   private type Effect[T] = ValueEntity.Effect[T]
-  private val jwtService = JwtService(GatewayKeyLoader)
+
+  private val authTokenService = AuthTokenService(jwtKeys)
+
   import io.grpc.Status.{Code => StatusCode}
 
   private[this] var token: Option[String] = None
@@ -85,15 +80,12 @@ class LoginTokenService(context: ValueEntityContext) extends AbstractLoginTokenS
     )
 
   private def createSuccessResponse(currentState: LoginTokenState): Effect[ClaimTokenResponse] = {
-    val token = jwtService.createAuthorizationToken(
+    val token = authTokenService.createToken(
       tokenIssuer,
-//      currentState.userEmail,
+      currentState.userEmail,
       jwtTokenValidDuration,
-      java.util.UUID.randomUUID().toString,
-      Map(
-//        "usage" -> currentState.usage.toString(),
-        //      "field" -> currentState.field
-      )
+      cats.data.NonEmptySet.of("admin"),
+      Map.empty
     )
 
     val responseProgram = token.map { jwt =>
@@ -129,6 +121,8 @@ object LoginTokenService {
   final val tokenIssuer           = "example.io"
 
   private def createExpirationTimestamp: Instant = SystemClock.currentInstant
+    .plus(tokenValidDuration)
+    /** EndMarker */
     .plus(tokenValidDuration)
     .plus(tokenValidDuration)
 
