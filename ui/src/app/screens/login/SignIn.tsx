@@ -12,8 +12,11 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Copyright} from "../styledComponents/copyright";
+import {useNavigate} from "react-router-dom";
 
 export default function SignIn() {
+    const navigate = useNavigate()
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -72,6 +75,14 @@ export default function SignIn() {
                     >
                         Sign In
                     </Button>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{mb: 2}}
+                    >
+                        Continue With...
+                    </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="#" variant="body2">
@@ -79,7 +90,7 @@ export default function SignIn() {
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link onClick={() => navigate("/sign-up")} variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>

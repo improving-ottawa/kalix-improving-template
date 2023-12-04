@@ -3,9 +3,10 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Provider} from "react-redux";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {store} from "./redux/store";
-import {Login} from "@mui/icons-material";
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers';
+import SignIn from "./screens/login/SignIn";
+import SignUp from "./screens/login/SignUp";
 
 const theme = createTheme({
     palette: {
@@ -30,7 +31,10 @@ function App() {
                     <BrowserRouter>
                         <Routes>
                             <Route path="/">
-                                <Route index element={<Login/>}/>
+                                <Route index element={<SignIn/>}/>
+                                <Route path="sign-up">
+                                    <Route index element={<SignUp/>}/>
+                                </Route>
                             </Route>
                         </Routes>
                     </BrowserRouter>
