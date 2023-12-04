@@ -15,10 +15,10 @@ name: Snyk Container Scan
 
 on:
   push:
-    branches: [ ] # TODO: re-enable "main" once kalix service is deployed
+    branches: [ "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ ] # TODO: re-enable "main" once kalix service is deployed
+    branches: [ "main" ]
 
 permissions:
   contents: read # for actions/checkout to fetch code
