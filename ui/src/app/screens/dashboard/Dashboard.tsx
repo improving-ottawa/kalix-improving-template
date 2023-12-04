@@ -2,7 +2,6 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import {PropsWithChildren} from "react";
 import {TopBar} from "../styledComponents/topBar";
 
 export const Dashboard = (props: { children: NonNullable<React.ReactNode> }) => {

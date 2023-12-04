@@ -14,7 +14,6 @@ import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import {mainNavItems, secondaryNavItems} from "../dashboard/navItems";
 import {Drawer} from "../dashboard/components";
-import Box from "@mui/material/Box";
 
 export const TopBar = (props: { showMenu?: boolean } = {showMenu: false}) => {
     const navigate = useNavigate()
