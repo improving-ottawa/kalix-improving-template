@@ -71,6 +71,7 @@ export default function SignIn() {
                         type="submit"
                         fullWidth
                         variant="contained"
+                        onClick={() => navigate("/pricing")}
                         sx={{mt: 3, mb: 2}}
                     >
                         Sign In

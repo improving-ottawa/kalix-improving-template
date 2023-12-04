@@ -7,6 +7,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import SignIn from "./screens/login/SignIn";
 import SignUp from "./screens/login/SignUp";
+import Pricing from "./screens/pricing/Pricing";
 
 const theme = createTheme({
     palette: {
@@ -34,6 +35,9 @@ function App() {
                                 <Route index element={<SignIn/>}/>
                                 <Route path="sign-up">
                                     <Route index element={<SignUp/>}/>
+                                </Route>
+                                <Route path="pricing">
+                                    <Route index element={<Pricing/>}/>
                                 </Route>
                             </Route>
                         </Routes>
