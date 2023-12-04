@@ -19,9 +19,9 @@ type AggregatedAOV is Number briefly "The average value of all orders placed in 
 
 page AOVDashboardPage {
   contains DashboardSideNav as group DashboardNav
-  output AOVGraph shows record AOVData briefly "As a line graph"
+  output AOVGraph shows AOVData briefly "As a line graph"
   output AOVSummary shows record AggregatedAOV
-  output OrderDetails shows record OrderDataTable 
+  output OrderDetails shows OrderDataTable 
   input TimeRangeSelector takes TimeRangeSelection
   input OrderMetricSelector takes OrderMetricSelection
 }

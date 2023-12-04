@@ -1,3 +1,44 @@
 type CustomerMetricSelector is any of {NEW, ACTIVE, LIFETIMEVALUE, LOCATION, ALL} //Where Active are customers who have bought in the last week
+type CustomerMetricSelection is String
 
-page CustomersDashboardPage {???}
+record CustomerDataRecord is {
+  customerId: String,
+  firstName: FirstName,
+  lastName: LastName,
+  emailAddress: EmailAddress,
+  phoneNumber: MobileNumber,
+  address: Address
+}
+type NewCustomerDataTable is CustomerDataRecord* briefly "A list of custoemrs that have signed up within the time range of this report"
+
+record NewCustomerDataRecord is {
+  date: Date,
+  newCustomers: Number briefly "The number of customers that have signed up within the time range of the report"
+}
+type NewCustomerData is NewCustomerDataRecord*
+type AggregatedNewCustomers is Number briefly "The number of new customers who have signed up in the time range of the report."
+page NewCustomersDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output NewCustomerGraph shows NewCustomerData briefly "As a line graph"
+  output NewCustomerSummary shows record AggregatedNewCustomers
+  output NewCustomerDetails shows record NewCustomerDataTable 
+  input TimeRangeSelector takes TimeRangeSelection
+  input CustomerMetricSelector takes CustomerMetricSelection
+}
+
+type ActiveCustomerDataTable is CustomerDataRecord* briefly "A list of customers that have placed an order within the time range of this report"
+
+record ActiveCustomerDataRecord is {
+  date: Date,
+  activeCustomers: Number briefly "The number of customers that have placed an order within the time range of the report"
+}
+type ActiveCustomerData is ActiveCustomerDataRecord*
+type AggregatedActiveCustomers is Number briefly "The number of customers who have placed an order in the time range of the report."
+page ActiveCustomersDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output ActiveCustomerGraph shows record ActiveCustomerData briefly "As a line graph"
+  output ActiveCustomerSummary shows record AggregatedActiveCustomers
+  output ActiveCustomerDetails shows record ActiveCustomerDataTable 
+  input TimeRangeSelector takes TimeRangeSelection
+  input CustomerMetricSelector takes CustomerMetricSelection
+}
