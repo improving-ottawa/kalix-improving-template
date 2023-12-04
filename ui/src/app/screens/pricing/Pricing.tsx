@@ -105,8 +105,7 @@ export default function Pricing() {
                             Resources
                         </Link>
                     </nav>
-                    <IconButton onClick={() => {
-                    }} sx={{my: 1, mx: 1.5}}>
+                    <IconButton onClick={() => navigate("/dashboard")} sx={{my: 1, mx: 1.5}}>
                         <AccountCircleTwoTone/>
                     </IconButton>
                 </Toolbar>
