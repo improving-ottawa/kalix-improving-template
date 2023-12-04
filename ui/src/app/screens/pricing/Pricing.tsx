@@ -18,6 +18,7 @@ import {Copyright} from "../styledComponents/copyright";
 import {useNavigate} from "react-router-dom";
 import {IconButton} from "@mui/material";
 import {AccountCircleTwoTone, Login} from "@mui/icons-material";
+import {TopBar} from "../styledComponents/topBar";
 
 const tiers = [
     {
@@ -63,53 +64,12 @@ const footers = [
 ];
 
 export default function Pricing() {
-    const navigate = useNavigate()
 
     return (
         <Box>
             <GlobalStyles styles={{ul: {margin: 0, padding: 0, listStyle: 'none'}}}/>
             <CssBaseline/>
-            <AppBar
-                position="static"
-                color="default"
-                elevation={0}
-                sx={{borderBottom: (theme) => `1px solid ${theme.palette.divider}`}}
-            >
-                <Toolbar sx={{flexWrap: 'wrap'}}>
-                    <Typography variant="h6" color="inherit" noWrap sx={{flexGrow: 1}}>
-                        Logoipsum
-                    </Typography>
-                    <nav>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            onClick={() => navigate("/pricing")}
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            Pricing
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            About Us
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            Resources
-                        </Link>
-                    </nav>
-                    <IconButton onClick={() => navigate("/dashboard")} sx={{my: 1, mx: 1.5}}>
-                        <AccountCircleTwoTone/>
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
+            <TopBar/>
             <Container disableGutters maxWidth="sm" component="main" sx={{pt: 8, pb: 6}}>
                 <Typography
                     component="h1"
