@@ -2,27 +2,20 @@ import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import LanguageIcon from '@mui/icons-material/Language';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 export const mainNavItems = (
     <React.Fragment>
         <ListItemButton>
             <ListItemIcon>
-                <DashboardIcon/>
-            </ListItemIcon>
-            <ListItemText primary="Dashboard"/>
-        </ListItemButton>
-        <ListItemButton>
-            <ListItemIcon>
                 <ShoppingCartIcon/>
             </ListItemIcon>
-            <ListItemText primary="Orders"/>
+            <ListItemText primary="Recent Orders"/>
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
@@ -32,41 +25,29 @@ export const mainNavItems = (
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
-                <BarChartIcon/>
+                <LanguageIcon/>
             </ListItemIcon>
-            <ListItemText primary="Reports"/>
+            <ListItemText primary="Sessions"/>
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
-                <LayersIcon/>
+                <AssignmentTurnedInIcon/>
             </ListItemIcon>
-            <ListItemText primary="Integrations"/>
+            <ListItemText primary="Inventory"/>
+        </ListItemButton>
+        <ListItemButton>
+            <ListItemIcon>
+                <AttachMoneyIcon/>
+            </ListItemIcon>
+            <ListItemText primary="Conversions"/>
         </ListItemButton>
     </React.Fragment>
 );
 
 export const secondaryNavItems = (
     <React.Fragment>
-        <ListSubheader component="div" inset>
-            Saved reports
-        </ListSubheader>
         <ListItemButton>
-            <ListItemIcon>
-                <AssignmentIcon/>
-            </ListItemIcon>
-            <ListItemText primary="Current month"/>
-        </ListItemButton>
-        <ListItemButton>
-            <ListItemIcon>
-                <AssignmentIcon/>
-            </ListItemIcon>
-            <ListItemText primary="Last quarter"/>
-        </ListItemButton>
-        <ListItemButton>
-            <ListItemIcon>
-                <AssignmentIcon/>
-            </ListItemIcon>
-            <ListItemText primary="Year-end sale"/>
+            <ListItemText primary="Kalix Console"/>
         </ListItemButton>
     </React.Fragment>
 );

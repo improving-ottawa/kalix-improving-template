@@ -2,6 +2,8 @@ import {styled} from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
 import {AppBarProps as MuiAppBarProps} from "@mui/material/AppBar/AppBar";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 
 
 const drawerWidth: number = 240;
@@ -54,3 +56,15 @@ export const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== '
         },
     }),
 );
+
+interface TitleProps {
+    children?: React.ReactNode;
+}
+
+export default function CardTitle(props: TitleProps) {
+    return (
+        <Typography component="h2" variant="h6" color="primary" gutterBottom>
+            {props.children}
+        </Typography>
+    );
+}

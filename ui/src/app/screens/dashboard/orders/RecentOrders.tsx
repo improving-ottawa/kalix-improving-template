@@ -5,14 +5,14 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import CardTitle from "./CardTitle";
-import {orderData} from "./fakeData";
+import {orderData} from "../fakeData";
+import CardTitle from "../components";
 
 function preventDefault(event: React.MouseEvent) {
     event.preventDefault();
 }
 
-export default function Orders() {
+export default function RecentOrders() {
     return (
         <React.Fragment>
             <CardTitle>Recent Orders</CardTitle>
@@ -38,7 +38,7 @@ export default function Orders() {
                     ))}
                 </TableBody>
             </Table>
-            <Link color="primary" href="#" onClick={preventDefault} sx={{mt: 3}}>
+            <Link color="primary" href="src/app/screens/dashboard" onClick={preventDefault} sx={{mt: 3}}>
                 See more orders
             </Link>
         </React.Fragment>

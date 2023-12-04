@@ -8,7 +8,7 @@ import {LocalizationProvider} from '@mui/x-date-pickers';
 import SignIn from "./screens/login/SignIn";
 import SignUp from "./screens/login/SignUp";
 import Pricing from "./screens/pricing/Pricing";
-import Dashboard from "./screens/dashboard/Dashboard";
+import OrdersPage from "./screens/dashboard/orders/OrdersPage";
 
 const theme = createTheme({
     palette: {
@@ -40,8 +40,8 @@ function App() {
                                 <Route path="pricing">
                                     <Route index element={<Pricing/>}/>
                                 </Route>
-                                <Route path="Dashboard">
-                                    <Route index element={<Dashboard/>}/>
+                                <Route path="dashboard">
+                                    <Route index element={<OrdersPage/>}/>
                                 </Route>
                             </Route>
                         </Routes>
