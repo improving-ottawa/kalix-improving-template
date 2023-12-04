@@ -16,8 +16,8 @@ import "validate/validate.proto";
 message LoginTokenState {
     common.Timestamp expiration_timestamp = 1;
     string redirect_uri = 2;
-    //LoginTokenUsage usage = 3;
-    //string user_email = 4;
+    repeated string roles = 3;
+    string user_email = 4;
 }
 
 // Requests

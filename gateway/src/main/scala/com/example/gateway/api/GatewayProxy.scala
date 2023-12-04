@@ -7,6 +7,7 @@ import com.example.gateway.domain.{DoNothingTwiceCommand, DoNothingTwiceResponse
 import com.example.gateway.utils.ServiceOnlineUtil
 import com.example.service3.api.Service3
 import com.google.protobuf.empty.Empty
+import com.improving.iam.KalixAuthorization
 import com.typesafe.config.{Config, ConfigFactory}
 import kalix.javasdk.impl.GrpcClients
 import kalix.scalasdk.action.{Action, ActionCreationContext}
@@ -23,7 +24,7 @@ class GatewayProxy(protected val creationContext: ActionCreationContext)
     with Service2Proxy
     with Service3Proxy
     with LoginProxy
-    with JwtAuthorization {
+    with KalixAuthorization {
 
   final protected val system: akka.actor.ActorSystem                  = creationContext.materializer.system
   implicit final protected val materializer: akka.stream.Materializer = creationContext.materializer

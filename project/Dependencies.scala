@@ -39,6 +39,8 @@ object Dependencies {
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
+    val chatwork        = "1.2.24"
+    val avro4s          = "5.0.7"
   }
 
   import Versions._
@@ -210,6 +212,11 @@ object Dependencies {
   val scalaPbGoogleCommonProtos: Seq[ModuleID] = Seq(
     "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0" % "protobuf",
     "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0"
+  )
+
+  val iamDependencies: Seq[ModuleID] = Seq(
+    "com.chatwork" %% "scala-jwk" % chatwork,
+    // "com.sksamuel.avro4s" %% "avro4s-core" % avro4s
   )
 
 }

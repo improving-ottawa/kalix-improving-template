@@ -1,10 +1,10 @@
 package com.example.gateway.api
 
 import com.example.gateway.domain._
+import com.improving.iam.KalixAuthorization
 import kalix.scalasdk.action.Action
 
-/** EndMarker */
-trait LoginProxy extends GatewayProxyBase with JwtAuthorization {
+trait LoginProxy extends GatewayProxyBase with KalixAuthorization {
 
   // TODO: uncommnent if enabling email
   // def sendAdminLoginLink(sendLoginLinkRequest: SendLoginLinkRequest): Action.Effect[SendLoginLinkResponse] = {
