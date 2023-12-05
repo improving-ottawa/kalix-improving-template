@@ -1,1 +1,42 @@
-page DashboardPage {???}
+include "fragments/dashboardNav"
+include "dashboards/orderDashboards"
+include "dashboards/customerDashboards"
+
+type TimeRangeSelector is any of {LAST24HOURS, LAST7DAYS, LAST30DAYS, LASTQUARTER, LASTYEAR, ALLTIME}
+type TimeRangeSelection: String
+
+//type SessionsMetricSelector is any of {CURRENT, ALL}
+//type ConversionMetricSelector is any of {CONVERTED, LOST} //where conversion is a session that resulted in an order
+//type InventoryMetricSelector is any of {STOCKOUTS, STALE, SAFETYSTOCK, TURNS}
+
+command NavigateToPage is {???}
+
+page SessionsDashboardPage {???}
+
+page ConversionsDashboardPage {???}
+
+page InventoryDashboardPage {???}
+
+page KalixDashboardPage {???}
+
+/*
+graph types:
+  AOV: bar chart (Average order value in a given day over the prescribed time window. expressed in $ over time. A single number per day.)
+  TotalSales: line chart (Aggregated value of sales in a given day over the prescribed time window. Expressed in $ over time. A single number per day.)
+  GrossMargin: line chart (similar to total sales, but shows total sales less COGS. Maybe an area chart with a line showing margin? Stacked bar with a line?)
+  ItemsSold: bar chart (a count of units sold in a given day over the prescribed time. Single number. Bar chart? Line Chart?)
+  NewCustomers: bar chart (A count of signups over time. Single number)
+  ActiveCustomers: heatmap, pie chart (a display of current active sessions. heatmap, pie chart by region)
+  LifetimeValue: horizontal bar by customer (who are the customers who have brought the greatest value over the prescribed time? )
+  CustomerLocation: Map (where are our customers located? heatmap, pie chart by region)
+  AllCustomers: Map (a map of all customers? Can you zoom the map to a specific area?)
+  //CurrentSessions: Map (a map of where current session originate from)
+  //AllSessions: line chart (a count of unique sessions over time)
+  //ConvertedSessions: (A count of sessions that resulted in a sale)
+  //LostSessions: (A count of sessions that did not result in a sale)
+  //Stockouts: (where has inventory gone to zero?)
+  //StaleInventory: (where is inventory stagnant? few turns)
+  //SafetyStock: (where are we in or approaching safety stock?)
+  //InventoryTurns: (where are we moving through inventory well?)
+  */
+  
