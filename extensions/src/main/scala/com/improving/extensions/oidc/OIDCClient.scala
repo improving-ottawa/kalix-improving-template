@@ -180,7 +180,7 @@ final private class OIDCClientImpl[F[_]](
     } yield redirectUri
 
   def completeAuthentication(callbackUri: Uri, stateDecoder: StateDecoderFn): F[AuthorizationFlowResult] = {
-    @inline def validateState(key: Base64String) =
+    @inline def validateState(key: Base64String): F[OIDCSession] =
       sessionStore.getSession(key).flatMap {
         case Some(session) => F.pure(session)
         case None          => F.raiseError(CsrfRejectionError(key))
