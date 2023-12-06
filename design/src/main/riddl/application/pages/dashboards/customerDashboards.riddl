@@ -20,8 +20,8 @@ type AggregatedNewCustomers is Number briefly "The number of new customers who h
 page NewCustomersDashboardPage {
   contains DashboardSideNav as group DashboardNav
   output NewCustomerGraph shows NewCustomerData briefly "As a line graph"
-  output NewCustomerSummary shows record AggregatedNewCustomers
-  output NewCustomerDetails shows record NewCustomerDataTable 
+  output NewCustomerSummary shows AggregatedNewCustomers
+  output NewCustomerDetails shows NewCustomerDataTable 
   input TimeRangeSelector takes TimeRangeSelection
   input CustomerMetricSelector takes CustomerMetricSelection
 }
@@ -36,9 +36,26 @@ type ActiveCustomerData is ActiveCustomerDataRecord*
 type AggregatedActiveCustomers is Number briefly "The number of customers who have placed an order in the time range of the report."
 page ActiveCustomersDashboardPage {
   contains DashboardSideNav as group DashboardNav
-  output ActiveCustomerGraph shows record ActiveCustomerData briefly "As a line graph"
-  output ActiveCustomerSummary shows record AggregatedActiveCustomers
-  output ActiveCustomerDetails shows record ActiveCustomerDataTable 
+  output ActiveCustomerGraph shows ActiveCustomerData briefly "As a line graph"
+  output ActiveCustomerSummary shows AggregatedActiveCustomers
+  output ActiveCustomerDetails shows ActiveCustomerDataTable 
+  input TimeRangeSelector takes TimeRangeSelection
+  input CustomerMetricSelector takes CustomerMetricSelection
+}
+
+type LifetimeValueDataTable is CustomerDataRecord* briefly "A list of customers that have placed an order within the time range of this report"
+
+record LifetimeValueDataRecord is {
+  customer: String briefly "customer name",
+  lifetimeValue: Number briefly "The sum dollar amount of all orders placed by a customer within the selected time range."
+}
+type LifetimeValueData is LifetimeValueDataRecord*
+type AverageLifetimeValue is Number briefly "The average lifetime value of customers in the time range of the report."
+page LifetimeValueDashboardPage {
+  contains DashboardSideNav as group DashboardNav
+  output LifetimeValueGraph shows LifetimeValueData briefly "As a line graph"
+  output LifetimeValueSummary shows AverageLifetimeValue
+  output LifetimeValueDetails shows LifetimeValueDataTable 
   input TimeRangeSelector takes TimeRangeSelection
   input CustomerMetricSelector takes CustomerMetricSelection
 }

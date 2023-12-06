@@ -6,5 +6,5 @@ record OrderConfirmation{
 
 page OrderConfirmationPage {
   contains CheckoutFlowStepperWidget as group CheckoutFlowStepper
-  output OrderConfirmationText shows record OrderConfirmation
+  output OrderConfirmationText shows OrderConfirmation
 }
