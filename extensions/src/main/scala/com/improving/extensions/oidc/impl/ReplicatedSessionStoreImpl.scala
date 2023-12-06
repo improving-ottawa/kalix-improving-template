@@ -9,7 +9,13 @@ import kalix.javasdk.impl.GrpcClients
 
 import scala.concurrent.Future
 
+/**
+  * Not accessible. Instead use [[ReplicatedSessionStore]] companion object, which will force the correct Kalix
+  * component registration(s).
+  */
 private[impl] object ReplicatedSessionStoreImpl {
+  // Using a single global `entityId` so only one replicated-entity is created per deployment.
+  final private val entityId: String = "92990870-9481-11ee-a434-1b7c64d6d3e8"
 
   def catsEffect(serviceEndpoint: Option[String], port: Int)(implicit asyncContext: AsyncContext): SessionStore[IO] =
     CatsWrapper(new ReplicatedSessionStoreImpl(serviceEndpoint, port))
@@ -32,9 +38,11 @@ private[impl] object ReplicatedSessionStoreImpl {
 
 }
 
+/** Not accessible / can't instantiate directly. Instead use [[ReplicatedSessionStore]] companion object. */
 private class ReplicatedSessionStoreImpl private (serviceEndpoint: Option[String], port: Int)(implicit
   val asyncContext: AsyncContext
 ) extends SessionStore[Future] {
+  import ReplicatedSessionStoreImpl.entityId
   import asyncContext._
 
   private lazy val client = {
@@ -44,15 +52,16 @@ private class ReplicatedSessionStoreImpl private (serviceEndpoint: Option[String
 
   def putSession(session: OIDCSession): Future[OIDCSession] = {
     val request = StoreSessionRequest(
+      entityId = entityId,
       key = session.key.toString,
-      data = ByteString.copyFrom(session.state.rawBytes)
+      data = if (session.state.rawBytes.isEmpty) ByteString.empty else ByteString.copyFrom(session.state.rawBytes)
     )
 
     client.putSession(request).map(_ => session)
   }
 
   def getSession(key: Base64String): Future[Option[OIDCSession]] = {
-    val request = SessionKey(key.toString)
+    val request = SessionKey(entityId, key.toString)
 
     client.getSession(request).map { response =>
       response.session match {

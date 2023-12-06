@@ -15,13 +15,9 @@ import scala.concurrent.Future
 @AkkaGrpcGenerated
 trait ReplicatedSessionStore {
 
-  def putSession(
-    in: com.improving.extensions.oidc.impl.StoreSessionRequest
-  ): scala.concurrent.Future[com.google.protobuf.empty.Empty]
+  def putSession(in: StoreSessionRequest): scala.concurrent.Future[com.google.protobuf.empty.Empty]
 
-  def getSession(
-    in: com.improving.extensions.oidc.impl.SessionKey
-  ): scala.concurrent.Future[com.improving.extensions.oidc.impl.GetSessionResponse]
+  def getSession(in: SessionKey): scala.concurrent.Future[com.improving.extensions.oidc.impl.GetSessionResponse]
 
 }
 

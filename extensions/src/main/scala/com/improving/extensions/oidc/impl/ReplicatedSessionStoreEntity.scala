@@ -29,11 +29,12 @@ final private[impl] class ReplicatedSessionStoreEntity(context: ReplicatedEntity
   ): ReplicatedEntity.Effect[GetSessionResponse] = {
     val key      = sessionKey.key
     val response = currentData.get(key) match {
-      case some @ Some(data) => if (data.data.isEmpty) GetSessionResponse(None) else GetSessionResponse(some)
-      case None              => GetSessionResponse(None)
+      case some @ Some(session) => if (session.data.isEmpty) GetSessionResponse(None) else GetSessionResponse(some)
+      case None                 => GetSessionResponse(None)
     }
 
-    effects.delete
+    effects
+      .update(currentData.remove(key))
       .thenReply(response)
   }
 

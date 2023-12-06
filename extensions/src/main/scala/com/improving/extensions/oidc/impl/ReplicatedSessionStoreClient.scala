@@ -35,14 +35,15 @@ object ReplicatedSessionStoreClient {
   def apply(channel: GrpcChannel)(implicit sys: ClassicActorSystemProvider): ReplicatedSessionStoreClient =
     new DefaultReplicatedSessionStoreClient(channel, isChannelOwned = false)
 
-  private class DefaultReplicatedSessionStoreClient(channel: GrpcChannel, isChannelOwned: Boolean)(implicit
+  final private class DefaultReplicatedSessionStoreClient(channel: GrpcChannel, isChannelOwned: Boolean)(implicit
     sys: ClassicActorSystemProvider
   ) extends ReplicatedSessionStoreClient {
     import ReplicatedSessionStore.MethodDescriptors._
 
     implicit private val ex: ExecutionContext = sys.classicSystem.dispatcher
-    private val settings                      = channel.settings
-    private val options                       = NettyClientUtils.callOptions(settings)
+
+    private val settings = channel.settings
+    private val options  = NettyClientUtils.callOptions(settings)
 
     private def putSessionRequestBuilder(channel: akka.grpc.internal.InternalChannel) =
       new ScalaUnaryRequestBuilder(putSessionDescriptor, channel, options, settings)
@@ -54,38 +55,26 @@ object ReplicatedSessionStoreClient {
       * Lower level "lifted" version of the method, giving access to request metadata etc. prefer
       * putSession(com.improving.extensions.oidc.impl.StoreSessionRequest) if possible.
       */
-
-    override def putSession(): SingleResponseRequestBuilder[
-      com.improving.extensions.oidc.impl.StoreSessionRequest,
-      com.google.protobuf.empty.Empty
-    ] =
+    override def putSession(): SingleResponseRequestBuilder[StoreSessionRequest, com.google.protobuf.empty.Empty] =
       putSessionRequestBuilder(channel.internalChannel)
 
     /**
       * For access to method metadata use the parameterless version of putSession
       */
-    def putSession(
-      in: com.improving.extensions.oidc.impl.StoreSessionRequest
-    ): scala.concurrent.Future[com.google.protobuf.empty.Empty] =
+    def putSession(in: StoreSessionRequest): scala.concurrent.Future[com.google.protobuf.empty.Empty] =
       putSession().invoke(in)
 
     /**
       * Lower level "lifted" version of the method, giving access to request metadata etc. prefer
       * getSession(com.improving.extensions.oidc.impl.SessionKey) if possible.
       */
-
-    override def getSession(): SingleResponseRequestBuilder[
-      com.improving.extensions.oidc.impl.SessionKey,
-      com.improving.extensions.oidc.impl.GetSessionResponse
-    ] =
+    override def getSession(): SingleResponseRequestBuilder[SessionKey, GetSessionResponse] =
       getSessionRequestBuilder(channel.internalChannel)
 
     /**
       * For access to method metadata use the parameterless version of getSession
       */
-    def getSession(
-      in: com.improving.extensions.oidc.impl.SessionKey
-    ): scala.concurrent.Future[com.improving.extensions.oidc.impl.GetSessionResponse] =
+    def getSession(in: SessionKey): scala.concurrent.Future[GetSessionResponse] =
       getSession().invoke(in)
 
     override def close(): scala.concurrent.Future[akka.Done] =
@@ -104,20 +93,12 @@ trait ReplicatedSessionStoreClientPowerApi {
     * Lower level "lifted" version of the method, giving access to request metadata etc. prefer
     * putSession(com.improving.extensions.oidc.impl.StoreSessionRequest) if possible.
     */
-
-  def putSession(): SingleResponseRequestBuilder[
-    com.improving.extensions.oidc.impl.StoreSessionRequest,
-    com.google.protobuf.empty.Empty
-  ] = ???
+  def putSession(): SingleResponseRequestBuilder[StoreSessionRequest, com.google.protobuf.empty.Empty] = ???
 
   /**
     * Lower level "lifted" version of the method, giving access to request metadata etc. prefer
     * getSession(com.improving.extensions.oidc.impl.SessionKey) if possible.
     */
-
-  def getSession(): SingleResponseRequestBuilder[
-    com.improving.extensions.oidc.impl.SessionKey,
-    com.improving.extensions.oidc.impl.GetSessionResponse
-  ] = ???
+  def getSession(): SingleResponseRequestBuilder[SessionKey, GetSessionResponse] = ???
 
 }
