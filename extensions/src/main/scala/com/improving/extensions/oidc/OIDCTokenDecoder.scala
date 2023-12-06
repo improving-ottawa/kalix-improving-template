@@ -12,13 +12,13 @@ import pdi.jwt.exceptions.JwtLengthException
 import scala.util.Try
 
 /**
- * Extracts and validates Jwt tokens from an OIDC token response, using the retrieved JWK set from the provider.
- */
+  * Extracts and validates Jwt tokens from an OIDC token response, using the retrieved JWK set from the provider.
+  */
 sealed abstract class OIDCTokenDecoder private {
   import OIDCTokenDecoder._
 
-  final def createDecoderUsingJWKS[P](jwkSet: JWKSet)(
-    implicit decoder: Decoder[P]
+  final def createDecoderUsingJWKS[P](jwkSet: JWKSet)(implicit
+    decoder: Decoder[P]
   ): Kleisli[Either[Throwable, *], String, P] = Kleisli(token => decode(jwkSet)(token))
 
   final def decode[P](jwkSet: JWKSet)(token: String)(implicit decoder: Decoder[P]): Either[Throwable, P] =
@@ -28,10 +28,9 @@ sealed abstract class OIDCTokenDecoder private {
     } yield payload
 
   // Validates the token, using the public key from the `JWKSet`
-  private final def validateSignature(jwkSet: JWKSet, jwtHeader: OIDCJwtHeader, token: String) = {
+  final private def validateSignature(jwkSet: JWKSet, jwtHeader: OIDCJwtHeader, token: String) = {
     // Try to find the key ID (`kid`) in the jwkSet
-    val keyForToken = Try(jwkSet.keyByKeyId(jwtHeader.keyId).get)
-      .toEither
+    val keyForToken = Try(jwkSet.keyByKeyId(jwtHeader.keyId).get).toEither
       .leftMap { _ =>
         val knownKeys = jwkSet.breachEncapsulationOfValues.view.flatMap(_.keyId).map(_.value).toSet
         JwkKeyNotFound(jwtHeader.keyId, knownKeys)
@@ -53,7 +52,7 @@ sealed abstract class OIDCTokenDecoder private {
   }
 
   // Decodes the JWT header and payload (since we need the header for signature validation)
-  private final def decodeToken[P](token: String)(implicit decoder: Decoder[P]) =
+  final private def decodeToken[P](token: String)(implicit decoder: Decoder[P]) =
     for {
       (header, payload) <- splitToken(token)
       jwtHeader         <- parse(header).flatMap(_.as[OIDCJwtHeader])
@@ -61,7 +60,7 @@ sealed abstract class OIDCTokenDecoder private {
     } yield (jwtHeader, jwtPayload)
 
   // Extracts the three parts of the ID token: header, payload, signature
-  private final def splitToken(token: String) = {
+  final private def splitToken(token: String) = {
     val parts = token.split('.')
 
     parts.length match {
@@ -85,12 +84,11 @@ object OIDCTokenDecoder extends OIDCTokenDecoder {
   /* Specific/typed errors */
 
   final case class JwkKeyNotFound(tokenKey: KeyId, providedKeys: Set[String])
-    extends Error(s"OIDC token key id [$tokenKey] not found in provided JWK keys [${providedKeys.mkString(",")}]")
+      extends Error(s"OIDC token key id [$tokenKey] not found in provided JWK keys [${providedKeys.mkString(",")}]")
 
-  final case class JwkNotAsymmetric(jwk: JWK)
-    extends Error(s"Received unexpected non-asymmetric Json Web Key: $jwk")
+  final case class JwkNotAsymmetric(jwk: JWK) extends Error(s"Received unexpected non-asymmetric Json Web Key: $jwk")
 
   final case class CouldNotExtractPublicKeyFromJwk(cause: PublicKeyCreationError)
-    extends Error(s"Could not extract public key from JWK due to error: ${cause.message}")
+      extends Error(s"Could not extract public key from JWK due to error: ${cause.message}")
 
 }

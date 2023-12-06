@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import java.time.ZoneId
 
-import impl._
+import internal._
 
 /** A caching [[JWKSet JWK set]] client, which can retrieve JWKs. */
 sealed trait JWKClient[F[_]] {
@@ -48,7 +48,7 @@ object JWKClient extends JWKClientErrors {
 }
 
 // Implementation for `JWKClient`, including caching behavior.
-private final class JWKClientImpl[F[_] : MonadThrow](cache: InMemCache[F], client: WebClient[F]) extends JWKClient[F] {
+final private class JWKClientImpl[F[_] : MonadThrow](cache: InMemCache[F], client: WebClient[F]) extends JWKClient[F] {
   import JWKClient._
 
   def retrieveJwks(clientId: String, jwksUri: Uri): F[JWKSet] =
@@ -93,7 +93,7 @@ private final class JWKClientImpl[F[_] : MonadThrow](cache: InMemCache[F], clien
         }
       }
 
-    client.get(jwksUri) flatMap handleJsonResponse
+    client.get(jwksUri).flatMap(handleJsonResponse)
   }
 
 }

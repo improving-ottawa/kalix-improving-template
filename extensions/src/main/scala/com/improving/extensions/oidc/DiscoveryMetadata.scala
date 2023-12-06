@@ -46,7 +46,7 @@ object DiscoveryMetadata {
       )
 
   // Helper function for parsing `Uri`s
-  @inline private final def parseUriForCursor(c: HCursor)(str: String): Either[DecodingFailure, Uri] =
+  @inline final private def parseUriForCursor(c: HCursor)(str: String): Either[DecodingFailure, Uri] =
     try Right(Uri.unsafeParse(str))
     catch {
       case scala.util.control.NonFatal(err) => Left(DecodingFailure.fromThrowable(err, c.history))

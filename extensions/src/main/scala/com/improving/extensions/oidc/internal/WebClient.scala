@@ -1,4 +1,4 @@
-package com.improving.extensions.oidc.impl
+package com.improving.extensions.oidc.internal
 
 import cats._
 import cats.effect._
@@ -14,22 +14,28 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /** A functional Http web client used for making JSON requests. */
 sealed trait WebClient[F[_]] {
+  final type PE          = AnyRef with sttp.capabilities.Effect[F]
+  final type JsonRequest = Request[Either[ResponseException[String, Error], Json], Any]
+
   def get(uri: Uri): F[Json]
 
   def post(uri: Uri, body: Json): F[Json]
+
+  def jsonRequest(request: JsonRequest): F[Json]
 }
 
 sealed abstract class WebClientErrors { self: WebClient.type =>
   /* Common Http related client errors */
 
   case class TimeoutOrServiceUnavailableError(uri: Uri)
-    extends scala.Error(s"Endpoint `$uri` timeout or service unavailable.")
+      extends scala.Error(s"Endpoint `$uri` timeout or service unavailable.")
 
   case class EndpointResponseNotJson(uri: Uri, respBody: String)
-    extends scala.Error(s"Endpoint `$uri` returned a non-Json response. Body: $respBody")
+      extends scala.Error(s"Endpoint `$uri` returned a non-Json response. Body: $respBody")
 
   case class EndpointInvalidResponse(uri: Uri, statusCode: Int, respBody: String)
-    extends scala.Error(s"Endpoint `$uri` returned an unexpected (code: $statusCode) response: $respBody")
+      extends scala.Error(s"Endpoint `$uri` returned an unexpected (code: $statusCode) response: $respBody")
+
 }
 
 object WebClient extends WebClientErrors {
@@ -50,8 +56,10 @@ object WebClient extends WebClientErrors {
   /* Instances */
 
   final private class CatsEffectWebClient extends WebClientImpl[IO] {
+
     protected def sendRequest[T](request: Request[T, _ >: PE]): IO[Response[T]] =
       backendResource.use(backend => backend.send(request))
+
   }
 
   final private class ScalaFutureWebClient(implicit ec: ExecutionContext) extends WebClientImpl[Future] {
@@ -65,27 +73,25 @@ object WebClient extends WebClientErrors {
 abstract private class WebClientImpl[F[+_]] protected (implicit F: MonadThrow[F]) extends WebClient[F] {
   import WebClient._
 
-  final def get(uri: Uri): F[Json] = jsonRequestResponse(basicRequest.get(uri).response(asJson[Json]))
+  final def get(uri: Uri): F[Json] = jsonRequest(basicRequest.get(uri).response(asJson[Json]))
 
   final def post(uri: Uri, body: Json): F[Json] =
-    jsonRequestResponse(
+    jsonRequest(
       basicRequest
         .post(uri)
         .body(body)(sttp.client3.circe.circeBodySerializer)
         .response(asJson[Json])
     )
 
-  protected final type PE = AnyRef with sttp.capabilities.Effect[F]
-
   // Depends on the particular `F[_]` implementation
   protected def sendRequest[T](request: Request[T, _ >: PE]): F[Response[T]]
 
   // Send a Http client request and handle the expected (JSON) response
-  private def jsonRequestResponse(request: Request[Either[ResponseException[String, Error], Json], Any]): F[Json] =
-    sendRequest(request) flatMap { response =>
+  final def jsonRequest(request: Request[Either[ResponseException[String, Error], Json], Any]): F[Json] =
+    sendRequest(request).flatMap { response =>
       response.body.fold(
         error => adaptResponseException(request.uri, error),
-        resp  => F.pure(resp)
+        resp => F.pure(resp)
       )
     }
 

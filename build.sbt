@@ -88,6 +88,7 @@ lazy val extensions: Project = project
   .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
   .configure(Config.withDepsPackage(Dependencies.iamDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.cachingDependencies))
+  .settings(excludeDependencies := Seq.empty)
 
 lazy val `bounded-context` = project
   .in(file("bounded-context"))

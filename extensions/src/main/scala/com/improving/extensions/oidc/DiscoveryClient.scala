@@ -9,10 +9,10 @@ import sttp.model.Uri
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import impl.WebClient
+import internal.WebClient
 
 /** Used to retrieve OIDC `discovery` metadata from an OIDC discovery endpoint. */
-sealed trait DiscoveryClient[F[+_]] {
+sealed trait DiscoveryClient[F[_]] {
 
   /** Retrieves OIDC [[DiscoveryMetadata discovery metadata]] from an OIDC discovery endpoint. */
   def retrieveMetadata(discoveryUri: Uri): F[DiscoveryMetadata]
@@ -22,7 +22,7 @@ sealed abstract class DiscoveryClientErrors { self: DiscoveryClient.type =>
 
   /* Typed/specific errors */
   case class DiscoveryResponseError(endpoint: Uri, responseBody: String)
-    extends scala.Error(s"Discovery endpoint '$endpoint' returned an invalid response: $responseBody")
+      extends scala.Error(s"Discovery endpoint '$endpoint' returned an invalid response: $responseBody")
 
 }
 
@@ -37,7 +37,7 @@ object DiscoveryClient extends DiscoveryClientErrors {
 
 }
 
-private final class DiscoveryClientImpl[F[+_] : MonadThrow](client: WebClient[F]) extends DiscoveryClient[F] {
+final private class DiscoveryClientImpl[F[_] : MonadThrow](client: WebClient[F]) extends DiscoveryClient[F] {
   import DiscoveryClient._
 
   def retrieveMetadata(discoveryUri: Uri): F[DiscoveryMetadata] = {
@@ -50,7 +50,7 @@ private final class DiscoveryClientImpl[F[+_] : MonadThrow](client: WebClient[F]
         }
       )
 
-    client.get(discoveryUri) flatMap handleJsonResponse
+    client.get(discoveryUri).flatMap(handleJsonResponse)
   }
 
 }

@@ -25,7 +25,7 @@ class JWKClientSpec extends AnyWordSpecLike with Matchers with AsyncContextSpec 
 
     "using Cats Effect context" should {
 
-      val client: JWKClientImpl[IO] = JWKClient.catsEffect .asInstanceOf[JWKClientImpl[IO]]
+      val client: JWKClientImpl[IO] = JWKClient.catsEffect.asInstanceOf[JWKClientImpl[IO]]
 
       "be able to retrieve Json Web Keys (JWKs) from Uri" in {
 
@@ -38,7 +38,7 @@ class JWKClientSpec extends AnyWordSpecLike with Matchers with AsyncContextSpec 
       }
 
       "be able to retrieve JWK from internal client cache after it has been retrieved" in {
-        val result = client.retrieveFromCache("clientId").attempt.unsafeRunSync()
+        val result    = client.retrieveFromCache("clientId").attempt.unsafeRunSync()
         if (result.isLeft) fail(result.left.get)
         val maybeJwks = result.getOrElse(None)
 

@@ -14,8 +14,8 @@ import java.util.UUID
   *   field is expected to contain a UUID, which is the user's unique identifier.
   *
   * @note
-  *   If the subject is not a unique identifier, __THEN A NEW UUID IS GENERATED FOR THIS USER__ using the subject
-  *   as entropy. If the provider ever changes the subject for this principal (very unlikely) then this will link to a new
+  *   If the subject is not a unique identifier, __THEN A NEW UUID IS GENERATED FOR THIS USER__ using the subject as
+  *   entropy. If the provider ever changes the subject for this principal (very unlikely) then this will link to a new
   *   user principal.
   *
   * @param id

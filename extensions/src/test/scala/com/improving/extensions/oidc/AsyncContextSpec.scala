@@ -5,7 +5,7 @@ import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 
 trait AsyncContextSpec extends SuiteMixin with BeforeAndAfterAll with ScalaFutures { self: Suite =>
-  protected final lazy val context = AsyncContext.catsEffect()
+  final protected lazy val context = AsyncContext.catsEffect()
 
   override def afterAll(): Unit = {
     super.afterAll()

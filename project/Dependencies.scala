@@ -42,7 +42,7 @@ object Dependencies {
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
-
+    val lightbendGrpc   = "2.2.0"
   }
 
   import Versions._
@@ -67,6 +67,8 @@ object Dependencies {
     "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
     "org.bouncycastle" % "bcpkix-jdk15on" % "1.70"
   )
+
+  lazy val akkaGrpc = "com.lightbend.akka.grpc" %% "akka-grpc-runtime" % lightbendGrpc
 
   lazy val pencilSmtp = "com.minosiants" %% "pencil" % "1.2.0"
 
