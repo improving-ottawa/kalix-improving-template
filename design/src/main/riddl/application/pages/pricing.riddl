@@ -24,3 +24,5 @@ page PricingPage {
   text BlogLink initiates command RedirectUserToBlogHome
   button BuyProductButton initiates command AddProductToOrder
 }
+
+//add a continue shopping button

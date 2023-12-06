@@ -1,0 +1,6 @@
+type NavSelection is any of {ORDERS, CUSTOMERS, SESSIONS, CONNVERSION, INVENTORY, KALIX}
+
+group DashboardNav is {
+  output DashboardNavOutput shows NavSelection briefly "which dashboard item is the user viewing?"
+  input DashboardNavSelection takes NavSelection briefly "which dashboard item would the user like to visit?"
+}
