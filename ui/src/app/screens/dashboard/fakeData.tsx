@@ -1,3 +1,12 @@
+export type FakeOrder = {
+    id: number;
+    date: string;
+    name: string;
+    shipTo: string;
+    paymentMethod: string;
+    amount: number;
+}
+
 function createData(
     id: number,
     date: string,
@@ -6,7 +15,8 @@ function createData(
     paymentMethod: string,
     amount: number,
 ) {
-    return {id, date, name, shipTo, paymentMethod, amount};
+    const data: FakeOrder = {id, date, name, shipTo, paymentMethod, amount}
+    return data;
 }
 
 export const orderData = [

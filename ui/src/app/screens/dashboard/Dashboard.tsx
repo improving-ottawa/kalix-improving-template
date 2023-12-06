@@ -2,13 +2,26 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import {TopBar} from "../styledComponents/topBar";
+import {SideNav, TopNav} from "../styledComponents/navBars";
+import {AppBar} from "./components";
 
 export const Dashboard = (props: { children: NonNullable<React.ReactNode> }) => {
+    const [open, setOpen] = React.useState(true);
+    const toggleDrawer = () => {
+        setOpen(!open);
+    };
+
     return (
         <Box sx={{display: 'flex'}}>
             <CssBaseline/>
-            <TopBar showMenu={true}/>
+            <AppBar position="absolute"
+                    color="default"
+                    open={open}
+                    elevation={0}
+                    sx={{borderBottom: (theme) => `1px solid ${theme.palette.divider}`}}>
+                <TopNav forDashboard={true} open={open} toggleDrawer={toggleDrawer}/>
+            </AppBar>
+            <SideNav open={open} toggleDrawer={toggleDrawer}/>
             <Box
                 component="main"
                 sx={{

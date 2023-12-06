@@ -6,17 +6,18 @@ import LanguageIcon from '@mui/icons-material/Language';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import InsightsIcon from '@mui/icons-material/Insights';
+import {NavigateFunction} from "react-router-dom";
 
-export const mainNavItems = (
-    <React.Fragment>
-        <ListItemButton>
+export const mainNavItems = (navigate: NavigateFunction) => {
+    return <React.Fragment>
+        <ListItemButton onClick={() => navigate("/dashboard/orders")}>
             <ListItemIcon>
                 <ShoppingCartIcon/>
             </ListItemIcon>
-            <ListItemText primary="Recent Orders"/>
+            <ListItemText primary="Orders"/>
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/customers")}>
             <ListItemIcon>
                 <PeopleIcon/>
             </ListItemIcon>
@@ -36,12 +37,12 @@ export const mainNavItems = (
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
-                <AttachMoneyIcon/>
+                <InsightsIcon/>
             </ListItemIcon>
             <ListItemText primary="Conversions"/>
         </ListItemButton>
     </React.Fragment>
-);
+}
 
 export const secondaryNavItems = (
     <React.Fragment>

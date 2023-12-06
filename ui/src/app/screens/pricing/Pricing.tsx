@@ -13,7 +13,8 @@ import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import {Copyright} from "../styledComponents/copyright";
-import {TopBar} from "../styledComponents/topBar";
+import {AppBar} from "@mui/material";
+import {TopNav} from "../styledComponents/navBars";
 
 const tiers = [
     {
@@ -64,7 +65,14 @@ export default function Pricing() {
         <Box>
             <GlobalStyles styles={{ul: {margin: 0, padding: 0, listStyle: 'none'}}}/>
             <CssBaseline/>
-            <TopBar/>
+            <AppBar
+                position="static"
+                color="default"
+                elevation={0}
+                sx={{borderBottom: (theme) => `1px solid ${theme.palette.divider}`}}
+            >
+                <TopNav/>
+            </AppBar>
             <Container disableGutters maxWidth="sm" component="main" sx={{pt: 8, pb: 6}}>
                 <Typography
                     component="h1"
