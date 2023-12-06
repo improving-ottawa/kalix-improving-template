@@ -4,6 +4,7 @@ import java.util.Base64
 
 /** Strongly typed `Base64` textual representation of data. */
 abstract class Base64String private[utils] extends CharSequence {
+
   /** Indicates whether or not this [[Base64String]] textual representation is safe for URL encoding. */
   def urlSafe: Boolean
 
@@ -30,7 +31,7 @@ object Base64String {
     catch { case scala.util.control.NonFatal(error) => Left(error) }
 
   def unsafeFromBase64String(base64: String, urlSafe: Boolean = true): Base64String = {
-    val decoder = if (urlSafe) Base64.getUrlDecoder else Base64.getDecoder
+    val decoder  = if (urlSafe) Base64.getUrlDecoder else Base64.getDecoder
     val rawBytes = decoder.decode(base64)
 
     assert(rawBytes.length >= 0)
@@ -38,15 +39,15 @@ object Base64String {
   }
 
   // Base64 Encoder selected from formatting arguments
-  private[utils] final def getEncoder(urlSafe: Boolean, withoutPadding: Boolean): Base64.Encoder =
+  final private[utils] def getEncoder(urlSafe: Boolean, withoutPadding: Boolean): Base64.Encoder =
     (urlSafe, withoutPadding) match {
-      case (true, true) => Base64.getUrlEncoder.withoutPadding()
-      case (true, false) => Base64.getUrlEncoder
-      case (false, true) => Base64.getEncoder.withoutPadding()
+      case (true, true)   => Base64.getUrlEncoder.withoutPadding()
+      case (true, false)  => Base64.getUrlEncoder
+      case (false, true)  => Base64.getEncoder.withoutPadding()
       case (false, false) => Base64.getEncoder
     }
 
-  private final case class Impl(override val toString: String, urlSafe: Boolean) extends Base64String {
+  final private case class Impl(override val toString: String, urlSafe: Boolean) extends Base64String {
 
     override lazy val rawBytes: Array[Byte] = {
       val decoder = if (urlSafe) Base64.getUrlDecoder else Base64.getDecoder

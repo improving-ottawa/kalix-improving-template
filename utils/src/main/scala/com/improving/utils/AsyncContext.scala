@@ -9,6 +9,7 @@ import scala.concurrent._
 
 /** A "god" type context which contains all of the asynchronous contexts for Scala, Akka, and Cats Effect. */
 sealed abstract class AsyncContext {
+
   /** An [[ExecutionContext execution context]] which __should__ be used for blocking operations / IO. */
   def blockingContext: ExecutionContext
 
@@ -38,7 +39,7 @@ sealed abstract class AsyncContext {
 
 object AsyncContext {
   final val defaultActorSystemName = "akka-async-context"
-  final val defaultBootstrapSetup = BootstrapSetup()
+  final val defaultBootstrapSetup  = BootstrapSetup()
   final val defaultIORuntimeConfig = IORuntimeConfig()
 
   def akka(name: String = defaultActorSystemName, setup: BootstrapSetup = defaultBootstrapSetup): AsyncContext =
@@ -66,20 +67,22 @@ object AsyncContext {
     implicit def catsEffectRuntime: IORuntime =
       _ioRuntime match {
         case Some(runtime) => runtime
-        case None => synchronized {
-          _ioRuntime match {
-            case Some(runtime) => runtime
+        case None          =>
+          synchronized {
+            _ioRuntime match {
+              case Some(runtime) => runtime
 
-            case None =>
-              val runtime = IORuntime.builder()
-                .setBlocking(blockingContext, () => ())
-                .setCompute(actorSystem.dispatcher, () => ())
-                .build()
+              case None =>
+                val runtime = IORuntime
+                  .builder()
+                  .setBlocking(blockingContext, () => ())
+                  .setCompute(actorSystem.dispatcher, () => ())
+                  .build()
 
-              _ioRuntime = Some(runtime)
-              runtime
+                _ioRuntime = Some(runtime)
+                runtime
+            }
           }
-        }
       }
 
     /** Akka [[Materializer materializer]] because Akka wants one. */
@@ -93,6 +96,7 @@ object AsyncContext {
       Await.result(actorSystem.terminate(), duration.FiniteDuration(10, "seconds"))
       ()
     }
+
   }
 
   /** Cats effect [[IORuntime]] driven [[AsyncContext]]. */
@@ -108,7 +112,8 @@ object AsyncContext {
         )
       }
 
-      IORuntime.builder()
+      IORuntime
+        .builder()
         .setConfig(config)
         .setBlocking(blockingContext, blockingContextShutdown)
         .addShutdownHook(shutdownActorSystem)
@@ -120,16 +125,18 @@ object AsyncContext {
       _actorSystemInstance match {
         case Some(system) => system
 
-        case None => synchronized {
-          _actorSystemInstance match {
-            case Some(system) => system
+        case None =>
+          synchronized {
+            _actorSystemInstance match {
+              case Some(system) => system
 
-            case None =>
-              val system = ActorSystem("cats-effect-system", defaultExecutionContext = Some(catsEffectRuntime.compute))
-              _actorSystemInstance = Some(system)
-              system
+              case None =>
+                val system =
+                  ActorSystem("cats-effect-system", defaultExecutionContext = Some(catsEffectRuntime.compute))
+                _actorSystemInstance = Some(system)
+                system
+            }
           }
-        }
       }
 
     /** Akka [[Materializer materializer]] because Akka wants one. */

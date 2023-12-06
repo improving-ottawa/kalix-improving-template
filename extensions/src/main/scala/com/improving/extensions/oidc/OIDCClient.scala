@@ -95,11 +95,11 @@ object OIDCClient extends OIDCClientErrors with OIDCClientUtils {
 
     implicit final def scalaFutureIsSupportedEffect(implicit asyncContext: AsyncContext): SupportedEffect[Future] =
       new SupportedEffect[Future] {
-        implicit private val ec: ExecutionContext                                = asyncContext.executionContext
-        final def monadThrow: MonadThrow[Future]                                 = MonadThrow[Future]
-        final def jwkClient: JWKClient[Future]                                   = JWKClient.scalaFuture(asyncContext.blockingContext)
-        final def metadataClient: DiscoveryClient[Future]                        = DiscoveryClient.scalaFuture(asyncContext.blockingContext)
-        final def metadataCache: InMemCache[Future]                              = InMemCache.scalaFuture(ec)
+        implicit private val ec: ExecutionContext         = asyncContext.executionContext
+        final def monadThrow: MonadThrow[Future]          = MonadThrow[Future]
+        final def jwkClient: JWKClient[Future]            = JWKClient.scalaFuture(asyncContext.blockingContext)
+        final def metadataClient: DiscoveryClient[Future] = DiscoveryClient.scalaFuture(asyncContext.blockingContext)
+        final def metadataCache: InMemCache[Future]       = InMemCache.scalaFuture(ec)
 
         final def tokenClient(config: OIDCClientConfig): OIDCTokenClient[Future] =
           OIDCTokenClient.scalaFuture(config, asyncContext.blockingContext)
@@ -180,7 +180,7 @@ final private class OIDCClientImpl[F[_]](
     } yield redirectUri
 
   def completeAuthentication(callbackUri: Uri, stateDecoder: StateDecoderFn): F[AuthorizationFlowResult] = {
-    @inline def validateState(key: Base64String): F[OIDCSession] =
+    @inline def validateState(key: Base64String) =
       sessionStore.getSession(key).flatMap {
         case Some(session) => F.pure(session)
         case None          => F.raiseError(CsrfRejectionError(key))
@@ -228,7 +228,8 @@ final private class OIDCClientImpl[F[_]](
     F.fromTry {
       scala.util.Try {
         // Nonce
-        val nonce                                 = SecureRandomString(16)
+        val nonce = SecureRandomString(16)
+
         // Additional query string parameters
         val additionalParams: Map[String, String] = config.codeFlowParams
 
@@ -255,10 +256,7 @@ final private class OIDCClientImpl[F[_]](
       }
     }
 
-  private def completeAuthenticationInternal(
-    metadata: DiscoveryMetadata,
-    code: String
-  ): F[OIDCIdentity] =
+  private def completeAuthenticationInternal(metadata: DiscoveryMetadata, code: String): F[OIDCIdentity] =
     for {
       response       <- tokenClient.tokenRequest(metadata.tokenEndpoint, code, providerCallbackUri)
       parsedIdentity <- idTokenDecoder.run(response)

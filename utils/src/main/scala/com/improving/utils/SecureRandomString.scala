@@ -4,7 +4,7 @@ import java.security.SecureRandom
 import java.util.Base64
 
 final class SecureRandomString private (val rawBytes: Array[Byte], val urlSafe: Boolean, encoder: Base64.Encoder)
-  extends Base64String {
+    extends Base64String {
 
   override lazy val toString: String = encoder.encodeToString(rawBytes)
 
@@ -18,6 +18,7 @@ final class SecureRandomString private (val rawBytes: Array[Byte], val urlSafe: 
 }
 
 object SecureRandomString {
+
   /** Default entropy length for a new [[SecureRandomString]]. */
   final val defaultEntropyLength = 64
 
@@ -30,14 +31,14 @@ object SecureRandomString {
     require(byteLength <= 4096, "Too many bytes requested for secure string (max: 4096)")
 
     val byteArray = Array.ofDim[Byte](byteLength)
-    val encoder = Base64String.getEncoder(urlSafe, withoutPadding)
-    val rng = rngSource.get()
+    val encoder   = Base64String.getEncoder(urlSafe, withoutPadding)
+    val rng       = rngSource.get()
     rng.nextBytes(byteArray)
 
     new SecureRandomString(byteArray, urlSafe, encoder)
   }
 
   // Secure random source
-  private[this] final val rngSource: ThreadLocal[SecureRandom] = ThreadLocal.withInitial(() => new SecureRandom())
+  final private[this] val rngSource: ThreadLocal[SecureRandom] = ThreadLocal.withInitial(() => new SecureRandom())
 
 }
