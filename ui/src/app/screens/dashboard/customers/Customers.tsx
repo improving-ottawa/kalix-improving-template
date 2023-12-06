@@ -72,17 +72,3 @@ export function LifetimeValue() {
         </React.Fragment>
     );
 }
-
-export function PerLocation() {
-    return (
-        <React.Fragment>
-            <CardTitle>Per Location</CardTitle>
-            <Table size="small">
-                <CustomersTable data={orderData}/>
-            </Table>
-            <Link color="primary" onClick={preventDefault} sx={{mt: 3}}>
-                See more customers
-            </Link>
-        </React.Fragment>
-    );
-}

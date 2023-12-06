@@ -23,7 +23,7 @@ export const mainNavItems = (navigate: NavigateFunction) => {
             </ListItemIcon>
             <ListItemText primary="Customers"/>
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton onClick={() => navigate("/dashboard/sessions")}>
             <ListItemIcon>
                 <LanguageIcon/>
             </ListItemIcon>
