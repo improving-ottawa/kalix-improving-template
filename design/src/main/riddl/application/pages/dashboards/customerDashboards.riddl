@@ -47,7 +47,7 @@ type LifetimeValueDataTable is CustomerDataRecord* briefly "A list of customers 
 
 record LifetimeValueDataRecord is {
   customer: String briefly "customer name",
-  lifetimeValue: Number briefly "The sum dollar amount of all orders placed by a customer within the selected time range."
+  lifetimeValue: Currency(USD) briefly "The sum dollar amount of all orders placed by a customer within the selected time range."
 }
 type LifetimeValueData is LifetimeValueDataRecord*
 type AverageLifetimeValue is Number briefly "The average lifetime value of customers in the time range of the report."

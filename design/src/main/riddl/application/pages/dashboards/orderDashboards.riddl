@@ -15,7 +15,7 @@ record AOVDataRecord is {
   aov: Number briefly "The average value of all orders placed on a specific date"
 }
 type AOVData is AOVDataRecord*
-type AggregatedAOV is Number briefly "The average value of all orders placed in the time range of the report."
+type AggregatedAOV is Currency(USD) briefly "The average value of all orders placed in the time range of the report."
 
 page AOVDashboardPage {
   contains DashboardSideNav as group DashboardNav
@@ -28,7 +28,7 @@ page AOVDashboardPage {
 
 record TotalSalesDataRecord is {
   date: Date,
-  totalSales: Number briefly "The total sales of all orders placed on a specific date"
+  totalSales: Currency(USD) briefly "The total sales of all orders placed on a specific date"
 }
 type TotalSalesData is TotalSalesDataRecord*
 type AggregatedTotalSales is Number briefly "The total value of sales placed in the time range of the report."
@@ -47,7 +47,7 @@ record GrossMarginDataRecord is {
   grossMargin: Number briefly "The gross margin of all sales placed on a specific date"
 }
 type GrossMarginData is GrossMarginDataRecord*
-type AggregatedGrossMargin is Number briefly "the total gross margin of all sales placed in the time range of the report."
+type AggregatedGrossMargin is Currency(USD) briefly "the total gross margin of all sales placed in the time range of the report."
 
 page GrossMarginDashboardPage {
   contains DashboardSideNav as group DashboardNav
