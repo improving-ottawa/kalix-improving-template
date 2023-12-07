@@ -45,9 +45,7 @@ export const mainNavItems = (navigate: NavigateFunction) => {
 }
 
 export const secondaryNavItems = (
-    <React.Fragment>
-        <ListItemButton>
-            <ListItemText primary="Kalix Console"/>
-        </ListItemButton>
-    </React.Fragment>
+    <ListItemButton>
+        <ListItemText primary="Kalix Console"/>
+    </ListItemButton>
 );

@@ -13,7 +13,6 @@ import Divider from "@mui/material/Divider";
 import {mainNavItems, secondaryNavItems} from "../dashboard/navItems";
 import {Drawer} from "../dashboard/components";
 import List from "@mui/material/List";
-import {ReactNode} from "react";
 
 interface TopNavProps {
     forDashboard?: boolean
