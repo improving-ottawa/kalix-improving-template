@@ -1,5 +1,4 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -9,52 +8,16 @@ import CardHeader from '@mui/material/CardHeader';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import StarIcon from '@mui/icons-material/StarBorder';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import {Copyright} from "../styledComponents/copyright";
+import {Copyright} from "../../styledComponents/copyright";
+import {AppBar} from "@mui/material";
+import {TopNav} from "../../styledComponents/navBars";
+import {Products} from "../Products";
 import {useNavigate} from "react-router-dom";
-import {IconButton} from "@mui/material";
-import {AccountCircleTwoTone, Login} from "@mui/icons-material";
 
-const tiers = [
-    {
-        title: 'Lorem ipsum',
-        price: '0',
-        description: [
-            'Lorem ipsum ',
-            'dolor sit amet, ',
-            'consectetur adipiscing elit',
-        ],
-        buttonText: 'Buy',
-        buttonVariant: 'outlined',
-    },
-    {
-        title: 'Lorem ipsum A',
-        subheader: 'Most popular',
-        price: '0',
-        description: [
-            'Lorem ipsum ',
-            'dolor sit amet, ',
-            'consectetur adipiscing elit',
-        ],
-        buttonText: 'Buy',
-        buttonVariant: 'contained',
-    },
-    {
-        title: 'Lorem ipsum',
-        price: '0',
-        description: [
-            'Lorem ipsum ',
-            'dolor sit amet, ',
-            'consectetur adipiscing elit',
-        ],
-        buttonText: 'Buy',
-        buttonVariant: 'outlined',
-    },
-];
 const footers = [
     {
         title: 'Legal',
@@ -75,41 +38,7 @@ export default function Pricing() {
                 elevation={0}
                 sx={{borderBottom: (theme) => `1px solid ${theme.palette.divider}`}}
             >
-                <Toolbar sx={{flexWrap: 'wrap'}}>
-                    <Typography variant="h6" color="inherit" noWrap sx={{flexGrow: 1}}>
-                        Logoipsum
-                    </Typography>
-                    <nav>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            onClick={() => navigate("/pricing")}
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            Pricing
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            About Us
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            Resources
-                        </Link>
-                    </nav>
-                    <IconButton onClick={() => {
-                    }} sx={{my: 1, mx: 1.5}}>
-                        <AccountCircleTwoTone/>
-                    </IconButton>
-                </Toolbar>
+                <TopNav/>
             </AppBar>
             <Container disableGutters maxWidth="sm" component="main" sx={{pt: 8, pb: 6}}>
                 <Typography
@@ -128,20 +57,20 @@ export default function Pricing() {
             </Container>
             <Container maxWidth="md" component="main">
                 <Grid container spacing={5} alignItems="flex-end">
-                    {tiers.map((tier) => (
+                    {Products.map((product) => (
                         <Grid
                             item
-                            key={tier.title}
+                            key={product.title}
                             xs={12}
-                            sm={tier.title === 'Enterprise' ? 12 : 6}
+                            sm={product.title === 'Lorem ipsum C' ? 12 : 6}
                             md={4}
                         >
                             <Card>
                                 <CardHeader
-                                    title={tier.title}
-                                    subheader={tier.subheader}
+                                    title={product.title}
+                                    subheader={product.subheader}
                                     titleTypographyProps={{align: 'center'}}
-                                    action={tier.title === 'Pro' ? <StarIcon/> : null}
+                                    action={product.title === 'Lorem ipsum A' ? <StarIcon/> : null}
                                     subheaderTypographyProps={{
                                         align: 'center',
                                     }}
@@ -162,14 +91,14 @@ export default function Pricing() {
                                         }}
                                     >
                                         <Typography component="h2" variant="h3" color="text.primary">
-                                            ${tier.price}
+                                            ${product.price}
                                         </Typography>
                                         <Typography variant="h6" color="text.secondary">
                                             /mo
                                         </Typography>
                                     </Box>
                                     <ul>
-                                        {tier.description.map((line) => (
+                                        {product.description.map((line) => (
                                             <Typography
                                                 component="li"
                                                 variant="subtitle1"
@@ -183,10 +112,11 @@ export default function Pricing() {
                                 </CardContent>
                                 <CardActions>
                                     <Button
+                                        onClick={() => navigate("/checkout")}
                                         fullWidth
-                                        variant={tier.buttonVariant as 'outlined' | 'contained'}
+                                        variant={product.buttonVariant as 'outlined' | 'contained'}
                                     >
-                                        {tier.buttonText}
+                                        {product.buttonText}
                                     </Button>
                                 </CardActions>
                             </Card>
@@ -212,7 +142,8 @@ export default function Pricing() {
                             <ul>
                                 {footer.description.map((item) => (
                                     <li key={item}>
-                                        <Link href="#" variant="subtitle1" color="text.secondary">
+                                        <Link variant="subtitle1"
+                                              color="text.secondary">
                                             {item}
                                         </Link>
                                     </li>
