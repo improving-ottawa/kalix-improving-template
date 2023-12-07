@@ -5,71 +5,73 @@
 
 package com.improving.extensions.oidc.impl
 
+import com.google.protobuf.{ByteString => ProtobufByteString}
+import scalapb._
+
 @SerialVersionUID(0L)
 final case class SessionData(
-  data: _root_.com.google.protobuf.ByteString = _root_.com.google.protobuf.ByteString.EMPTY,
-  unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+  data: ProtobufByteString = ProtobufByteString.EMPTY,
+  unknownFields: UnknownFieldSet = UnknownFieldSet.empty
 ) extends scalapb.GeneratedMessage
     with scalapb.lenses.Updatable[SessionData] {
 
-  @transient private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
+  @transient private[this] var serializedSizeMemoized: Int = 0
 
-  private[this] def __computeSerializedSize(): _root_.scala.Int = {
-    var __size = 0
+  private[this] def computeSerializedSize(): Int = {
+    var size = 0
 
     {
-      val __value = data
-      if (!__value.isEmpty) {
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeBytesSize(2, __value)
+      val value = data
+      if (!value.isEmpty) {
+        size += com.google.protobuf.CodedOutputStream.computeBytesSize(2, value)
       }
     };
-    __size += unknownFields.serializedSize
-    __size
+    size += unknownFields.serializedSize
+    size
   }
 
-  override def serializedSize: _root_.scala.Int = {
-    var __size = __serializedSizeMemoized
-    if (__size == 0) {
-      __size = __computeSerializedSize() + 1
-      __serializedSizeMemoized = __size
+  override def serializedSize: Int = {
+    var size = serializedSizeMemoized
+    if (size == 0) {
+      size = computeSerializedSize() + 1
+      serializedSizeMemoized = size
     }
-    __size - 1
+    size - 1
 
   }
 
-  def writeTo(`_output__`: _root_.com.google.protobuf.CodedOutputStream): _root_.scala.Unit = {
+  def writeTo(output: com.google.protobuf.CodedOutputStream): Unit = {
     {
-      val __v = data
-      if (!__v.isEmpty) {
-        _output__.writeBytes(2, __v)
+      val v = data
+      if (!v.isEmpty) {
+        output.writeBytes(2, v)
       }
     }
-    unknownFields.writeTo(_output__)
+    unknownFields.writeTo(output)
   }
 
-  def withData(__v: _root_.com.google.protobuf.ByteString): SessionData = copy(data = __v)
+  def withData(pbs: ProtobufByteString): SessionData = copy(data = pbs)
 
-  def withUnknownFields(__v: _root_.scalapb.UnknownFieldSet): SessionData = copy(unknownFields = __v)
+  def withUnknownFields(ufs: UnknownFieldSet): SessionData = copy(unknownFields = ufs)
 
-  def discardUnknownFields: SessionData = copy(unknownFields = _root_.scalapb.UnknownFieldSet.empty)
+  def discardUnknownFields: SessionData = copy(unknownFields = UnknownFieldSet.empty)
 
-  def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
-    (__fieldNumber: @ _root_.scala.unchecked) match {
-      case 2 => {
-        val __t = data
-        if (__t != _root_.com.google.protobuf.ByteString.EMPTY) __t else null
-      }
+  def getFieldByNumber(fieldNumber: Int): Any = {
+    (fieldNumber: @ unchecked) match {
+      case 2 =>
+        val t = data
+        if (t != ProtobufByteString.EMPTY) t else null
     }
   }
 
-  def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
-    _root_.scala.Predef.require(__field.containingMessage eq companion.scalaDescriptor)
-    (__field.number: @ _root_.scala.unchecked) match {
-      case 2 => _root_.scalapb.descriptors.PByteString(data)
+  def getField(field: descriptors.FieldDescriptor): descriptors.PValue = {
+    Predef.require(field.containingMessage eq companion.scalaDescriptor)
+    (field.number: @ unchecked) match {
+      case 2 => descriptors.PByteString(data)
     }
   }
 
-  def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
+  def toProtoString: Predef.String = TextFormat.printToUnicodeString(this)
 
   def companion: SessionData.type = SessionData
 }
@@ -78,161 +80,159 @@ object SessionData extends scalapb.GeneratedMessageCompanion[SessionData] {
 
   implicit def messageCompanion: scalapb.GeneratedMessageCompanion[SessionData] = this
 
-  def parseFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): SessionData = {
-    var __data: _root_.com.google.protobuf.ByteString               = _root_.com.google.protobuf.ByteString.EMPTY
-    var `_unknownFields__` : _root_.scalapb.UnknownFieldSet.Builder = null
-    var _done__                                                     = false
-    while (!_done__) {
-      val _tag__ = _input__.readTag()
-      _tag__ match {
-        case 0   => _done__ = true
+  def parseFrom(input: com.google.protobuf.CodedInputStream): SessionData = {
+    var data: ProtobufByteString               = ProtobufByteString.EMPTY
+    var unknownFields : UnknownFieldSet.Builder = null
+    var done                                                     = false
+    while (!done) {
+      val tag = input.readTag()
+      tag match {
+        case 0   => done = true
         case 18  =>
-          __data = _input__.readBytes()
+          data = input.readBytes()
         case tag =>
-          if (_unknownFields__ == null) {
-            _unknownFields__ = new _root_.scalapb.UnknownFieldSet.Builder()
+          if (unknownFields == null) {
+            unknownFields = new UnknownFieldSet.Builder()
           }
-          _unknownFields__.parseField(tag, _input__)
+          unknownFields.parseField(tag, input)
       }
     }
     SessionData(
-      data = __data,
-      unknownFields = if (_unknownFields__ == null) _root_.scalapb.UnknownFieldSet.empty else _unknownFields__.result()
+      data = data,
+      unknownFields = if (unknownFields == null) UnknownFieldSet.empty else unknownFields.result()
     )
   }
 
-  implicit def messageReads: _root_.scalapb.descriptors.Reads[SessionData] = _root_.scalapb.descriptors.Reads {
-    case _root_.scalapb.descriptors.PMessage(__fieldsMap) =>
-      _root_.scala.Predef.require(
-        __fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
+  implicit def messageReads: descriptors.Reads[SessionData] = descriptors.Reads {
+    case descriptors.PMessage(fieldsMap) =>
+      Predef.require(
+        fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
         "FieldDescriptor does not match message type."
       )
       SessionData(
-        data = __fieldsMap
+        data = fieldsMap
           .get(scalaDescriptor.findFieldByNumber(2).get)
-          .map(_.as[_root_.com.google.protobuf.ByteString])
-          .getOrElse(_root_.com.google.protobuf.ByteString.EMPTY)
+          .map(_.as[ProtobufByteString])
+          .getOrElse(ProtobufByteString.EMPTY)
       )
     case _                                                => throw new RuntimeException("Expected PMessage")
   }
 
-  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor =
+  def javaDescriptor: com.google.protobuf.Descriptors.Descriptor =
     ReplicatedSessionStoreProto.javaDescriptor.getMessageTypes.get(0)
 
-  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(0)
+  def scalaDescriptor: descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(0)
 
-  def messageCompanionForFieldNumber(__number: _root_.scala.Int): _root_.scalapb.GeneratedMessageCompanion[_] =
-    throw new MatchError(__number)
+  def messageCompanionForFieldNumber(number: Int): GeneratedMessageCompanion[_] =
+    throw new MatchError(number)
 
   lazy val nestedMessagesCompanions
-    : Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] = Seq.empty
+    : Seq[GeneratedMessageCompanion[_ <: GeneratedMessage]] = Seq.empty
 
-  def enumCompanionForFieldNumber(__fieldNumber: _root_.scala.Int): _root_.scalapb.GeneratedEnumCompanion[_] =
-    throw new MatchError(__fieldNumber)
+  def enumCompanionForFieldNumber(fieldNumber: Int): GeneratedEnumCompanion[_] =
+    throw new MatchError(fieldNumber)
 
   lazy val defaultInstance: SessionData = SessionData(
-    data = _root_.com.google.protobuf.ByteString.EMPTY
+    data = ProtobufByteString.EMPTY
   )
 
-  implicit class SessionDataLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, SessionData])
-      extends _root_.scalapb.lenses.ObjectLens[UpperPB, SessionData](_l) {
+  implicit class SessionDataLens[UpperPB](_l: lenses.Lens[UpperPB, SessionData])
+      extends lenses.ObjectLens[UpperPB, SessionData](_l) {
 
-    def data: _root_.scalapb.lenses.Lens[UpperPB, _root_.com.google.protobuf.ByteString] =
+    def data: lenses.Lens[UpperPB, ProtobufByteString] =
       field(_.data)((c_, f_) => c_.copy(data = f_))
 
   }
 
   final val DATA_FIELD_NUMBER = 2
 
-  def of(data: _root_.com.google.protobuf.ByteString): SessionData = SessionData(data)
+  def of(data: ProtobufByteString): SessionData = SessionData(data)
 }
 
 @SerialVersionUID(0L)
 final case class SessionKey(
-  entityId: _root_.scala.Predef.String,
-  key: _root_.scala.Predef.String,
-  unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+  entityId: Predef.String,
+  key: Predef.String,
+  unknownFields: UnknownFieldSet = UnknownFieldSet.empty
 ) extends scalapb.GeneratedMessage
     with scalapb.lenses.Updatable[SessionKey] {
 
-  @transient private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
+  @transient private[this] var serializedSizeMemoized: Int = 0
 
-  private[this] def __computeSerializedSize(): _root_.scala.Int = {
-    var __size = 0
+  private[this] def computeSerializedSize(): Int = {
+    var size = 0
 
     {
-      val __value = entityId
-      if (__value.nonEmpty) {
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(1, __value)
+      val value = entityId
+      if (value.nonEmpty) {
+        size += com.google.protobuf.CodedOutputStream.computeStringSize(1, value)
       }
     };
 
     {
-      val __value = key
-      if (__value.nonEmpty) {
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(2, __value)
+      val value = key
+      if (value.nonEmpty) {
+        size += com.google.protobuf.CodedOutputStream.computeStringSize(2, value)
       }
     };
-    __size += unknownFields.serializedSize
-    __size
+    size += unknownFields.serializedSize
+    size
   }
 
-  override def serializedSize: _root_.scala.Int = {
-    var __size = __serializedSizeMemoized
-    if (__size == 0) {
-      __size = __computeSerializedSize() + 1
-      __serializedSizeMemoized = __size
+  override def serializedSize: Int = {
+    var size = serializedSizeMemoized
+    if (size == 0) {
+      size = computeSerializedSize() + 1
+      serializedSizeMemoized = size
     }
-    __size - 1
+    size - 1
 
   }
 
-  def writeTo(`_output__`: _root_.com.google.protobuf.CodedOutputStream): _root_.scala.Unit = {
+  def writeTo(output: com.google.protobuf.CodedOutputStream): Unit = {
     {
-      val __v = entityId
-      if (__v.nonEmpty) {
-        _output__.writeString(1, __v)
+      val v = entityId
+      if (v.nonEmpty) {
+        output.writeString(1, v)
       }
     };
     {
-      val __v = key
-      if (__v.nonEmpty) {
-        _output__.writeString(2, __v)
+      val v = key
+      if (v.nonEmpty) {
+        output.writeString(2, v)
       }
     };
-    unknownFields.writeTo(_output__)
+    unknownFields.writeTo(output)
   }
 
-  def withEntityId(__v: _root_.scala.Predef.String): SessionKey = copy(entityId = __v)
+  def withEntityId(v: Predef.String): SessionKey = copy(entityId = v)
 
-  def withKey(__v: _root_.scala.Predef.String): SessionKey = copy(key = __v)
+  def withKey(v: Predef.String): SessionKey = copy(key = v)
 
-  def withUnknownFields(__v: _root_.scalapb.UnknownFieldSet): SessionKey = copy(unknownFields = __v)
+  def withUnknownFields(v: UnknownFieldSet): SessionKey = copy(unknownFields = v)
 
-  def discardUnknownFields: SessionKey = copy(unknownFields = _root_.scalapb.UnknownFieldSet.empty)
+  def discardUnknownFields: SessionKey = copy(unknownFields = UnknownFieldSet.empty)
 
-  def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
-    (__fieldNumber: @ _root_.scala.unchecked) match {
-      case 1 => {
-        val __t = entityId
-        if (__t != "") __t else null
-      }
-      case 2 => {
-        val __t = key
-        if (__t != "") __t else null
-      }
+  def getFieldByNumber(fieldNumber: Int): Any = {
+    (fieldNumber: @ unchecked) match {
+      case 1 =>
+        val t = entityId
+        if (t != "") t else null
+      case 2 =>
+        val t = key
+        if (t != "") t else null
     }
   }
 
-  def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
-    _root_.scala.Predef.require(__field.containingMessage eq companion.scalaDescriptor)
-    (__field.number: @ _root_.scala.unchecked) match {
-      case 1 => _root_.scalapb.descriptors.PString(entityId)
-      case 2 => _root_.scalapb.descriptors.PString(key)
+  def getField(field: descriptors.FieldDescriptor): descriptors.PValue = {
+    Predef.require(field.containingMessage eq companion.scalaDescriptor)
+    (field.number: @ unchecked) match {
+      case 1 => descriptors.PString(entityId)
+      case 2 => descriptors.PString(key)
     }
   }
 
-  def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
+  def toProtoString: Predef.String = TextFormat.printToUnicodeString(this)
 
   def companion: SessionKey.type = SessionKey
 }
@@ -241,74 +241,74 @@ object SessionKey extends scalapb.GeneratedMessageCompanion[SessionKey] {
 
   implicit def messageCompanion: scalapb.GeneratedMessageCompanion[SessionKey] = this
 
-  def parseFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): SessionKey = {
-    var __entityId: _root_.scala.Predef.String                      = ""
-    var __key: _root_.scala.Predef.String                           = ""
-    var `_unknownFields__` : _root_.scalapb.UnknownFieldSet.Builder = null
-    var _done__                                                     = false
-    while (!_done__) {
-      val _tag__ = _input__.readTag()
-      _tag__ match {
-        case 0   => _done__ = true
+  def parseFrom(input: com.google.protobuf.CodedInputStream): SessionKey = {
+    var entityId: Predef.String                      = ""
+    var key: Predef.String                           = ""
+    var unknownFields : UnknownFieldSet.Builder = null
+    var done                                                     = false
+    while (!done) {
+      val tag = input.readTag()
+      tag match {
+        case 0   => done = true
         case 10  =>
-          __entityId = _input__.readStringRequireUtf8()
+          entityId = input.readStringRequireUtf8()
         case 18  =>
-          __key = _input__.readStringRequireUtf8()
+          key = input.readStringRequireUtf8()
         case tag =>
-          if (_unknownFields__ == null) {
-            _unknownFields__ = new _root_.scalapb.UnknownFieldSet.Builder()
+          if (unknownFields == null) {
+            unknownFields = new UnknownFieldSet.Builder()
           }
-          _unknownFields__.parseField(tag, _input__)
+          unknownFields.parseField(tag, input)
       }
     }
     SessionKey(
-      entityId = __entityId,
-      key = __key,
-      unknownFields = if (_unknownFields__ == null) _root_.scalapb.UnknownFieldSet.empty else _unknownFields__.result()
+      entityId = entityId,
+      key = key,
+      unknownFields = if (unknownFields == null) UnknownFieldSet.empty else unknownFields.result()
     )
   }
 
-  implicit def messageReads: _root_.scalapb.descriptors.Reads[SessionKey] = _root_.scalapb.descriptors.Reads {
-    case _root_.scalapb.descriptors.PMessage(__fieldsMap) =>
-      _root_.scala.Predef.require(
-        __fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
+  implicit def messageReads: descriptors.Reads[SessionKey] = descriptors.Reads {
+    case descriptors.PMessage(fieldsMap) =>
+      Predef.require(
+        fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
         "FieldDescriptor does not match message type."
       )
       SessionKey(
         entityId =
-          __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
+          fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[Predef.String]).getOrElse(""),
         key =
-          __fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[_root_.scala.Predef.String]).getOrElse("")
+          fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[Predef.String]).getOrElse("")
       )
     case _                                                => throw new RuntimeException("Expected PMessage")
   }
 
-  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor =
+  def javaDescriptor: com.google.protobuf.Descriptors.Descriptor =
     ReplicatedSessionStoreProto.javaDescriptor.getMessageTypes.get(1)
 
-  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(1)
+  def scalaDescriptor: descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(1)
 
-  def messageCompanionForFieldNumber(__number: _root_.scala.Int): _root_.scalapb.GeneratedMessageCompanion[_] =
-    throw new MatchError(__number)
+  def messageCompanionForFieldNumber(number: Int): GeneratedMessageCompanion[_] =
+    throw new MatchError(number)
 
   lazy val nestedMessagesCompanions
-    : Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] = Seq.empty
+    : Seq[GeneratedMessageCompanion[_ <: GeneratedMessage]] = Seq.empty
 
-  def enumCompanionForFieldNumber(__fieldNumber: _root_.scala.Int): _root_.scalapb.GeneratedEnumCompanion[_] =
-    throw new MatchError(__fieldNumber)
+  def enumCompanionForFieldNumber(fieldNumber: Int): GeneratedEnumCompanion[_] =
+    throw new MatchError(fieldNumber)
 
   lazy val defaultInstance: SessionKey = SessionKey(
     entityId = "",
     key = ""
   )
 
-  implicit class SessionKeyLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, SessionKey])
-      extends _root_.scalapb.lenses.ObjectLens[UpperPB, SessionKey](_l) {
+  implicit class SessionKeyLens[UpperPB](_l: lenses.Lens[UpperPB, SessionKey])
+      extends lenses.ObjectLens[UpperPB, SessionKey](_l) {
 
-    def entityId: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] =
+    def entityId: lenses.Lens[UpperPB, Predef.String] =
       field(_.entityId)((c_, f_) => c_.copy(entityId = f_))
 
-    def key: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] =
+    def key: lenses.Lens[UpperPB, Predef.String] =
       field(_.key)((c_, f_) => c_.copy(key = f_))
 
   }
@@ -316,118 +316,115 @@ object SessionKey extends scalapb.GeneratedMessageCompanion[SessionKey] {
   final val ENTITY_ID_FIELD_NUMBER = 1
   final val KEY_FIELD_NUMBER       = 2
 
-  def of(entityId: _root_.scala.Predef.String, key: _root_.scala.Predef.String): SessionKey =
+  def of(entityId: Predef.String, key: Predef.String): SessionKey =
     SessionKey(entityId, key)
 
 }
 
 @SerialVersionUID(0L)
 final case class StoreSessionRequest(
-  entityId: _root_.scala.Predef.String,
-  key: _root_.scala.Predef.String,
-  data: _root_.com.google.protobuf.ByteString = _root_.com.google.protobuf.ByteString.EMPTY,
-  unknownFields: _root_.scalapb.UnknownFieldSet = _root_.scalapb.UnknownFieldSet.empty
+  entityId: Predef.String,
+  key: Predef.String,
+  data: ProtobufByteString = ProtobufByteString.EMPTY,
+  unknownFields: UnknownFieldSet = UnknownFieldSet.empty
 ) extends scalapb.GeneratedMessage
     with scalapb.lenses.Updatable[StoreSessionRequest] {
 
-  @transient private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
+  @transient private[this] var serializedSizeMemoized: Int = 0
 
-  private[this] def __computeSerializedSize(): _root_.scala.Int = {
-    var __size = 0
+  private[this] def computeSerializedSize(): Int = {
+    var size = 0
 
     {
-      val __value = entityId
-      if (__value.nonEmpty) {
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(1, __value)
+      val value = entityId
+      if (value.nonEmpty) {
+        size += com.google.protobuf.CodedOutputStream.computeStringSize(1, value)
       }
     };
 
     {
-      val __value = key
-      if (__value.nonEmpty) {
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(2, __value)
+      val value = key
+      if (value.nonEmpty) {
+        size += com.google.protobuf.CodedOutputStream.computeStringSize(2, value)
       }
     };
 
     {
-      val __value = data
-      if (!__value.isEmpty) {
-        __size += _root_.com.google.protobuf.CodedOutputStream.computeBytesSize(3, __value)
+      val value = data
+      if (!value.isEmpty) {
+        size += com.google.protobuf.CodedOutputStream.computeBytesSize(3, value)
       }
     };
-    __size += unknownFields.serializedSize
-    __size
+    size += unknownFields.serializedSize
+    size
   }
 
-  override def serializedSize: _root_.scala.Int = {
-    var __size = __serializedSizeMemoized
-    if (__size == 0) {
-      __size = __computeSerializedSize() + 1
-      __serializedSizeMemoized = __size
+  override def serializedSize: Int = {
+    var size = serializedSizeMemoized
+    if (size == 0) {
+      size = computeSerializedSize() + 1
+      serializedSizeMemoized = size
     }
-    __size - 1
+    size - 1
 
   }
 
-  def writeTo(`_output__`: _root_.com.google.protobuf.CodedOutputStream): _root_.scala.Unit = {
+  def writeTo(output: com.google.protobuf.CodedOutputStream): Unit = {
     {
-      val __v = entityId
-      if (__v.nonEmpty) {
-        _output__.writeString(1, __v)
+      val v = entityId
+      if (v.nonEmpty) {
+        output.writeString(1, v)
       }
     };
     {
-      val __v = key
-      if (__v.nonEmpty) {
-        _output__.writeString(2, __v)
+      val v = key
+      if (v.nonEmpty) {
+        output.writeString(2, v)
       }
     };
     {
-      val __v = data
-      if (!__v.isEmpty) {
-        _output__.writeBytes(3, __v)
+      val v = data
+      if (!v.isEmpty) {
+        output.writeBytes(3, v)
       }
     };
-    unknownFields.writeTo(_output__)
+    unknownFields.writeTo(output)
   }
 
-  def withEntityId(__v: _root_.scala.Predef.String): StoreSessionRequest = copy(entityId = __v)
+  def withEntityId(v: Predef.String): StoreSessionRequest = copy(entityId = v)
 
-  def withKey(__v: _root_.scala.Predef.String): StoreSessionRequest = copy(key = __v)
+  def withKey(v: Predef.String): StoreSessionRequest = copy(key = v)
 
-  def withData(__v: _root_.com.google.protobuf.ByteString): StoreSessionRequest = copy(data = __v)
+  def withData(v: ProtobufByteString): StoreSessionRequest = copy(data = v)
 
-  def withUnknownFields(__v: _root_.scalapb.UnknownFieldSet): StoreSessionRequest = copy(unknownFields = __v)
+  def withUnknownFields(v: UnknownFieldSet): StoreSessionRequest = copy(unknownFields = v)
 
-  def discardUnknownFields: StoreSessionRequest = copy(unknownFields = _root_.scalapb.UnknownFieldSet.empty)
+  def discardUnknownFields: StoreSessionRequest = copy(unknownFields = UnknownFieldSet.empty)
 
-  def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
-    (__fieldNumber: @ _root_.scala.unchecked) match {
-      case 1 => {
-        val __t = entityId
-        if (__t != "") __t else null
-      }
-      case 2 => {
-        val __t = key
-        if (__t != "") __t else null
-      }
-      case 3 => {
-        val __t = data
-        if (__t != _root_.com.google.protobuf.ByteString.EMPTY) __t else null
-      }
+  def getFieldByNumber(fieldNumber: Int): Any = {
+    (fieldNumber: @ unchecked) match {
+      case 1 =>
+        val t = entityId
+        if (t != "") t else null
+      case 2 =>
+        val t = key
+        if (t != "") t else null
+      case 3 =>
+        val t = data
+        if (t != ProtobufByteString.EMPTY) t else null
     }
   }
 
-  def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
-    _root_.scala.Predef.require(__field.containingMessage eq companion.scalaDescriptor)
-    (__field.number: @ _root_.scala.unchecked) match {
-      case 1 => _root_.scalapb.descriptors.PString(entityId)
-      case 2 => _root_.scalapb.descriptors.PString(key)
-      case 3 => _root_.scalapb.descriptors.PByteString(data)
+  def getField(field: descriptors.FieldDescriptor): descriptors.PValue = {
+    Predef.require(field.containingMessage eq companion.scalaDescriptor)
+    (field.number: @ unchecked) match {
+      case 1 => descriptors.PString(entityId)
+      case 2 => descriptors.PString(key)
+      case 3 => descriptors.PByteString(data)
     }
   }
 
-  def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
+  def toProtoString: Predef.String = TextFormat.printToUnicodeString(this)
 
   def companion: StoreSessionRequest.type = StoreSessionRequest
 }
@@ -435,86 +432,86 @@ final case class StoreSessionRequest(
 object StoreSessionRequest extends scalapb.GeneratedMessageCompanion[StoreSessionRequest] {
   implicit def messageCompanion: scalapb.GeneratedMessageCompanion[StoreSessionRequest] = this
 
-  def parseFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): StoreSessionRequest = {
-    var __entityId: _root_.scala.Predef.String                      = ""
-    var __key: _root_.scala.Predef.String                           = ""
-    var __data: _root_.com.google.protobuf.ByteString               = _root_.com.google.protobuf.ByteString.EMPTY
-    var `_unknownFields__` : _root_.scalapb.UnknownFieldSet.Builder = null
-    var _done__                                                     = false
-    while (!_done__) {
-      val _tag__ = _input__.readTag()
-      _tag__ match {
-        case 0   => _done__ = true
+  def parseFrom(input: com.google.protobuf.CodedInputStream): StoreSessionRequest = {
+    var entityId: Predef.String                      = ""
+    var key: Predef.String                           = ""
+    var data: ProtobufByteString                     = ProtobufByteString.EMPTY
+    var unknownFields : UnknownFieldSet.Builder      = null
+    var done                                         = false
+    while (!done) {
+      val tag = input.readTag()
+      tag match {
+        case 0   => done = true
         case 10  =>
-          __entityId = _input__.readStringRequireUtf8()
+          entityId = input.readStringRequireUtf8()
         case 18  =>
-          __key = _input__.readStringRequireUtf8()
+          key = input.readStringRequireUtf8()
         case 26  =>
-          __data = _input__.readBytes()
+          data = input.readBytes()
         case tag =>
-          if (_unknownFields__ == null) {
-            _unknownFields__ = new _root_.scalapb.UnknownFieldSet.Builder()
+          if (unknownFields == null) {
+            unknownFields = new UnknownFieldSet.Builder()
           }
-          _unknownFields__.parseField(tag, _input__)
+          unknownFields.parseField(tag, input)
       }
     }
     StoreSessionRequest(
-      entityId = __entityId,
-      key = __key,
-      data = __data,
-      unknownFields = if (_unknownFields__ == null) _root_.scalapb.UnknownFieldSet.empty else _unknownFields__.result()
+      entityId = entityId,
+      key = key,
+      data = data,
+      unknownFields = if (unknownFields == null) UnknownFieldSet.empty else unknownFields.result()
     )
   }
 
-  implicit def messageReads: _root_.scalapb.descriptors.Reads[StoreSessionRequest] = _root_.scalapb.descriptors.Reads {
-    case _root_.scalapb.descriptors.PMessage(__fieldsMap) =>
-      _root_.scala.Predef.require(
-        __fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
+  implicit def messageReads: descriptors.Reads[StoreSessionRequest] = descriptors.Reads {
+    case descriptors.PMessage(fieldsMap) =>
+      Predef.require(
+        fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
         "FieldDescriptor does not match message type."
       )
       StoreSessionRequest(
         entityId =
-          __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
+          fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).map(_.as[Predef.String]).getOrElse(""),
         key =
-          __fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[_root_.scala.Predef.String]).getOrElse(""),
-        data = __fieldsMap
+          fieldsMap.get(scalaDescriptor.findFieldByNumber(2).get).map(_.as[Predef.String]).getOrElse(""),
+        data = fieldsMap
           .get(scalaDescriptor.findFieldByNumber(3).get)
-          .map(_.as[_root_.com.google.protobuf.ByteString])
-          .getOrElse(_root_.com.google.protobuf.ByteString.EMPTY)
+          .map(_.as[ProtobufByteString])
+          .getOrElse(ProtobufByteString.EMPTY)
       )
     case _                                                => throw new RuntimeException("Expected PMessage")
   }
 
-  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor =
+  def javaDescriptor: com.google.protobuf.Descriptors.Descriptor =
     ReplicatedSessionStoreProto.javaDescriptor.getMessageTypes.get(2)
 
-  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(2)
+  def scalaDescriptor: descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(2)
 
-  def messageCompanionForFieldNumber(__number: _root_.scala.Int): _root_.scalapb.GeneratedMessageCompanion[_] =
-    throw new MatchError(__number)
+  def messageCompanionForFieldNumber(number: Int): GeneratedMessageCompanion[_] =
+    throw new MatchError(number)
 
   lazy val nestedMessagesCompanions
-    : Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] = Seq.empty
+    : Seq[GeneratedMessageCompanion[_ <: GeneratedMessage]] = Seq.empty
 
-  def enumCompanionForFieldNumber(__fieldNumber: _root_.scala.Int): _root_.scalapb.GeneratedEnumCompanion[_] =
-    throw new MatchError(__fieldNumber)
+  def enumCompanionForFieldNumber(fieldNumber: Int): GeneratedEnumCompanion[_] =
+    throw new MatchError(fieldNumber)
 
   lazy val defaultInstance: StoreSessionRequest = StoreSessionRequest(
     entityId = "",
     key = "",
-    data = _root_.com.google.protobuf.ByteString.EMPTY
+    data = ProtobufByteString.EMPTY
   )
 
-  implicit class StoreSessionRequestLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, StoreSessionRequest])
-      extends _root_.scalapb.lenses.ObjectLens[UpperPB, StoreSessionRequest](_l) {
+  implicit class StoreSessionRequestLens[UpperPB](_l: lenses.Lens[UpperPB, StoreSessionRequest])
+      extends lenses.ObjectLens[UpperPB, StoreSessionRequest](_l) {
 
-    def entityId: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] =
+    def entityId: lenses.Lens[UpperPB, Predef.String] =
       field(_.entityId)((c_, f_) => c_.copy(entityId = f_))
 
-    def key: _root_.scalapb.lenses.Lens[UpperPB, _root_.scala.Predef.String] =
+    def key: lenses.Lens[UpperPB, Predef.String] =
       field(_.key)((c_, f_) => c_.copy(key = f_))
 
-    def data: _root_.scalapb.lenses.Lens[UpperPB, _root_.com.google.protobuf.ByteString] =
+    def data: lenses.Lens[UpperPB, ProtobufByteString] =
       field(_.data)((c_, f_) => c_.copy(data = f_))
 
   }
@@ -524,9 +521,9 @@ object StoreSessionRequest extends scalapb.GeneratedMessageCompanion[StoreSessio
   final val DATA_FIELD_NUMBER      = 3
 
   def of(
-    entityId: _root_.scala.Predef.String,
-    key: _root_.scala.Predef.String,
-    data: _root_.com.google.protobuf.ByteString
+    entityId: Predef.String,
+    key: Predef.String,
+    data: ProtobufByteString
   ): StoreSessionRequest =
     StoreSessionRequest(entityId, key, data)
 
@@ -534,69 +531,69 @@ object StoreSessionRequest extends scalapb.GeneratedMessageCompanion[StoreSessio
 
 @SerialVersionUID(0L)
 final case class GetSessionResponse(
-  session: scala.Option[SessionData] = _root_.scala.None,
+  session: scala.Option[SessionData] = None,
   unknownFields: scalapb.UnknownFieldSet = scalapb.UnknownFieldSet.empty
 ) extends scalapb.GeneratedMessage
     with scalapb.lenses.Updatable[GetSessionResponse] {
 
   @transient
-  private[this] var __serializedSizeMemoized: _root_.scala.Int = 0
+  private[this] var serializedSizeMemoized: Int = 0
 
-  private[this] def __computeSerializedSize(): _root_.scala.Int = {
-    var __size = 0
+  private[this] def computeSerializedSize(): Int = {
+    var size = 0
     if (session.isDefined) {
-      val __value = session.get
-      __size += 1 + _root_.com.google.protobuf.CodedOutputStream
-        .computeUInt32SizeNoTag(__value.serializedSize) + __value.serializedSize
+      val value = session.get
+      size += 1 + com.google.protobuf.CodedOutputStream
+        .computeUInt32SizeNoTag(value.serializedSize) + value.serializedSize
     };
-    __size += unknownFields.serializedSize
-    __size
+    size += unknownFields.serializedSize
+    size
   }
 
-  override def serializedSize: _root_.scala.Int = {
-    var __size = __serializedSizeMemoized
-    if (__size == 0) {
-      __size = __computeSerializedSize() + 1
-      __serializedSizeMemoized = __size
+  override def serializedSize: Int = {
+    var size = serializedSizeMemoized
+    if (size == 0) {
+      size = computeSerializedSize() + 1
+      serializedSizeMemoized = size
     }
-    __size - 1
+    size - 1
 
   }
 
-  def writeTo(`_output__`: _root_.com.google.protobuf.CodedOutputStream): _root_.scala.Unit = {
-    session.foreach { __v =>
-      val __m = __v
-      _output__.writeTag(1, 2)
-      _output__.writeUInt32NoTag(__m.serializedSize)
-      __m.writeTo(_output__)
+  def writeTo(output: com.google.protobuf.CodedOutputStream): Unit = {
+    session.foreach { v =>
+      val m = v
+      output.writeTag(1, 2)
+      output.writeUInt32NoTag(m.serializedSize)
+      m.writeTo(output)
     };
-    unknownFields.writeTo(_output__)
+    unknownFields.writeTo(output)
   }
 
   def getSession: SessionData = session.getOrElse(SessionData.defaultInstance)
 
-  def clearSession: GetSessionResponse = copy(session = _root_.scala.None)
+  def clearSession: GetSessionResponse = copy(session = None)
 
-  def withSession(__v: SessionData): GetSessionResponse = copy(session = Option(__v))
+  def withSession(v: SessionData): GetSessionResponse = copy(session = Option(v))
 
-  def withUnknownFields(__v: _root_.scalapb.UnknownFieldSet): GetSessionResponse = copy(unknownFields = __v)
+  def withUnknownFields(v: UnknownFieldSet): GetSessionResponse = copy(unknownFields = v)
 
-  def discardUnknownFields: GetSessionResponse = copy(unknownFields = _root_.scalapb.UnknownFieldSet.empty)
+  def discardUnknownFields: GetSessionResponse = copy(unknownFields = UnknownFieldSet.empty)
 
-  def getFieldByNumber(__fieldNumber: _root_.scala.Int): _root_.scala.Any = {
-    (__fieldNumber: @ _root_.scala.unchecked) match {
+  def getFieldByNumber(fieldNumber: Int): Any = {
+    (fieldNumber: @ unchecked) match {
       case 1 => session.orNull
     }
   }
 
-  def getField(__field: _root_.scalapb.descriptors.FieldDescriptor): _root_.scalapb.descriptors.PValue = {
-    _root_.scala.Predef.require(__field.containingMessage eq companion.scalaDescriptor)
-    (__field.number: @ _root_.scala.unchecked) match {
-      case 1 => session.map(_.toPMessage).getOrElse(_root_.scalapb.descriptors.PEmpty)
+  def getField(field: descriptors.FieldDescriptor): descriptors.PValue = {
+    Predef.require(field.containingMessage eq companion.scalaDescriptor)
+    (field.number: @ unchecked) match {
+      case 1 => session.map(_.toPMessage).getOrElse(descriptors.PEmpty)
     }
   }
 
-  def toProtoString: _root_.scala.Predef.String = _root_.scalapb.TextFormat.printToUnicodeString(this)
+  def toProtoString: Predef.String = TextFormat.printToUnicodeString(this)
 
   def companion: GetSessionResponse.type = GetSessionResponse
 
@@ -605,74 +602,74 @@ final case class GetSessionResponse(
 object GetSessionResponse extends scalapb.GeneratedMessageCompanion[GetSessionResponse] {
   implicit def messageCompanion: scalapb.GeneratedMessageCompanion[GetSessionResponse] = this
 
-  def parseFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): GetSessionResponse = {
-    var __session: _root_.scala.Option[SessionData]                 = _root_.scala.None
-    var `_unknownFields__` : _root_.scalapb.UnknownFieldSet.Builder = null
-    var _done__                                                     = false
-    while (!_done__) {
-      val _tag__ = _input__.readTag()
-      _tag__ match {
-        case 0   => _done__ = true
+  def parseFrom(input: com.google.protobuf.CodedInputStream): GetSessionResponse = {
+    var session: Option[SessionData]                 = None
+    var unknownFields : UnknownFieldSet.Builder = null
+    var done                                                     = false
+    while (!done) {
+      val tag = input.readTag()
+      tag match {
+        case 0   => done = true
         case 10  =>
-          __session = Option(
-            __session.fold(_root_.scalapb.LiteParser.readMessage[SessionData](_input__))(
-              _root_.scalapb.LiteParser.readMessage(_input__, _)
+          session = Option(
+            session.fold(LiteParser.readMessage[SessionData](input))(
+              LiteParser.readMessage(input, _)
             )
           )
         case tag =>
-          if (_unknownFields__ == null) {
-            _unknownFields__ = new _root_.scalapb.UnknownFieldSet.Builder()
+          if (unknownFields == null) {
+            unknownFields = new UnknownFieldSet.Builder()
           }
-          _unknownFields__.parseField(tag, _input__)
+          unknownFields.parseField(tag, input)
       }
     }
     GetSessionResponse(
-      session = __session,
-      unknownFields = if (_unknownFields__ == null) _root_.scalapb.UnknownFieldSet.empty else _unknownFields__.result()
+      session = session,
+      unknownFields = if (unknownFields == null) UnknownFieldSet.empty else unknownFields.result()
     )
   }
 
-  implicit def messageReads: _root_.scalapb.descriptors.Reads[GetSessionResponse] = _root_.scalapb.descriptors.Reads {
-    case _root_.scalapb.descriptors.PMessage(__fieldsMap) =>
-      _root_.scala.Predef.require(
-        __fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
+  implicit def messageReads: descriptors.Reads[GetSessionResponse] = descriptors.Reads {
+    case descriptors.PMessage(fieldsMap) =>
+      Predef.require(
+        fieldsMap.keys.forall(_.containingMessage eq scalaDescriptor),
         "FieldDescriptor does not match message type."
       )
       GetSessionResponse(
         session =
-          __fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).flatMap(_.as[_root_.scala.Option[SessionData]])
+          fieldsMap.get(scalaDescriptor.findFieldByNumber(1).get).flatMap(_.as[Option[SessionData]])
       )
     case _                                                => throw new RuntimeException("Expected PMessage")
   }
 
-  def javaDescriptor: _root_.com.google.protobuf.Descriptors.Descriptor =
+  def javaDescriptor: com.google.protobuf.Descriptors.Descriptor =
     ReplicatedSessionStoreProto.javaDescriptor.getMessageTypes.get(3)
 
-  def scalaDescriptor: _root_.scalapb.descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(3)
+  def scalaDescriptor: descriptors.Descriptor = ReplicatedSessionStoreProto.scalaDescriptor.messages(3)
 
-  def messageCompanionForFieldNumber(__number: _root_.scala.Int): _root_.scalapb.GeneratedMessageCompanion[_] = {
-    var __out: _root_.scalapb.GeneratedMessageCompanion[_] = null
-    (__number: @ _root_.scala.unchecked) match {
-      case 1 => __out = SessionData
+  def messageCompanionForFieldNumber(number: Int): GeneratedMessageCompanion[_] = {
+    var out: GeneratedMessageCompanion[_] = null
+    (number: @ unchecked) match {
+      case 1 => out = SessionData
     }
-    __out
+    out
   }
 
   lazy val nestedMessagesCompanions
-    : Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] = Seq.empty
+    : Seq[GeneratedMessageCompanion[_ <: GeneratedMessage]] = Seq.empty
 
-  def enumCompanionForFieldNumber(__fieldNumber: _root_.scala.Int): _root_.scalapb.GeneratedEnumCompanion[_] =
-    throw new MatchError(__fieldNumber)
+  def enumCompanionForFieldNumber(fieldNumber: Int): GeneratedEnumCompanion[_] =
+    throw new MatchError(fieldNumber)
 
-  lazy val defaultInstance: GetSessionResponse = GetSessionResponse(session = _root_.scala.None)
+  lazy val defaultInstance: GetSessionResponse = GetSessionResponse(session = None)
 
-  implicit class GetSessionResponseLens[UpperPB](_l: _root_.scalapb.lenses.Lens[UpperPB, GetSessionResponse])
-      extends _root_.scalapb.lenses.ObjectLens[UpperPB, GetSessionResponse](_l) {
+  implicit class GetSessionResponseLens[UpperPB](_l: lenses.Lens[UpperPB, GetSessionResponse])
+      extends lenses.ObjectLens[UpperPB, GetSessionResponse](_l) {
 
-    def session: _root_.scalapb.lenses.Lens[UpperPB, SessionData] =
+    def session: lenses.Lens[UpperPB, SessionData] =
       field(_.getSession)((c_, f_) => c_.copy(session = Option(f_)))
 
-    def optionalSession: _root_.scalapb.lenses.Lens[UpperPB, scala.Option[SessionData]] =
+    def optionalSession: lenses.Lens[UpperPB, scala.Option[SessionData]] =
       field(_.session)((c_, f_) => c_.copy(session = f_))
 
   }
@@ -683,23 +680,23 @@ object GetSessionResponse extends scalapb.GeneratedMessageCompanion[GetSessionRe
 
 }
 
-object ReplicatedSessionStoreProto extends _root_.scalapb.GeneratedFileObject {
+object ReplicatedSessionStoreProto extends GeneratedFileObject {
 
-  lazy val dependencies: Seq[_root_.scalapb.GeneratedFileObject] = Seq(
+  lazy val dependencies: Seq[GeneratedFileObject] = Seq(
     com.google.protobuf.empty.EmptyProto,
     kalix.AnnotationsProto,
     scalapb.options.ScalapbProto
   )
 
-  lazy val messagesCompanions: Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]] =
-    Seq[_root_.scalapb.GeneratedMessageCompanion[_ <: _root_.scalapb.GeneratedMessage]](
+  lazy val messagesCompanions: Seq[GeneratedMessageCompanion[_ <: GeneratedMessage]] =
+    Seq[GeneratedMessageCompanion[_ <: GeneratedMessage]](
       SessionData,
       SessionKey,
       StoreSessionRequest,
       GetSessionResponse
     )
 
-  private lazy val ProtoBytes: _root_.scala.Array[Byte] =
+  private lazy val ProtoBytes: Array[Byte] =
     scalapb.Encoding.fromBase64(
       scala.collection.immutable
         .Seq(
@@ -721,16 +718,16 @@ object ReplicatedSessionStoreProto extends _root_.scalapb.GeneratedFileObject {
         .mkString
     )
 
-  lazy val scalaDescriptor: _root_.scalapb.descriptors.FileDescriptor = {
+  lazy val scalaDescriptor: descriptors.FileDescriptor = {
     val scalaProto = com.google.protobuf.descriptor.FileDescriptorProto.parseFrom(ProtoBytes)
-    _root_.scalapb.descriptors.FileDescriptor.buildFrom(scalaProto, dependencies.map(_.scalaDescriptor))
+    descriptors.FileDescriptor.buildFrom(scalaProto, dependencies.map(_.scalaDescriptor))
   }
 
   lazy val javaDescriptor: com.google.protobuf.Descriptors.FileDescriptor = {
     val javaProto = com.google.protobuf.DescriptorProtos.FileDescriptorProto.parseFrom(ProtoBytes)
     com.google.protobuf.Descriptors.FileDescriptor.buildFrom(
       javaProto,
-      _root_.scala.Array(
+      Array(
         com.google.protobuf.empty.EmptyProto.javaDescriptor,
         kalix.AnnotationsProto.javaDescriptor,
         scalapb.options.ScalapbProto.javaDescriptor
