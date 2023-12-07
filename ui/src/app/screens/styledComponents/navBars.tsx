@@ -13,8 +13,20 @@ import Divider from "@mui/material/Divider";
 import {mainNavItems, secondaryNavItems} from "../dashboard/navItems";
 import {Drawer} from "../dashboard/components";
 import List from "@mui/material/List";
+import {ReactNode} from "react";
 
-export const TopNav = (props: { forDashboard?: boolean, open?: boolean, toggleDrawer?: () => void }) => {
+interface TopNavProps {
+    forDashboard?: boolean
+    open?: boolean
+    toggleDrawer?: () => void
+}
+
+interface SideNavProps {
+    open?: boolean
+    toggleDrawer?: () => void
+}
+
+export const TopNav = (props: TopNavProps) => {
     const navigate = useNavigate()
 
     return <Toolbar sx={props.forDashboard ? {pr: '24px'} : {flexWrap: 'wrap'}}>
