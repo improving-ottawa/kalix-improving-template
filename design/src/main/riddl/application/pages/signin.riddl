@@ -13,7 +13,7 @@ command RemindUserOfPassword is {email: EmailAddress}
 command RedirectUserToSignupPage is {???}
 
 page SigninPage {
-  form SigninForm acquires record LoginParameters {
+  form SigninForm acquires LoginParameters {
     input signinEmailAddress accepts EmailAddress
     input signinPassword accepts Password
     selector rememberMeOption accepts RememberMe
