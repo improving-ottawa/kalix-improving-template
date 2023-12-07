@@ -26,7 +26,7 @@ interface SideNavProps {
     toggleDrawer?: () => void
 }
 
-export const TopNav = (props: TopNavProps) => {
+export const TopNav = (readonly props: TopNavProps) => {
     const navigate = useNavigate()
 
     return <Toolbar sx={props.forDashboard ? {pr: '24px'} : {flexWrap: 'wrap'}}>
@@ -80,7 +80,7 @@ export const TopNav = (props: TopNavProps) => {
     </Toolbar>
 }
 
-export const SideNav = (props: { open: boolean, toggleDrawer: () => void }) => {
+export const SideNav = (readonly props: SideNavProps) => {
     return <Drawer variant="permanent" open={props.open}>
         <Toolbar
             sx={{
