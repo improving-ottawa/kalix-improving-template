@@ -14,7 +14,7 @@ command NavigateToPaymentDetailsPage is {???}
 
 page OrderReviewPage {
   contains CheckoutFlowStepperWidget as group CheckoutFlowStepper
-  output OrderDetails shows record Order
+  output OrderDetails shows Order
   button PlaceOrderButton initiates command PlaceOrder
   text BackToPaymentDetailsLink initiates command NavigateToPaymentDetailsPage
   button NavigateToPaymentDetailsButton initiates command NavigateStepperToStep
