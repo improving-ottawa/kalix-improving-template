@@ -8,9 +8,6 @@ import {LocalizationProvider} from '@mui/x-date-pickers';
 import SignIn from "./screens/login/SignIn";
 import SignUp from "./screens/login/SignUp";
 import Pricing from "./screens/productsFlow/pricing/Pricing";
-import OrdersPage from "./screens/dashboard/orders/OrdersPage";
-import CustomersPage from "./screens/dashboard/customers/CustomersPage";
-import SessionsPage from "./screens/dashboard/sessions/SessionsPage";
 import Checkout from "./screens/productsFlow/checkout/Checkout";
 
 const theme = createTheme({
@@ -45,18 +42,6 @@ function App() {
                                 </Route>
                                 <Route path="checkout">
                                     <Route index element={<Checkout/>}/>
-                                </Route>
-                                <Route path="dashboard">
-                                    <Route index element={<Navigate to="orders"/>}/>
-                                    <Route path="orders">
-                                        <Route index element={<OrdersPage/>}/>
-                                    </Route>
-                                    <Route path="customers">
-                                        <Route index element={<CustomersPage/>}/>
-                                    </Route>
-                                    <Route path="sessions">
-                                        <Route index element={<SessionsPage/>}/>
-                                    </Route>
                                 </Route>
                             </Route>
                         </Routes>

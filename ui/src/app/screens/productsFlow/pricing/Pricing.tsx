@@ -15,8 +15,10 @@ import Container from '@mui/material/Container';
 import {Copyright} from "../../styledComponents/copyright";
 import {AppBar} from "@mui/material";
 import {TopNav} from "../../styledComponents/navBars";
-import {Products} from "../Products";
+import {Product, Products, productsDisplay} from "../ProductsDisplay";
 import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {addProduct} from "../../../redux/slices/purchasingSlice";
 
 const footers = [
     {
@@ -27,6 +29,7 @@ const footers = [
 
 export default function Pricing() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     return (
         <Box>
@@ -57,7 +60,7 @@ export default function Pricing() {
             </Container>
             <Container maxWidth="md" component="main">
                 <Grid container spacing={5} alignItems="flex-end">
-                    {Products.map((product) => (
+                    {productsDisplay.map((product) => (
                         <Grid
                             item
                             key={product.title}
@@ -112,7 +115,11 @@ export default function Pricing() {
                                 </CardContent>
                                 <CardActions>
                                     <Button
-                                        onClick={() => navigate("/checkout")}
+                                        onClick={() => {
+                                            const productToAdd = Products.find(_ => _.name === product.title)
+                                            if (productToAdd) dispatch(addProduct(productToAdd))
+                                            navigate("/checkout")
+                                        }}
                                         fullWidth
                                         variant={product.buttonVariant as 'outlined' | 'contained'}
                                     >

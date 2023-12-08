@@ -14,6 +14,8 @@ import ShippingForm from './ShippingForm';
 import BillingForm from './BillingForm';
 import Review from './Review';
 import {Copyright} from "../../styledComponents/copyright";
+import {Link} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 
@@ -31,6 +33,7 @@ function getStepContent(step: number) {
 }
 
 export default function Checkout() {
+    const navigate = useNavigate()
     const [activeStep, setActiveStep] = React.useState(0);
 
     const handleNext = () => {
@@ -85,19 +88,27 @@ export default function Checkout() {
                     ) : (
                         <React.Fragment>
                             {getStepContent(activeStep)}
-                            <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                                {activeStep !== 0 && (
-                                    <Button onClick={handleBack} sx={{mt: 3, ml: 1}}>
-                                        Back
+                            <Box sx={{display: 'flex'}}>
+                                <Box sx={{display: 'flex', justifyContent: 'flex-start'}}>
+                                    <Link underline="none" onClick={() => navigate("/pricing")}
+                                          sx={{mt: 3, ml: 1}}>
+                                        {"Continue shopping"}
+                                    </Link>
+                                </Box>
+                                <Box sx={{display: 'flex', marginLeft: 'auto'}}>
+                                    {activeStep !== 0 && (
+                                        <Button onClick={handleBack} sx={{mt: 3, ml: 1}}>
+                                            Back
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleNext}
+                                        sx={{mt: 3, ml: 1}}
+                                    >
+                                        {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
                                     </Button>
-                                )}
-                                <Button
-                                    variant="contained"
-                                    onClick={handleNext}
-                                    sx={{mt: 3, ml: 1}}
-                                >
-                                    {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
-                                </Button>
+                                </Box>
                             </Box>
                         </React.Fragment>
                     )}

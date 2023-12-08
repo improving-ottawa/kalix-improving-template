@@ -60,7 +60,8 @@ export default function BillingForm() {
                 <Grid item xs={12}>
                     <FormControlLabel
                         onChange={() => setShowAddress(!showAddress)}
-                        control={<Checkbox color="secondary" name="saveAddress" value={showAddress}/>}
+                        control={<Checkbox name="saveAddress"
+                                           value={showAddress}/>}
                         label="Use shipping address for payment details"
                     />
                     {showAddress && <AddressFormFields/>}
