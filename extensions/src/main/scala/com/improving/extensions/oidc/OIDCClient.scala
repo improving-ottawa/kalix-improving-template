@@ -214,11 +214,17 @@ final private class OIDCClientImpl[F[_]](
   protected def beginAuthenticationInternal(metadata: DiscoveryMetadata, state: String): F[Uri] =
     F.fromTry {
       scala.util.Try {
-        // Nonce
-        val nonce = SecureRandomString(16)
-
         // Additional query string parameters
         val additionalParams: Map[String, String] = config.codeFlowParams
+
+        // Nonce param
+        val nonceParam: Map[String, String] =
+          if (config.useNonce)
+            Map(
+              // Nonce
+              "nonce" -> SecureRandomString(16).toString
+            )
+          else Map.empty
 
         // Required query string parameters for the request
         val requestParameters = Map(
@@ -232,9 +238,7 @@ final private class OIDCClientImpl[F[_]](
           "scope"         -> requiredScopes,
           // State
           "state"         -> state,
-          // Nonce
-          "nonce"         -> nonce.toString
-        ) ++ additionalParams
+        ) ++ nonceParam ++ additionalParams
 
         val uriQuery: Seq[Uri.QuerySegment] =
           requestParameters.map { case (key, value) => Uri.QuerySegment.KeyValue(key, value) }.toSeq
