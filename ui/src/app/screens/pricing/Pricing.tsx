@@ -1,5 +1,4 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -9,15 +8,13 @@ import CardHeader from '@mui/material/CardHeader';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import StarIcon from '@mui/icons-material/StarBorder';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import {Copyright} from "../styledComponents/copyright";
-import {useNavigate} from "react-router-dom";
-import {IconButton} from "@mui/material";
-import {AccountCircleTwoTone, Login} from "@mui/icons-material";
+import {AppBar} from "@mui/material";
+import {TopNav} from "../styledComponents/navBars";
 
 const tiers = [
     {
@@ -63,7 +60,6 @@ const footers = [
 ];
 
 export default function Pricing() {
-    const navigate = useNavigate()
 
     return (
         <Box>
@@ -75,41 +71,7 @@ export default function Pricing() {
                 elevation={0}
                 sx={{borderBottom: (theme) => `1px solid ${theme.palette.divider}`}}
             >
-                <Toolbar sx={{flexWrap: 'wrap'}}>
-                    <Typography variant="h6" color="inherit" noWrap sx={{flexGrow: 1}}>
-                        Logoipsum
-                    </Typography>
-                    <nav>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            onClick={() => navigate("/pricing")}
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            Pricing
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            About Us
-                        </Link>
-                        <Link
-                            variant="button"
-                            color="text.primary"
-                            href="#"
-                            sx={{my: 1, mx: 1.5}}
-                        >
-                            Resources
-                        </Link>
-                    </nav>
-                    <IconButton onClick={() => {
-                    }} sx={{my: 1, mx: 1.5}}>
-                        <AccountCircleTwoTone/>
-                    </IconButton>
-                </Toolbar>
+                <TopNav/>
             </AppBar>
             <Container disableGutters maxWidth="sm" component="main" sx={{pt: 8, pb: 6}}>
                 <Typography
