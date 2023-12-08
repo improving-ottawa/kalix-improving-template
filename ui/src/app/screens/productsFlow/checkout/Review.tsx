@@ -4,11 +4,10 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
-import {selectProducts} from "../../../redux/slices/purchasingSlice";
-import {useDispatch} from "react-redux";
+import {selectPurchasingState} from "../../../redux/slices/purchasingSlice";
 import {useAppSelector} from "../../../redux/hooks";
+import {printAddress} from "../../../utils";
 
-const addresses = ['1 MUI Drive', 'Reactville', 'Anytown', '99999', 'USA'];
 const payments = [
     {name: 'Card type', detail: 'Visa'},
     {name: 'Card holder', detail: 'Mr John Smith'},
@@ -17,8 +16,10 @@ const payments = [
 ];
 
 export default function Review() {
+    const state = useAppSelector(selectPurchasingState)
+
     const products = [
-        ...useAppSelector(selectProducts),
+        ...state.products,
         {name: 'Shipping', price: 0},
     ];
     return (
@@ -45,8 +46,12 @@ export default function Review() {
                     <Typography variant="h6" gutterBottom sx={{mt: 2}}>
                         Shipping
                     </Typography>
-                    <Typography gutterBottom>John Smith</Typography>
-                    <Typography gutterBottom>{addresses.join(', ')}</Typography>
+                    <Typography
+                        gutterBottom>{state.shippingAddress?.firstName} {state.shippingAddress?.lastName}</Typography>
+                    <Typography
+                        gutterBottom>
+                        {state.shippingAddress?.address && printAddress(state.shippingAddress.address)}
+                    </Typography>
                 </Grid>
                 <Grid item container direction="column" xs={12} sm={6}>
                     <Typography variant="h6" gutterBottom sx={{mt: 2}}>

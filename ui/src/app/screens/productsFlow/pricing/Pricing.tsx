@@ -15,7 +15,7 @@ import Container from '@mui/material/Container';
 import {Copyright} from "../../styledComponents/copyright";
 import {AppBar} from "@mui/material";
 import {TopNav} from "../../styledComponents/navBars";
-import {Product, Products, productsDisplay} from "../ProductsDisplay";
+import {Products, productsDisplay} from "../ProductsDisplay";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {addProduct} from "../../../redux/slices/purchasingSlice";

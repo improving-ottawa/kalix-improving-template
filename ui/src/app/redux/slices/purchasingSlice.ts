@@ -5,6 +5,12 @@ import {Address} from "../../../generated/com/example/common/domain/address_pb";
 import {Product} from "../../screens/productsFlow/ProductsDisplay";
 import {RootState} from "../store";
 
+export interface AddressWithName {
+    address: Address,
+    firstName?: string,
+    lastName?: string
+}
+
 export interface PaymentInfo {
     cardType: string
     cardHolder: string
@@ -15,8 +21,8 @@ export interface PaymentInfo {
 export interface PurchasingState {
     products: Product[]
 
-    shippingAddress?: Address
-    billingAddress?: Address
+    shippingAddress?: AddressWithName
+    billingAddress?: AddressWithName
     paymentInfo?: PaymentInfo
 }
 
@@ -45,10 +51,10 @@ export const purchasingSlice = createSlice({
         addProduct: (state, action: PayloadAction<Product>) => {
             state.products.push(action.payload)
         },
-        changeShippingAddress: (state, action: PayloadAction<Address>) => {
+        changeShippingAddress: (state, action: PayloadAction<AddressWithName>) => {
             state.shippingAddress = action.payload
         },
-        changeBillingAddress: (state, action: PayloadAction<Address>) => {
+        changeBillingAddress: (state, action: PayloadAction<AddressWithName>) => {
             state.billingAddress = action.payload
         },
         changePaymentInfo: (state, action: PayloadAction<PaymentInfo>) => {
@@ -75,6 +81,6 @@ export const {
     changePaymentInfo
 } = purchasingSlice.actions
 
-export const selectProducts = (state: RootState) => state.purchasing.products
+export const selectPurchasingState = (state: RootState) => state.purchasing
 
 export default purchasingSlice.reducer

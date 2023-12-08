@@ -1,4 +1,5 @@
-import {PhoneNumber} from "../generated/com/example/common/domain/address_pb";
+import {Address, PhoneNumber, PostalCode} from "../generated/com/example/common/domain/address_pb";
+import PostalCodeValueCase = PostalCode.PostalCodeValueCase;
 
 export function parsePhoneNumber(phoneNumberStr: string): PhoneNumber {
     const phoneNumber = new PhoneNumber()
@@ -14,6 +15,16 @@ export function printPhoneNumber(phoneNumber: PhoneNumber | undefined): string {
     return phoneNumber ? phoneNumber.getCountryCode() + "-(" + phoneNumber.getAreaCode() + ")-" + phoneNumber.getPersonalNumber().substring(0, 3) + "-" + phoneNumber.getPersonalNumber().substring(3)
         : "1"
 }
+
+export const printAddress = (address: Address) => [
+    address.getLine1(),
+    address.getLine2(),
+    address.getCity(),
+    address.getStateProvince(),
+    address.getCountry(),
+    address.getPostalCode()?.getPostalCodeValueCase() === PostalCodeValueCase.CA_POSTAL_CODE_MESSAGE ?
+        address.getPostalCode()?.getCaPostalCodeMessage() : address.getPostalCode()?.getUsPostalCodeMessage()
+].join(", ")
 
 // Use this for modifying lists in state based on an index provided by UX components that correlates to the data in state
 export type IndexedListItem<T> = {

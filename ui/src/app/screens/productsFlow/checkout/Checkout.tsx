@@ -16,32 +16,53 @@ import Review from './Review';
 import {Copyright} from "../../styledComponents/copyright";
 import {Link} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import {useState} from "react";
+import {
+    AddressWithName,
+    changeBillingAddress,
+    changeShippingAddress,
+    selectPurchasingState
+} from "../../../redux/slices/purchasingSlice";
+import {Address} from "../../../../generated/com/example/common/domain/address_pb";
+import {useAppDispatch, useAppSelector} from "../../../redux/hooks";
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 
-function getStepContent(step: number) {
-    switch (step) {
-        case 0:
-            return <ShippingForm/>;
-        case 1:
-            return <BillingForm/>;
-        case 2:
-            return <Review/>;
-        default:
-            throw new Error('Unknown step');
-    }
-}
-
 export default function Checkout() {
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     const [activeStep, setActiveStep] = React.useState(0);
 
+    const state = useAppSelector(selectPurchasingState)
+
+    const [addressWithName, setAddressWithName] = useState<AddressWithName>({address: new Address()})
+
+    function getStepContent(step: number) {
+        switch (step) {
+            case 0:
+                return <ShippingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}/>;
+            case 1:
+                return <BillingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}/>;
+            case 2:
+                return <Review/>;
+            default:
+                throw new Error('Unknown step');
+        }
+    }
+
     const handleNext = () => {
+        if (activeStep === 0) dispatch(changeShippingAddress(addressWithName))
+        else if (activeStep === 1) dispatch(changeBillingAddress(addressWithName))
+        setAddressWithName({address: new Address()})
         setActiveStep(activeStep + 1);
     };
 
     const handleBack = () => {
         setActiveStep(activeStep - 1);
+        if (activeStep === 0 && state.shippingAddress)
+            setAddressWithName(state.shippingAddress)
+        else if (activeStep === 1 && state.billingAddress) setAddressWithName(state.billingAddress)
+        else setAddressWithName({address: new Address()})
     };
 
     return (

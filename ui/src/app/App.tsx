@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Provider} from "react-redux";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {store} from "./redux/store";

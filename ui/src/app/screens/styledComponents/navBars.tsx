@@ -78,7 +78,7 @@ export const TopNav = (props: TopNavProps) => {
     </Toolbar>
 }
 
-export const SideNav = (props: { open: boolean, toggleDrawer: () => void }) => {
+export const SideNav = (props: SideNavProps) => {
     return <Drawer variant="permanent" open={props.open}>
         <Toolbar
             sx={{

@@ -4,10 +4,10 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import AddressFormFields from "./AddressFormFields";
+import AddressFormFields, {AddressFormFieldProps} from "./AddressFormFields";
 import {useState} from "react";
 
-export default function BillingForm() {
+export default function BillingForm(props: AddressFormFieldProps) {
     const [showAddress, setShowAddress] = useState(true)
 
     return (
@@ -64,7 +64,9 @@ export default function BillingForm() {
                                            value={showAddress}/>}
                         label="Use shipping address for payment details"
                     />
-                    {showAddress && <AddressFormFields/>}
+                    {showAddress &&
+                        <AddressFormFields addressWithName={props.addressWithName}
+                                           setAddressWithName={props.setAddressWithName}/>}
                 </Grid>
             </Grid>
         </React.Fragment>
