@@ -18,7 +18,6 @@ import scala.util.Try
 
 /** An OpenID Connect [[OIDCClient client]], which can be used for the OIDC "Authorization Code" flow. */
 sealed trait OIDCClient[F[_]] {
-  import OIDCClient.{AuthorizationFlowResult, StateDecoderFn}
 
   /** The [[OIDCClientConfig client configuration]] used with this client. */
   def config: OIDCClientConfig
@@ -30,12 +29,10 @@ sealed trait OIDCClient[F[_]] {
   def getMetadata: F[DiscoveryMetadata]
 
   /** Starts an OIDC "Authorization Code" flow, returning the client (UI) redirect [[Uri uri]]. */
-  def beginAuthentication(state: Option[GeneratedMessage]): F[Uri]
+  def beginAuthentication(state: String): F[Uri]
 
-  /**
-    * Completes the "Authorization Code" flow, by handling the full (raw) [[Uri `callbackUri`]] from the OIDC provider.
-    */
-  def completeAuthentication(callbackUri: Uri, stateDecoder: StateDecoderFn): F[AuthorizationFlowResult]
+  /** Completes the "Authorization Code" flow, given the `code` and `state` (__sessionKey__) from the OIDC provider. */
+  def completeAuthentication(code: String): F[OIDCIdentity]
 
 }
 
@@ -55,13 +52,12 @@ sealed abstract class OIDCClientErrors { self: OIDCClient.type =>
 object OIDCClient extends OIDCClientErrors with OIDCClientUtils {
 
   /** Create a new [[OIDCClient]], which can be used for the OIDC "Authorization Code" flow. */
-  final def apply[F[_]](config: OIDCClientConfig, providerCallbackUri: Uri, sessionStore: SessionStore[F])(implicit
-    effect: SupportedEffect[F]
+  final def apply[F[_]](config: OIDCClientConfig, providerCallbackUri: Uri)(
+    implicit effect: SupportedEffect[F]
   ): OIDCClient[F] =
     new OIDCClientImpl[F](
       config,
       providerCallbackUri,
-      sessionStore,
       effect.jwkClient,
       effect.metadataClient,
       effect.metadataCache,
@@ -69,9 +65,6 @@ object OIDCClient extends OIDCClientErrors with OIDCClientUtils {
     )(effect.monadThrow)
 
   /* Implementation Details */
-
-  final type AuthorizationFlowResult = (OIDCIdentity, Option[GeneratedMessage])
-  final type StateDecoderFn          = Array[Byte] => GeneratedMessage
 
   /** Supported effect types for [[OIDCClient `OIDCClient[Effect[_]]` ]] */
   sealed trait SupportedEffect[F[_]] {
@@ -142,15 +135,12 @@ sealed trait OIDCClientUtils { self: OIDCClient.type =>
 final private class OIDCClientImpl[F[_]](
   val config: OIDCClientConfig,
   val providerCallbackUri: Uri,
-  sessionStore: SessionStore[F],
   jwkClient: JWKClient[F],
   metadataClient: DiscoveryClient[F],
   metadataCache: InMemCache[F],
-  tokenClient: OIDCTokenClient[F]
-)(implicit
-  F: MonadThrow[F]
+  tokenClient: OIDCTokenClient[F])(
+  implicit F: MonadThrow[F]
 ) extends OIDCClient[F] {
-  import OIDCClient._
 
   /* OIDCClient Implementation */
 
@@ -170,36 +160,19 @@ final private class OIDCClientImpl[F[_]](
     }
   }
 
-  def beginAuthentication(state: Option[GeneratedMessage]): F[Uri] =
+  def beginAuthentication(state: String): F[Uri] =
     for {
-      sessionData <- F.fromTry(Try(state.map(_.toByteArray).getOrElse(Array.empty[Byte])))
-      session     <- F.pure(OIDCSession(sessionData))
       metadata    <- getMetadata
-      _           <- sessionStore.putSession(session)
-      redirectUri <- beginAuthenticationInternal(metadata, session)
+      redirectUri <- beginAuthenticationInternal(metadata, state)
     } yield redirectUri
 
-  def completeAuthentication(callbackUri: Uri, stateDecoder: StateDecoderFn): F[AuthorizationFlowResult] = {
-    @inline def validateState(key: Base64String): F[OIDCSession] =
-      sessionStore.getSession(key).flatMap {
-        case Some(session) => F.pure(session)
-        case None          => F.raiseError(CsrfRejectionError(key))
-      }
-
-    @inline def parseSessionData(session: OIDCSession) =
-      F.fromTry {
-        val data = session.state.rawBytes
-        Try(if (data.isEmpty) Option.empty[GeneratedMessage] else Some(stateDecoder(data)))
-      }
-
+  def completeAuthentication(code: String): F[OIDCIdentity] = {
     for {
-      metadata           <- getMetadata
-      (sessionKey, code) <- F.fromEither(parseStateAndAuthorizationCodeFrom(callbackUri))
-      session            <- validateState(sessionKey)
-      stateData          <- parseSessionData(session)
-      identity           <- completeAuthenticationInternal(metadata, code)
-    } yield (identity, stateData)
+      metadata <- getMetadata
+      identity <- completeAuthenticationInternal(metadata, code)
+    } yield identity
   }
+
 
   /* Internal Implementation */
 
@@ -224,7 +197,7 @@ final private class OIDCClientImpl[F[_]](
     }
   }
 
-  protected def beginAuthenticationInternal(metadata: DiscoveryMetadata, session: OIDCSession): F[Uri] =
+  protected def beginAuthenticationInternal(metadata: DiscoveryMetadata, state: String): F[Uri] =
     F.fromTry {
       scala.util.Try {
         // Nonce
@@ -244,7 +217,7 @@ final private class OIDCClientImpl[F[_]](
           // Requested scopes
           "scope"         -> requiredScopes,
           // State
-          "state"         -> session.key.toString,
+          "state"         -> state,
           // Nonce
           "nonce"         -> nonce.toString
         ) ++ additionalParams

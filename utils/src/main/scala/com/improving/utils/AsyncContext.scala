@@ -45,23 +45,24 @@ object AsyncContext {
   def akka(name: String = defaultActorSystemName, setup: BootstrapSetup = defaultBootstrapSetup): AsyncContext =
     new ActorSystemContext(name, setup)
 
+  def akkaFrom(system: ActorSystem): AsyncContext =
+    new ActorSystemContext(system)
+
   def catsEffect(config: IORuntimeConfig = defaultIORuntimeConfig): AsyncContext =
     new CatsEffectAsyncContext(config)
 
   /** Akka [[ActorSystem]] driven [[AsyncContext]]. */
-  final class ActorSystemContext private[AsyncContext] (name: String, setup: BootstrapSetup) extends AsyncContext {
+  final class ActorSystemContext private[AsyncContext] (system: ActorSystem) extends AsyncContext {
     private[this] var _ioRuntime: Option[IORuntime] = None
+
+    def this(name: String, setup: BootstrapSetup) = this(ActorSystem(name, setup))
 
     val (blockingContext, blockingContextShutdown) = IORuntime.createDefaultBlockingExecutionContext()
 
-    implicit val actorSystem: ActorSystem = {
-      val system = ActorSystem(name, setup)
+    system.registerOnTermination(blockingContextShutdown())
+    system.registerOnTermination(_ioRuntime.foreach(runtime => runtime.shutdown()))
 
-      system.registerOnTermination(blockingContextShutdown())
-      system.registerOnTermination(_ioRuntime.foreach(runtime => runtime.shutdown()))
-
-      system
-    }
+    implicit val actorSystem: ActorSystem = system
 
     /** Cats effect [[IORuntime runtime]] for working with `IO`. */
     implicit def catsEffectRuntime: IORuntime =

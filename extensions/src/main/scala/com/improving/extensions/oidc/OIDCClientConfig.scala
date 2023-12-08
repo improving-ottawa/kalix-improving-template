@@ -13,8 +13,6 @@ import java.time.Duration
   *   The client ID for this ODIC client.
   * @param discoveryUri
   *   The public discovery Uri (typically ends with `/.well-known/openid-configuration`)
-  * @param publicUrl
-  *   The public facing base URL for the access management server (i.e. "this server").
   * @param clientSecret
   *   The client secret for this OIDC client
   * @param useNonce
@@ -29,7 +27,6 @@ import java.time.Duration
 case class OIDCClientConfig(
   clientId: String,
   discoveryUri: String,
-  publicUrl: String,
   clientSecret: String,
   useNonce: Boolean = true,
   sessionTimeToLive: Duration = Duration.ofSeconds(120),
@@ -45,7 +42,6 @@ object OIDCClientConfig {
 
     val clientId      = getString("client-id")
     val discoveryUri  = getString("discovery-uri")
-    val publicUrl     = getString("public-url")
     val clientSecret  = getString("client-secret")
     val useNonce      = getBoolean("use-nonce").withDefault(true)
     val sessionTTL    = getJavaDuration("session-time-to-live").withDefault(Duration.ofSeconds(120))
@@ -55,7 +51,6 @@ object OIDCClientConfig {
     val readConfig = (
       clientId,
       discoveryUri,
-      publicUrl,
       clientSecret,
       useNonce,
       sessionTTL,

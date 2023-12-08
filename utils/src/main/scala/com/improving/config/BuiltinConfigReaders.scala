@@ -1,6 +1,8 @@
 package com.improving.config
 
-import scala.jdk.CollectionConverters._
+import cats.effect.SyncIO
+import cats.syntax.all._
+
 import scala.util.Try
 
 abstract private[config] class BuiltinConfigReaders { self: readers.type =>
@@ -39,6 +41,11 @@ abstract private[config] class BuiltinConfigReaders { self: readers.type =>
 
   final val getStringsMap = pathInputReader { path => cfg =>
     cfg.getObject(path).unwrapped().asScala.view.mapValues(_.asInstanceOf[String]).toMap
+  }
+
+  final val getKeyedConfigMap = pathInputReader { path => cfg =>
+    val cfgObject = cfg.getObject(path).asScala
+    cfgObject.view.mapValues(cfgValue => cfgValue.asInstanceOf[Config]).toMap
   }
 
 }
