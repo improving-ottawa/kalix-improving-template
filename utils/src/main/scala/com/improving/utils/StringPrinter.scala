@@ -1,5 +1,9 @@
 package com.improving.utils
 
+import com.improving.config.ShowConfig
+
+import cats.Show
+
 /**
   * An enhanced, immutable/functional version of something akin to [[StringBuilder]], which can be used to create
   * complex formatted text using a variety of different printing/formatting functions.
@@ -16,6 +20,7 @@ trait StringPrinter { self =>
   def indent(level: Int): StringPrinter
 
   final def outdent: StringPrinter = outdent(1)
+
   def outdent(level: Int): StringPrinter
 
   def append(text: String): StringPrinter
@@ -55,6 +60,12 @@ trait StringPrinter { self =>
   final def applyEndo(funcs: PrinterEndo*): StringPrinter =
     funcs.foldLeft(self)((printer, f) => f(printer))
 
+  final def appendShow[A : Show](element: A): StringPrinter =
+    appendLine(Show[A].show(element))
+
+  final def appendConfig[Cfg : ShowConfig](config: Cfg): StringPrinter =
+    applyEndo(implicitly[ShowConfig[Cfg]].print(config, _))
+
   def lines: Iterable[String]
 
   def result: String
@@ -78,7 +89,8 @@ object StringPrinter {
   ) extends StringPrinter {
     private lazy val prefix = " " * (indentLevel * indentSize)
 
-    def indent(level: Int): StringPrinter  = copy(indentLevel = indentLevel + level)
+    def indent(level: Int): StringPrinter = copy(indentLevel = indentLevel + level)
+
     def outdent(level: Int): StringPrinter = copy(indentLevel = if (indentLevel == 0) 0 else indentLevel - level)
 
     def append(text: String): StringPrinter =

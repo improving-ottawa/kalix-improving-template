@@ -97,7 +97,7 @@ lazy val `bounded-context` = project
 lazy val gateway = project
   .in(file("gateway"))
   .configure(Config.AsKalix.service)
-  .dependsOn(`bounded-context`, extensions)
+  .dependsOn(`bounded-context`, extensions, `integration-testkit` % Test)
 
 lazy val `scheduled-tasks` = project
   .in(file("scheduled-tasks"))
@@ -106,5 +106,5 @@ lazy val `scheduled-tasks` = project
 
 lazy val `integration-testkit-tests`: Project = project
   .in(file("integration-testkit-tests"))
-  .configure(Config.AsKalix.library)
+  .configure(Config.AsProjectType.basicLibrary)
   .dependsOn(`integration-testkit`, `bounded-context`, gateway)

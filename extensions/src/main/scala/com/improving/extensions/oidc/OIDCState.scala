@@ -10,7 +10,7 @@ import java.time.Instant
 import scala.annotation.switch
 import scala.util.Try
 
-case class OIDCState (
+case class OIDCState(
   providerId: String,
   issuedAt: Instant,
   csrfToken: String,
@@ -48,15 +48,15 @@ object OIDCState {
   }
 
   def fromByteArray(array: Array[Byte]): OIDCState = {
-    var providerId = ""
+    var providerId  = ""
     var epochSecond = 0L
-    var nano = 0
-    var csrfToken = ""
+    var nano        = 0
+    var csrfToken   = ""
     var redirectUri = ""
-    var done = false
+    var done        = false
 
     val input = CodedInputStream.newInstance(array)
-    while(!done) {
+    while (!done) {
       val tag = input.readTag()
       (tag: @switch) match {
         case 0  => done = true
@@ -79,22 +79,22 @@ object OIDCStateService {
     new OIDCStateService(algorithmWithKeys)
 
   case class InvalidStateToken(received: String)
-    extends Error(s"Invalid OIDC state received (expected two base64 string separated by a '.'): $received")
+      extends Error(s"Invalid OIDC state received (expected two base64 string separated by a '.'): $received")
 
   case class SignatureVerificationFailed(received: String)
-    extends Error(s"Invalid cryptographic signature in received state token: $received")
+      extends Error(s"Invalid cryptographic signature in received state token: $received")
 
 }
 
-final class OIDCStateService private(algorithmWithKeys: AlgorithmWithKeys) {
+final class OIDCStateService private (algorithmWithKeys: AlgorithmWithKeys) {
   import OIDCStateService._
 
   def signToken(session: OIDCState): String = {
-    val data = OIDCState.toByteArray(session)
+    val data      = OIDCState.toByteArray(session)
     val signature = JwtUtils.sign(data, algorithmWithKeys.privateKey, algorithmWithKeys.algorithm)
 
     val header = Base64String(signature)
-    val body = Base64String(data)
+    val body   = Base64String(data)
 
     header + "." + body
   }

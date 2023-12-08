@@ -17,12 +17,25 @@ case class JwtIssuerConfig(
 
 object JwtIssuerConfig {
 
+  /** [[ShowConfig]] instance for [[JwtIssuerConfig]] */
+  implicit val showConfigForJwtIssuerConfig: ShowConfig[JwtIssuerConfig] =
+    ShowConfig { cfg => printer =>
+      printer
+        .appendLine("JwtIssuerConfig")
+        .indent
+        .appendLine(s"Issuer URL:           ${cfg.tokenIssuerUrl}")
+        .appendLine(s"Token Valid Duration: ${cfg.tokenValidDuration.toMinutes} mins")
+        .appendLine(s"Default User Role:    ${cfg.defaultUserRole}")
+        .outdent
+        .newline
+    }
+
   def fromConfig(config: Config, sectionName: Option[String] = None): Either[Throwable, JwtIssuerConfig] = {
     import readers._
 
-    val tokenIssuerUrlReader = getString("issuer-url")
+    val tokenIssuerUrlReader     = getString("issuer-url")
     val tokenValidDurationReader = getFiniteDuration("token-valid-duration")
-    val defaultUserRoleReader = getString("default-user-role")
+    val defaultUserRoleReader    = getString("default-user-role")
 
     val configReader = (
       tokenIssuerUrlReader,
@@ -39,6 +52,7 @@ object JwtIssuerConfig {
 }
 
 object JwtIssuer {
+
   def apply(config: JwtIssuerConfig, algorithmWithKeys: AlgorithmWithKeys): JwtIssuer =
     new JwtIssuer(config, algorithmWithKeys)
 
@@ -56,7 +70,7 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
     val maxAge = config.tokenValidDuration.toSeconds
     val secure = if (config.tokenIssuerUrl.startsWith("https")) "; Secure" else ""
 
-    s"authToken=$jwt; MaxAge=$maxAge$secure"
+    s"authToken=$jwt; Path=/; MaxAge=$maxAge$secure"
   }
 
   def createJwtFor(identity: OIDCIdentity): Either[Throwable, String] = {
@@ -75,5 +89,8 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
 
     authTokenService.encodeToken(authToken)
   }
+
+  def decodeJwtToken(token: String): Either[Throwable, AuthToken] =
+    authTokenService.validateAndExtractToken(token)
 
 }

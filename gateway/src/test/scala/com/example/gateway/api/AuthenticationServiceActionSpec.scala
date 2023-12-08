@@ -4,4 +4,4 @@ package com.example.gateway.api
 //
 // DO NOT EDIT.
 
-class AuthenticationServiceActionSpec { }
+class AuthenticationServiceActionSpec {}

@@ -4,6 +4,7 @@ package com.example.gateway.api;
 
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
+import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
 message BeginAuthenticationRequest {
@@ -23,6 +24,10 @@ message OIDCAccessCodeData {
 
   // The state
   string state = 2;
+
+  // Additional query string params we might receive
+  string session_state = 3;
+  string iss = 4;
 }
 
 service AuthenticationService {
@@ -46,6 +51,13 @@ service AuthenticationService {
       // https://cloud.google.com/apis/design/standard_methods#get
       // the query parameters should populate the `OIDCAccessCodeData` record.
       get: "/oidc/callback"
+    };
+  }
+
+  // Dumps the JWT cookie
+  rpc oidcCheck (google.protobuf.Empty) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      get: "/oidc/check"
     };
   }
 

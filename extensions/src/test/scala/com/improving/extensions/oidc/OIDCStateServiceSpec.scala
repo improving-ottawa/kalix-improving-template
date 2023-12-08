@@ -29,7 +29,7 @@ class OIDCStateServiceSpec extends AnyWordSpec with Matchers {
   import OIDCStateServiceSpec._
 
   private val algorithmWithKeys = KeyLoader.load(ecConfig).fold(throw _, identity)
-  private val service = OIDCStateService(algorithmWithKeys)
+  private val service           = OIDCStateService(algorithmWithKeys)
 
   "OIDCStateService" should {
 
@@ -39,7 +39,7 @@ class OIDCStateServiceSpec extends AnyWordSpec with Matchers {
     }
 
     "be able to decode a signed state token into an OIDCState instance" in {
-      val token = service.signToken(expected)
+      val token  = service.signToken(expected)
       val result = service.parseSessionToken(token)
       result match {
         case Left(error)   => fail(error)

@@ -52,8 +52,8 @@ sealed abstract class OIDCClientErrors { self: OIDCClient.type =>
 object OIDCClient extends OIDCClientErrors with OIDCClientUtils {
 
   /** Create a new [[OIDCClient]], which can be used for the OIDC "Authorization Code" flow. */
-  final def apply[F[_]](config: OIDCClientConfig, providerCallbackUri: Uri)(
-    implicit effect: SupportedEffect[F]
+  final def apply[F[_]](config: OIDCClientConfig, providerCallbackUri: Uri)(implicit
+    effect: SupportedEffect[F]
   ): OIDCClient[F] =
     new OIDCClientImpl[F](
       config,
@@ -76,6 +76,20 @@ object OIDCClient extends OIDCClientErrors with OIDCClientUtils {
   }
 
   object SupportedEffect {
+
+    def testEffectForFuture: SupportedEffect[Future] =
+      new SupportedEffect[Future] {
+        implicit private val executionContext: ExecutionContext = ExecutionContext.global
+
+        final def monadThrow: MonadThrow[Future]          = MonadThrow[Future]
+        final def jwkClient: JWKClient[Future]            = JWKClient.scalaFuture(executionContext)
+        final def metadataClient: DiscoveryClient[Future] = DiscoveryClient.scalaFuture(executionContext)
+        final def metadataCache: InMemCache[Future]       = InMemCache.scalaFuture(executionContext)
+
+        final def tokenClient(config: OIDCClientConfig): OIDCTokenClient[Future] =
+          OIDCTokenClient.scalaFuture(config, executionContext)
+
+      }
 
     implicit final val catsEffectIsSupportedEffect: SupportedEffect[IO] =
       new SupportedEffect[IO] {
@@ -138,8 +152,9 @@ final private class OIDCClientImpl[F[_]](
   jwkClient: JWKClient[F],
   metadataClient: DiscoveryClient[F],
   metadataCache: InMemCache[F],
-  tokenClient: OIDCTokenClient[F])(
-  implicit F: MonadThrow[F]
+  tokenClient: OIDCTokenClient[F]
+)(implicit
+  F: MonadThrow[F]
 ) extends OIDCClient[F] {
 
   /* OIDCClient Implementation */
@@ -172,7 +187,6 @@ final private class OIDCClientImpl[F[_]](
       identity <- completeAuthenticationInternal(metadata, code)
     } yield identity
   }
-
 
   /* Internal Implementation */
 
