@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import scala.concurrent._
 import scala.concurrent.duration._
 
-final private[testkit] class TestKitImpl private ()
+final private[testkit] class TestKitImpl private
     extends KalixServiceManager
     with TestKitBuilder
     with BuildableTestKitBuilder
@@ -90,7 +90,7 @@ final private[testkit] class TestKitImpl private ()
 private[testkit] object TestKitImpl {
   final private val testKitSystemConfig = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = true")
 
-  private[internal] def emptyBuilder: TestKitBuilder = new TestKitImpl()
+  private[testkit] def emptyBuilder: TestKitBuilder = new TestKitImpl()
 
   sealed private trait State {
     def system: ActorSystem

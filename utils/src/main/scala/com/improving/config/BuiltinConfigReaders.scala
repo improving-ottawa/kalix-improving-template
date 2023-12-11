@@ -1,5 +1,8 @@
 package com.improving.config
 
+import cats.effect.SyncIO
+import cats.syntax.all._
+
 import scala.util.Try
 
 abstract private[config] class BuiltinConfigReaders { self: readers.type =>
@@ -24,6 +27,7 @@ abstract private[config] class BuiltinConfigReaders { self: readers.type =>
   final val getBytesSize  = pathInputReader(path => cfg => Long.unbox(cfg.getBytes(path)))
   final val getMemorySize = pathInputReader(path => cfg => cfg.getMemorySize(path))
 
+  final val getJavaDuration   = pathInputReader(path => cfg => cfg.getDuration(path))
   final val getFiniteDuration = pathInputReader(path => cfg => cfg.getFiniteDuration(path))
   final val getBase64Bytes    = pathInputReader(path => cfg => decode64(cfg.getString(path)))
   final val getFileSystemPath = pathInputReader(path => cfg => cfg.getString(path)).andThen(_.map(asPath))
@@ -33,8 +37,16 @@ abstract private[config] class BuiltinConfigReaders { self: readers.type =>
   final val getLongList    = pathInputReader(path => cfg => cfg.getLongList(path).asScala.map(Long.unbox).toList)
   final val getDoubleList  = pathInputReader(path => cfg => cfg.getDoubleList(path).asScala.map(Double.unbox).toList)
   final val getStringList  = pathInputReader(path => cfg => cfg.getStringList(path).asScala.toList)
+  final val getConfigList  = pathInputReader(path => cfg => cfg.getConfigList(path).asScala.toList)
 
-  final val getConfigList = pathInputReader(path => cfg => cfg.getConfigList(path).asScala.toList)
+  final val getStringsMap = pathInputReader { path => cfg =>
+    cfg.getObject(path).unwrapped().asScala.view.mapValues(_.asInstanceOf[String]).toMap
+  }
+
+  final val getKeyedConfigMap = pathInputReader { path => cfg =>
+    val cfgObject = cfg.getObject(path).asScala
+    cfgObject.view.mapValues(cfgValue => cfgValue.asInstanceOf[Config]).toMap
+  }
 
 }
 
