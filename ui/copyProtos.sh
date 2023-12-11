@@ -1,4 +1,6 @@
-rm -r protos
+if [ -d "protos" ]; then
+  rm -r protos
+fi
 if [ -d "src/generated" ]; then
   rm -r src/generated
 fi
