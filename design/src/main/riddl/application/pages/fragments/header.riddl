@@ -1,1 +1,19 @@
-section Header {???}
+type ShopLink is String
+type CustomerDashboardLink is String
+type OrderDashboardLink is String
+type AboutUsLink is String
+type ResourcesLink is String
+
+command GotoPricingPage is {???}
+command GotoCustomerDashboard is {???}
+command GotoOrderDashboard is {???}
+command GotoAboutUsPage is {???}
+command GotoResources is {???}
+
+group Header is {
+  text ShopMenuItem initiates command GotoPricingPage
+  text CustomerDashboardMenuItem initiates command GotoCustomerDashboard
+  text OrderDashboardMenuItem initiates command GotoOrderDashboard
+  text AboutUsMenuItem initiates command GotoAboutUsPage
+  text ResourcesMenuItem initiates command GotoResources
+}
