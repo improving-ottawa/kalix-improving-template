@@ -8,13 +8,6 @@ import {selectPurchasingState} from "../../../redux/slices/purchasingSlice";
 import {useAppSelector} from "../../../redux/hooks";
 import {printAddress} from "../../../utils";
 
-const payments = [
-    {name: 'Card type', detail: 'Visa'},
-    {name: 'Card holder', detail: 'Mr John Smith'},
-    {name: 'Card number', detail: 'xxxx-xxxx-xxxx-1234'},
-    {name: 'Expiry date', detail: '04/2024'},
-];
-
 export default function Review() {
     const state = useAppSelector(selectPurchasingState)
 
@@ -58,13 +51,20 @@ export default function Review() {
                         Payment details
                     </Typography>
                     <Grid container>
-                        {payments.map((payment) => (
-                            <React.Fragment key={payment.name}>
+                        {[{id: "Card Holder", info: state.paymentInfo?.cardHolder},
+                            {id: "Card Number", info: state.paymentInfo?.cardNumber},
+                            {
+                                id: "Expiry Date", info: state.paymentInfo?.expiryDate ?
+                                    (new Date(state.paymentInfo.expiryDate)).toDateString() : ""
+                            },
+                            {id: "CVV", info: state.paymentInfo?.cvv},
+                        ].map((info) => (
+                            <React.Fragment key={info.id}>
                                 <Grid item xs={6}>
-                                    <Typography gutterBottom>{payment.name}</Typography>
+                                    <Typography gutterBottom>{info.id}</Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography gutterBottom>{payment.detail}</Typography>
+                                    <Typography gutterBottom>{info.info}</Typography>
                                 </Grid>
                             </React.Fragment>
                         ))}

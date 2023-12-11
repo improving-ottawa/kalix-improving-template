@@ -12,10 +12,10 @@ export interface AddressWithName {
 }
 
 export interface PaymentInfo {
-    cardType: string
-    cardHolder: string
-    cardNumber: string
-    expiryDate: Date
+    cvv?: string
+    cardHolder?: string
+    cardNumber?: string
+    expiryDate?: Date
 }
 
 export interface PurchasingState {
