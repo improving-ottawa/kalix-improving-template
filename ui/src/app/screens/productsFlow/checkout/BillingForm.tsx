@@ -66,7 +66,8 @@ export default function BillingForm(props: AddressFormFieldProps) {
                     />
                     {showAddress &&
                         <AddressFormFields addressWithName={props.addressWithName}
-                                           setAddressWithName={props.setAddressWithName}/>}
+                                           setAddressWithName={props.setAddressWithName}
+                                           hasCountryError={props.hasCountryError}/>}
                 </Grid>
             </Grid>
         </React.Fragment>

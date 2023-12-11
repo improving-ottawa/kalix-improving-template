@@ -16,7 +16,7 @@ import Review from './Review';
 import {Copyright} from "../../styledComponents/copyright";
 import {Link} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
     AddressWithName,
     changeBillingAddress,
@@ -25,6 +25,7 @@ import {
 } from "../../../redux/slices/purchasingSlice";
 import {Address} from "../../../../generated/com/example/common/domain/address_pb";
 import {useAppDispatch, useAppSelector} from "../../../redux/hooks";
+import typia from "typia";
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 
@@ -36,13 +37,20 @@ export default function Checkout() {
     const state = useAppSelector(selectPurchasingState)
 
     const [addressWithName, setAddressWithName] = useState<AddressWithName>({address: new Address()})
+    const [hasCountryError, setHasCountryError] = useState(false)
+
+    useEffect(() => {
+        if (state.shippingAddress) typia.protobuf.validateEncode(state.shippingAddress?.address)
+    }, [state.shippingAddress?.address, state.billingAddress?.address])
 
     function getStepContent(step: number) {
         switch (step) {
             case 0:
-                return <ShippingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}/>;
+                return <ShippingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}
+                                     hasCountryError={hasCountryError}/>;
             case 1:
-                return <BillingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}/>;
+                return <BillingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}
+                                    hasCountryError={hasCountryError}/>;
             case 2:
                 return <Review/>;
             default:

@@ -13,7 +13,8 @@ export default function ShippingForm(props: AddressFormFieldProps) {
             <Typography variant="h6" gutterBottom>
                 Shipping address
             </Typography>
-            <AddressFormFields addressWithName={props.addressWithName} setAddressWithName={props.setAddressWithName}/>
+            <AddressFormFields addressWithName={props.addressWithName} setAddressWithName={props.setAddressWithName}
+                               hasCountryError={props.hasCountryError}/>
         </React.Fragment>
     );
 }

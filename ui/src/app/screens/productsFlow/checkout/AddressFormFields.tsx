@@ -3,20 +3,19 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import {PostalCode} from "../../../../generated/com/example/common/domain/address_pb";
 import {AddressWithName} from "../../../redux/slices/purchasingSlice";
-import {PropsWithChildren, useState} from "react";
-import typia from "typia";
+import {PropsWithChildren, useEffect, useState} from "react";
+import typia, {IValidation} from "typia";
 import {FormControl, FormHelperText, InputLabel, MenuItem, Select} from "@mui/material";
 
 export interface AddressFormFieldProps extends PropsWithChildren<any> {
     addressWithName: AddressWithName
     setAddressWithName: React.Dispatch<React.SetStateAction<AddressWithName>>
+    hasCountryError: boolean
 }
 
 export default function AddressFormFields(props: AddressFormFieldProps) {
-    var validate = require('protobuf-validator')('../../../../generated/com/example/common/domain/address_pb.proto');
-
-    const [hasCountryError, setHasCountryError] = useState(false)
     const [postalCodeValidationError, setPostalCodeValidationError] = useState<string | undefined>(undefined)
+
 
     return <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
@@ -112,25 +111,28 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 }}
             />
         </Grid>
-        <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}} error={hasCountryError}>
-            <InputLabel id="companyCountryField">Country</InputLabel>
-            <Select fullWidth
-                    required
-                    value={props.addressWithName.address.getCountry()}
-                    labelId="companyCountryField"
-                    onChange={(e) => {
-                        props.setAddressWithName({
-                            ...props.addressWithName,
-                            address: props.addressWithName.address.setCountry(e.target.value)
-                        })
-                    }}
-                    id="changeCountry" label="Country" variant="outlined"
-            >
-                <MenuItem divider value={"Canada"}>Canada</MenuItem>
-                <MenuItem divider value={"US"}>Canada</MenuItem>
-            </Select>
-            <FormHelperText>{hasCountryError ? "Country is required" : ""}</FormHelperText>
-        </FormControl>
+        <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}
+                         error={props.hasCountryError}>
+                <InputLabel id="companyCountryField">Country</InputLabel>
+                <Select fullWidth
+                        required
+                        value={props.addressWithName.address.getCountry()}
+                        labelId="companyCountryField"
+                        onChange={(e) => {
+                            props.setAddressWithName({
+                                ...props.addressWithName,
+                                address: props.addressWithName.address.setCountry(e.target.value)
+                            })
+                        }}
+                        id="changeCountry" label="Country" variant="outlined"
+                >
+                    <MenuItem divider value={"Canada"}>Canada</MenuItem>
+                    <MenuItem divider value={"US"}>US</MenuItem>
+                </Select>
+                <FormHelperText>{props.hasCountryError ? "Country is required" : ""}</FormHelperText>
+            </FormControl>
+        </Grid>
         <Grid item xs={12} sm={6}>
             <TextField
                 required
@@ -143,15 +145,18 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 error={postalCodeValidationError !== undefined}
                 helperText={!postalCodeValidationError ?? postalCodeValidationError}
                 onChange={(e) => {
-                    const validation = typia.protobuf.validateEncode<PostalCode>(e.target.value)
-                    if (validation) {
+                    const validation = props.addressWithName.address.getCountry() === "Canada" ?
+                        typia.protobuf.validateEncode<PostalCode>(e.target.value) :
+                        props.addressWithName.address.getCountry() !== "US" ?
+                            typia.protobuf.validateEncode<PostalCode>(e.target.value) : typia.protobuf.validateEncode<PostalCode>("")
+                    if (validation.success) {
                         const postalCode = new PostalCode()
                         postalCode.setCaPostalCodeMessage(e.target.value)
                         props.setAddressWithName({
                             ...props.addressWithName,
                             address: props.addressWithName.address.setPostalCode(postalCode)
                         })
-                    } else setPostalCodeValidationError(validation)
+                    } else setPostalCodeValidationError(validation.errors.join(", "))
                 }}
             />
         </Grid>
