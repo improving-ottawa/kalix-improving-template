@@ -1,6 +1,7 @@
 package com.example.gateway
 
 import com.example.gateway.api._
+import com.example.gateway.entity._
 import com.example.gateway.utils._
 import com.improving.iam._
 import com.improving.extensions.oidc._
@@ -21,7 +22,7 @@ import scala.concurrent.duration.FiniteDuration
 
 object Main {
 
-  private val log = LoggerFactory.getLogger("com.example.template.Main")
+  private val log = LoggerFactory.getLogger("com.example.gateway.Main")
 
   def createKalixForTest(): Kalix = {
     implicit val testEffect: OIDCClient.SupportedEffect[Future] =
@@ -45,6 +46,7 @@ object Main {
 
     KalixFactory.withComponents(
       new LoginTokenService(_, algorithmWithKeys),
+      new UserEntity(_),
       new AuthenticationServiceAction(identityService, jwtIssuer, _),
       new GatewayProxy(_)
     )
@@ -81,6 +83,7 @@ object Main {
       .register(authServiceProvider)
       .register(LoginTokenServiceProvider(new LoginTokenService(_, algorithmWithKeys)))
       .register(GatewayProxyProvider(new GatewayProxy(_)))
+      .register(UserEntityProvider(new UserEntity(_)))
   }
 
   def main(args: Array[String]): Unit = {

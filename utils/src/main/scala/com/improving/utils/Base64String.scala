@@ -3,7 +3,7 @@ package com.improving.utils
 import java.util.Base64
 
 /** Strongly typed `Base64` textual representation of data. */
-abstract class Base64String private[utils] extends CharSequence {
+sealed abstract class Base64String private[utils] extends CharSequence {
 
   /** Indicates whether or not this [[Base64String]] textual representation is safe for URL encoding. */
   def urlSafe: Boolean
@@ -24,7 +24,7 @@ abstract class Base64String private[utils] extends CharSequence {
 object Base64String {
 
   def apply(data: Array[Byte], urlSafe: Boolean = true, withoutPadding: Boolean = true): Base64String =
-    Impl(getEncoder(urlSafe, withoutPadding).encodeToString(data), urlSafe)
+    Impl(getEncoder(urlSafe, withoutPadding).encodeToString(data), data, urlSafe)
 
   def fromBase64String(base64: String, urlSafe: Boolean = true): Either[Throwable, Base64String] =
     try Right(unsafeFromBase64String(base64, urlSafe))
@@ -35,7 +35,7 @@ object Base64String {
     val rawBytes = decoder.decode(base64)
 
     assert(rawBytes.length >= 0)
-    Impl(base64, urlSafe)
+    Impl(base64, rawBytes, urlSafe)
   }
 
   // Base64 Encoder selected from formatting arguments
@@ -47,12 +47,11 @@ object Base64String {
       case (false, false) => Base64.getEncoder
     }
 
-  final private case class Impl(override val toString: String, urlSafe: Boolean) extends Base64String {
-
-    override lazy val rawBytes: Array[Byte] = {
-      val decoder = if (urlSafe) Base64.getUrlDecoder else Base64.getDecoder
-      decoder.decode(toString)
-    }
+  final private case class Impl(
+    override val toString: String,
+    rawBytes: Array[Byte],
+    urlSafe: Boolean
+  ) extends Base64String {
 
     override def canEqual(that: Any): Boolean = that.isInstanceOf[Base64String]
 

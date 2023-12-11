@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package com.example.gateway.domain;
+
+import "com/example/common/timestamp.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+message UserInfo {
+  // The unique user identifier (UUID)
+  string id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+  // The OIDC identity provider this user is synchronized to
+  string provider_id = 2 [(validate.rules).string.min_len = 1];
+  // The user's email address
+  optional string email_address = 3 [(validate.rules).string.email = true];
+  // The last date/time (instant) this was synchronized with the source identity provider
+  optional common.Timestamp last_synced = 4;
+
+  // The user's given name ("first name")
+  string given_name = 5;
+  // The user's family name ("last name")
+  string family_name = 6;
+  // The user's preferred display name
+  string preferred_display_name = 7 [(validate.rules).string.min_len = 1];
+
+  // Reserved for future data
+  reserved 8, 9;
+
+  // The roles that are assigned to this user
+  repeated string user_roles = 10 [(scalapb.field).collection_type = "scala.collection.immutable.Set"];
+}

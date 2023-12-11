@@ -6,28 +6,28 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class OIDCStateSpec extends AnyWordSpec with Matchers {
 
-  "OIDCSession" should {
+  "OIDCState" should {
 
     "be serializable into a byte array" in {
       val providerId  = "Google"
-      val csrfToken   = SecureRandomString(32)
+      val nonce       = SecureRandomString(16)
       val redirectUrl = "http://localhost:9000/"
-      val state       = OIDCState(providerId, csrfToken.toString, redirectUrl)
+      val state       = OIDCState(providerId, redirectUrl, nonce)
       val byteArray   = OIDCState.toByteArray(state)
       byteArray.length must be > 0
     }
 
     "be serializable into a byte array (empty strings)" in {
-      val state     = OIDCState("Google", "", "")
+      val state     = OIDCState("Google", "")
       val byteArray = OIDCState.toByteArray(state)
       byteArray.length must be > 0
     }
 
     "be deserializable from a byte array" in {
       val providerId  = "Google"
-      val csrfToken   = SecureRandomString(32)
+      val nonce       = SecureRandomString(32)
       val redirectUrl = "http://localhost:9000/"
-      val expected    = OIDCState(providerId, csrfToken.toString, redirectUrl)
+      val expected    = OIDCState(providerId, redirectUrl, nonce)
       val byteArray   = OIDCState.toByteArray(expected)
       val actual      = OIDCState.fromByteArray(byteArray)
 

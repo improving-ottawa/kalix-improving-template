@@ -3,9 +3,10 @@ package com.example.gateway.utils
 import com.improving.iam._
 import com.improving.config._
 import com.improving.extensions.oidc.OIDCIdentity
-import com.improving.utils.SystemClock
+import com.improving.utils.{Base64String, SystemClock}
 
 import cats.syntax.all._
+
 import scala.concurrent.duration.FiniteDuration
 import java.util.UUID
 
@@ -56,6 +57,16 @@ object JwtIssuer {
   def apply(config: JwtIssuerConfig, algorithmWithKeys: AlgorithmWithKeys): JwtIssuer =
     new JwtIssuer(config, algorithmWithKeys)
 
+  /* Typed / specific errors */
+
+  case class CsrfTokenMismatch(fromJwt: Base64String, fromHeader: Base64String)
+    extends Error(
+      s"CSRF verification failed, received different CSRF tokens from JWT ($fromJwt) and HTTP header ($fromHeader)."
+    )
+
+  case class MissingCsrfToken(authToken: AuthToken)
+    extends Error(s"Authorization token missing `csrf_token` in claims: $authToken")
+
 }
 
 final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: AlgorithmWithKeys) {
@@ -73,8 +84,9 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
     s"authToken=$jwt; Path=/; MaxAge=$maxAge$secure"
   }
 
-  def createJwtFor(identity: OIDCIdentity): Either[Throwable, String] = {
-    val nowInstant = SystemClock.currentInstant
+  def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, String] = {
+    val nowInstant       = SystemClock.currentInstant
+    val additionalClaims = Map("csrf_token" -> csrfToken.toString)
 
     val authToken =
       AuthToken(
@@ -84,7 +96,8 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
         nowInstant.plus(javaDuration),
         nowInstant,
         nowInstant,
-        Set(config.defaultUserRole)
+        Set(config.defaultUserRole),
+        additionalClaims = additionalClaims
       )
 
     authTokenService.encodeToken(authToken)
@@ -92,5 +105,22 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
 
   def decodeJwtToken(token: String): Either[Throwable, AuthToken] =
     authTokenService.validateAndExtractToken(token)
+
+  def validateAndExtract(jwt: String, csrfToken: Base64String): Either[Throwable, AuthToken] = {
+    @inline def extractJwtAuthToken(authToken: AuthToken) =
+      authToken.additionalClaims.get("csrf_token")
+        .map(Base64String.fromBase64String(_).leftMap(_ => JwtIssuer.MissingCsrfToken(authToken)))
+        .getOrElse(Left(JwtIssuer.MissingCsrfToken(authToken)))
+
+    @inline def verifyCsrfTokens(fromJwt: Base64String) =
+      if (csrfToken == fromJwt) Right(())
+      else Left(JwtIssuer.CsrfTokenMismatch(fromJwt, csrfToken))
+
+    for {
+      authToken     <- authTokenService.validateAndExtractToken(jwt)
+      jwtCsrfToken  <- extractJwtAuthToken(authToken)
+      _             <- verifyCsrfTokens(jwtCsrfToken)
+    } yield authToken
+  }
 
 }

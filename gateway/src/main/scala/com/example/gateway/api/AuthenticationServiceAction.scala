@@ -1,12 +1,12 @@
 package com.example.gateway.api
 
-import com.improving.extensions.oidc._
+import com.example.gateway.domain.UserInfo
 import com.example.gateway.utils.JwtIssuer
-import com.improving.utils.FutureUtils
+import com.improving.extensions.oidc._
+import com.improving.utils.{FutureUtils, SecureRandomString}
 
 import com.google.api.HttpBody
 import com.google.protobuf.empty.Empty
-import com.improving.iam.AuthToken.toClaims
 import io.circe.Json
 import io.grpc.Status.{Code => StatusCode}
 import kalix.scalasdk.Metadata
@@ -29,26 +29,30 @@ class AuthenticationServiceAction(
   private val log = LoggerFactory.getLogger(classOf[AuthenticationServiceAction])
 
   final def oidcAuthentication(request: BeginAuthenticationRequest): Action.Effect[HttpBody] = {
-    val session      = OIDCState(request.providerId, request.csrfToken, request.redirectUri)
-    val redirectUri  = identityService.beginAuthorizationCodeFlow(session)
-    val redirectHtml = redirectUri.map { uri =>
+    val session        = OIDCState(request.providerId, request.redirectUri)
+    val redirectUri    = identityService.beginAuthorizationCodeFlow(session)
+    val redirectEffect = redirectUri.map { uri =>
       val html =
         s"""<head>
            |  <meta http-equiv="Refresh" content="0; URL=${uri.toString}" />
            |</head>""".stripMargin
 
-      HttpBody(
+      val emptyBody = HttpBody(
         contentType = "text/html",
-        data = com.google.protobuf.ByteString.copyFromUtf8(html)
+        data = com.google.protobuf.ByteString.EMPTY
       )
+
+      val headers = Metadata.empty
+        .add("_kalix-http-code", "303")
+        .add("Location", uri.toString)
+
+      effects.reply(emptyBody, headers)
     }
 
     val asyncEffect =
-      redirectHtml
-        .map(httpBody => effects.reply(httpBody))
-        .recover { case err: OIDCIdentityService.InvalidProviderIdError =>
-          effects.error(err.getMessage, StatusCode.INVALID_ARGUMENT)
-        }
+      redirectEffect.recover { case err: OIDCIdentityService.InvalidProviderIdError =>
+        effects.error(err.getMessage, StatusCode.INVALID_ARGUMENT)
+      }
 
     effects.asyncEffect(asyncEffect)
   }
@@ -61,30 +65,43 @@ class AuthenticationServiceAction(
     } else {
       val code       = accessCodeData.code
       val stateToken = accessCodeData.state
+      val csrfToken  = SecureRandomString(8)
+
+      def syncUserIdentity(identity: OIDCIdentity, state: OIDCState) = {
+        val userInfo = UserInfo(
+          id = identity.id.toString,
+          providerId = state.providerId,
+          emailAddress = identity.email,
+          lastSynced = None,
+          givenName = identity.givenName.getOrElse(""),
+          familyName = identity.familyName.getOrElse(""),
+          preferredDisplayName = identity.preferredName.getOrElse(identity.name)
+        )
+
+        components.userEntity.createOrUpdateUserInfo(userInfo).execute()
+      }
 
       val redirectEffect =
         for {
           (identity, state) <- identityService.completeAuthorizationCodeFlow(code, stateToken)
-          jwtToken          <- Future.fromEither(jwtIssuer.createJwtFor(identity))
-          csrfToken          = state.csrfToken
+          jwtToken          <- Future.fromEither(jwtIssuer.createJwtFor(identity, csrfToken))
+          _                 <- syncUserIdentity(identity, state)
         } yield {
+          val csrfTokenCookie = s"csrfToken=${csrfToken.toString}; Path=/; SameSite=Lax"
+
           val httpHeaders = Metadata.empty
+            .add("_kalix-http-code", "303")
+            .add("Location", state.redirectUri)
             .add("Cache-Control", "no-cache")
             .add("Set-Cookie", jwtIssuer.jwtToHttpCookie(jwtToken))
-            .add("Set-Cookie", s"csrfToken=$csrfToken; Path=/")
+            .add("Set-Cookie", csrfTokenCookie)
 
-          val html =
-            s"""<head>
-               |  <meta http-equiv="Refresh" content="0; URL=${state.redirectUri}" />
-               |</head>""".stripMargin
-
-          effects.reply(
-            HttpBody(
-              contentType = "text/html",
-              data = com.google.protobuf.ByteString.copyFromUtf8(html)
-            ),
-            httpHeaders
+          val body = HttpBody(
+            contentType = "text/html",
+            data = com.google.protobuf.ByteString.EMPTY
           )
+
+          effects.reply(body, httpHeaders)
         }
 
       effects.asyncEffect(redirectEffect)
@@ -119,6 +136,7 @@ class AuthenticationServiceAction(
     val metadataJsonMap = requestMetadata.foldLeft(Map.empty[String, Json]) { case (acc, (key, value)) =>
       key match {
         case "Authorization" => acc + ("bearer_token" -> parseAuthToken(value.replace("Bearer", "").trim))
+        case "X-CSRF-Token"  => acc + ("csrfToken" -> Json.fromString(value))
         case "Cookie"        => acc ++ parseCookies(value)
         case _               => acc
       }
