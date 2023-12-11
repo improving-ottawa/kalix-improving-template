@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package com.example.gateway.api;
+
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+
+message BeginAuthenticationRequest {
+  // The `providerId` to use when selecting the OIDC client / which OIDC provider to use
+  string provider_id = 1;
+
+  // The client (UI) URI that the user will be redirected to after the OIDC authorization code flow is complete
+  string redirect_uri = 2;
+
+  // Optional (but suggested) CSRF token
+  string csrf_token = 3;
+}
+
+message OIDCAccessCodeData {
+  // The access code
+  string code = 1;
+
+  // The state
+  string state = 2;
+
+  // Additional query string params we might receive
+  string session_state = 3;
+  string iss = 4;
+}
+
+service AuthenticationService {
+  option (kalix.codegen) = { action: {} };
+
+  // Begin authentication, which will redirect the client (web-browser) to the OIDC provider's login page
+  // starting the authorization code flow
+  rpc oidcAuthentication (BeginAuthenticationRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      // Note: According to this specification:
+      // https://cloud.google.com/apis/design/standard_methods#get
+      // the query parameters should populate the `OIDCAccessCodeData` record.
+      get: "/oidc/auth"
+    };
+  }
+
+  // OpenID Connect (OIDC) callback endpoint
+  rpc oidcCallback (OIDCAccessCodeData) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      // Note: According to this specification:
+      // https://cloud.google.com/apis/design/standard_methods#get
+      // the query parameters should populate the `OIDCAccessCodeData` record.
+      get: "/oidc/callback"
+    };
+  }
+
+  // Dumps the JWT cookie
+  rpc oidcCheck (google.protobuf.Empty) returns (google.api.HttpBody) {
+    option (google.api.http) = {
+      get: "/oidc/check"
+    };
+  }
+
+}

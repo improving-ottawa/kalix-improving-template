@@ -7,7 +7,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import kalix.javasdk.OpenKalixRunner
 import kalix.javasdk.testkit.{EventingTestKit, KalixProxyContainer}
 import kalix.scalasdk.WrappedKalix
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.tailrec
 import scala.concurrent._
@@ -29,8 +29,8 @@ abstract private[testkit] class KalixServiceManager {
   @volatile private[this] var isRunning         = false
   @volatile private[this] var grpcClientsConfig = ConfigFactory.empty()
 
-  private lazy val serviceManagerLog = LoggerFactory.getLogger("IntegrationTestKit.KalixServicesManager")
-  private lazy val proxyManagerLog   = LoggerFactory.getLogger("IntegrationTestKit.KalixProxyManager   ")
+  protected lazy val serviceManagerLog: Logger = LoggerFactory.getLogger("IntegrationTestKit.KalixServicesManager")
+  protected lazy val proxyManagerLog: Logger   = LoggerFactory.getLogger("IntegrationTestKit.KalixProxyManager   ")
 
   /* Public API */
 
@@ -111,7 +111,7 @@ abstract private[testkit] class KalixServiceManager {
       serviceManagerLog.info(s"Assigning TCP ports for Kalix service: $svcName ...")
 
       entry.jvmServicePort = availableLocalPort()
-      entry.kalixProxyPort = availableLocalPort()
+      entry.kalixProxyPort = entry.overrideProxyPort.fold(availableLocalPort())(identity)
     }
 
     try
@@ -176,6 +176,7 @@ abstract private[testkit] class KalixServiceManager {
           }
         }
 
+        instanceRegistry.clear()
         isRunning = false
       }
     catch {

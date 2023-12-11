@@ -15,7 +15,7 @@ command CreateUserUsingGmail is {???}
 command RedirectUserToSigninPage is {???}
 
 page SignupPage {
-  form NewUserForm acquires record SignupParameters {
+  form NewUserForm acquires SignupParameters {
     input firstName accepts FirstName
     input lastName accepts LastName
     input emailAddress accepts EmailAddress

@@ -1,12 +1,12 @@
 package com.example.gateway.api
 
-import akka.actor.ActorSystem
 import com.example.gateway.Main
-import com.example.gateway.domain.ClaimTokenRequest
-import com.example.gateway.domain.ClaimTokenResponse
-import com.example.gateway.domain.CreateLoginTokenRequest
-import com.example.gateway.domain.CreateLoginTokenResponse
-import com.google.protobuf.empty.Empty
+import com.example.gateway.domain._
+import com.example.gateway.utils.JwtIssuerConfig
+import com.improving.extensions.oidc.OIDCIdentityServiceConfig
+import com.improving.iam.KeyLoaderConfig
+import com.improving.utils.AsyncContext
+
 import kalix.scalasdk.testkit.KalixTestKit
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
@@ -26,7 +26,31 @@ class LoginTokenIntegrationSpec extends AnyWordSpec with Matchers with BeforeAnd
   implicit private val patience: PatienceConfig =
     PatienceConfig(Span(5, Seconds), Span(500, Millis))
 
-  private val testKit = KalixTestKit(Main.createKalix()).start()
+  implicit private val asyncContext: AsyncContext = AsyncContext.akka("test-system")
+
+  private val kalix = {
+    val keyLoaderConfig = KeyLoaderConfig(
+      pdi.jwt.JwtAlgorithm.RS256,
+      "does_not_exist.pub",
+      "does_not_exist.priv",
+      None
+    )
+
+    val identityConfig = OIDCIdentityServiceConfig(
+      providerCallback = sttp.model.Uri.unsafeParse("http://localhost:9000/oidc/callback"),
+      Map.empty
+    )
+
+    val jwtIssuerConfig = JwtIssuerConfig(
+      tokenIssuerUrl = "http://localhost:9000",
+      tokenValidDuration = scala.concurrent.duration.FiniteDuration(5, "minutes"),
+      defaultUserRole = "Test"
+    )
+
+    Main.createKalix(keyLoaderConfig, identityConfig, jwtIssuerConfig)
+  }
+
+  private val testKit = KalixTestKit(kalix).start()
 
   private val client = testKit.getGrpcClient(classOf[LoginToken])
 
