@@ -5,10 +5,13 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import AddressFormFields, {AddressFormFieldProps} from "./AddressFormFields";
-import {useState} from "react";
 
-export default function BillingForm(props: AddressFormFieldProps) {
-    const [showAddress, setShowAddress] = useState(true)
+interface BillingFormProps {
+    showAddress: boolean
+    setShowAddress: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function BillingForm(props: AddressFormFieldProps & BillingFormProps) {
 
     return (
         <React.Fragment>
@@ -59,12 +62,12 @@ export default function BillingForm(props: AddressFormFieldProps) {
                 </Grid>
                 <Grid item xs={12}>
                     <FormControlLabel
-                        onChange={() => setShowAddress(!showAddress)}
+                        onChange={() => props.setShowAddress(!props.showAddress)}
                         control={<Checkbox name="saveAddress"
-                                           value={showAddress}/>}
+                                           checked={!props.showAddress}/>}
                         label="Use shipping address for payment details"
                     />
-                    {showAddress &&
+                    {props.showAddress &&
                         <AddressFormFields addressWithName={props.addressWithName}
                                            setAddressWithName={props.setAddressWithName}
                                            hasCountryError={props.hasCountryError}/>}

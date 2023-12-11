@@ -23,11 +23,6 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
-    "plugins": [
-      {
-        "transform": "typia/lib/transform"
-      }
-    ]
   },
   "include": [
     "src"

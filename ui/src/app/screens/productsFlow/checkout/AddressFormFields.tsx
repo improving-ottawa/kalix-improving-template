@@ -3,9 +3,9 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import {PostalCode} from "../../../../generated/com/example/common/domain/address_pb";
 import {AddressWithName} from "../../../redux/slices/purchasingSlice";
-import {PropsWithChildren, useEffect, useState} from "react";
-import typia, {IValidation} from "typia";
+import {PropsWithChildren, useState} from "react";
 import {FormControl, FormHelperText, InputLabel, MenuItem, Select} from "@mui/material";
+import {Countries, ProvinceStates} from "../../../utils";
 
 export interface AddressFormFieldProps extends PropsWithChildren<any> {
     addressWithName: AddressWithName
@@ -13,9 +13,12 @@ export interface AddressFormFieldProps extends PropsWithChildren<any> {
     hasCountryError: boolean
 }
 
+
 export default function AddressFormFields(props: AddressFormFieldProps) {
+    const [stateProvinceError, setStateProvinceError] = useState<boolean>(true)
     const [postalCodeValidationError, setPostalCodeValidationError] = useState<string | undefined>(undefined)
 
+    const country = props.addressWithName.address.getCountry()
 
     return <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
@@ -97,19 +100,28 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
             />
         </Grid>
         <Grid item xs={12} sm={6}>
-            <TextField
-                id="state"
-                name="state"
-                label="State/Province/Region"
-                fullWidth
-                variant="standard"
-                onChange={(e) => {
-                    props.setAddressWithName({
-                        ...props.addressWithName,
-                        address: props.addressWithName.address.setStateProvince(e.target.value)
-                    })
-                }}
-            />
+            <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}>
+                <InputLabel id="companyStateProvinceField">Country</InputLabel>
+                <Select fullWidth
+                        required
+                        value={props.addressWithName.address.getStateProvince()}
+                        labelId="companyStateProvinceField"
+                        error={stateProvinceError}
+                        onChange={(e) => {
+                            if (stateProvinceError) setStateProvinceError(false)
+                            props.setAddressWithName({
+                                ...props.addressWithName,
+                                address: props.addressWithName.address.setStateProvince(e.target.value)
+                            })
+                        }}
+                        id="changeStateProvince" label="State/Province" variant="outlined"
+                >
+                    {country ? ProvinceStates.get(country)?.map(ps =>
+                        <MenuItem divider value={ps}>{ps}</MenuItem>
+                    ) : []}
+                </Select>
+                <FormHelperText>{stateProvinceError ? `${country === "Canada" ? "Province/Territory" : "State"} is required` : ""}</FormHelperText>
+            </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
             <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}
@@ -117,18 +129,23 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 <InputLabel id="companyCountryField">Country</InputLabel>
                 <Select fullWidth
                         required
-                        value={props.addressWithName.address.getCountry()}
                         labelId="companyCountryField"
+                        value={country}
                         onChange={(e) => {
                             props.setAddressWithName({
                                 ...props.addressWithName,
-                                address: props.addressWithName.address.setCountry(e.target.value)
+                                address: props.addressWithName.address
+                                    .setCountry(e.target.value)
+                                    .setPostalCode(new PostalCode())
+                                    .setStateProvince("")
                             })
+                            setStateProvinceError(true)
                         }}
                         id="changeCountry" label="Country" variant="outlined"
                 >
-                    <MenuItem divider value={"Canada"}>Canada</MenuItem>
-                    <MenuItem divider value={"US"}>US</MenuItem>
+                    {Countries.map(country =>
+                        <MenuItem divider value={country}>{country}</MenuItem>
+                    )}
                 </Select>
                 <FormHelperText>{props.hasCountryError ? "Country is required" : ""}</FormHelperText>
             </FormControl>
@@ -138,25 +155,29 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 required
                 id="zip"
                 name="zip"
-                label="Zip / Postal code"
+                label={country === "Canada" ? "Postal Code" : "ZIP Code"}
                 fullWidth
                 autoComplete="shipping postal-code"
                 variant="standard"
                 error={postalCodeValidationError !== undefined}
-                helperText={!postalCodeValidationError ?? postalCodeValidationError}
+                helperText={postalCodeValidationError ?? ""}
                 onChange={(e) => {
-                    const validation = props.addressWithName.address.getCountry() === "Canada" ?
-                        typia.protobuf.validateEncode<PostalCode>(e.target.value) :
-                        props.addressWithName.address.getCountry() !== "US" ?
-                            typia.protobuf.validateEncode<PostalCode>(e.target.value) : typia.protobuf.validateEncode<PostalCode>("")
-                    if (validation.success) {
-                        const postalCode = new PostalCode()
-                        postalCode.setCaPostalCodeMessage(e.target.value)
+                    const input = e.target.value
+                    const regexCA = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i;
+                    const regexUS = /^\d\d\d\d\d$/i;
+                    const forCA = props.addressWithName.address.getCountry() === "Canada"
+                    const validation = forCA ?
+                        regexCA.exec(input) :
+                        regexUS.exec(input)
+                    if (validation !== null) {
+                        var pc = new PostalCode()
+                        pc = forCA ? pc.setCaPostalCodeMessage(input) : pc.setUsPostalCodeMessage(input)
                         props.setAddressWithName({
                             ...props.addressWithName,
-                            address: props.addressWithName.address.setPostalCode(postalCode)
+                            address: props.addressWithName.address.setPostalCode(pc)
                         })
-                    } else setPostalCodeValidationError(validation.errors.join(", "))
+                        setPostalCodeValidationError(undefined)
+                    } else setPostalCodeValidationError(`You must use a correctly formatted ${country === "Canada" ? "Postal Code" : "ZIP Code"} for the region specified`)
                 }}
             />
         </Grid>
