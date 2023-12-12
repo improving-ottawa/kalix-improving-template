@@ -101,7 +101,8 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
         </Grid>
         <Grid item xs={12} sm={6}>
             <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}>
-                <InputLabel id="companyStateProvinceField">Country</InputLabel>
+                <InputLabel
+                    id="companyStateProvinceField">{country === "Canada" ? "Province/Territory" : "State"}</InputLabel>
                 <Select fullWidth
                         required
                         value={props.addressWithName.address.getStateProvince()}

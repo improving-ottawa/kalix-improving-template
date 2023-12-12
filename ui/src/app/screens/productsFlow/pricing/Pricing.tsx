@@ -18,6 +18,7 @@ import {Products, productsDisplay} from "../ProductsDisplay";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {addProduct} from "../../../redux/slices/purchasingSlice";
+import {Copyright} from "../../styledComponents/copyright";
 
 const footers = [
     {

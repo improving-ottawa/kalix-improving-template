@@ -1,8 +1,6 @@
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import {Drawer, IconButton} from "@mui/material";
-import {IconButton} from "@mui/material";
 import {AccountCircleTwoTone} from "@mui/icons-material";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
@@ -11,10 +9,10 @@ import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
 import {mainNavItems, secondaryNavItems} from "../dashboard/navItems";
 import {Drawer} from "../dashboard/components";
 import List from "@mui/material/List";
+import {IconButton} from "@mui/material";
 
 interface TopNavProps {
     forDashboard?: boolean

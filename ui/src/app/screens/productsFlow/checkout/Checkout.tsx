@@ -16,7 +16,7 @@ import Review from './Review';
 import {Copyright} from "../../styledComponents/copyright";
 import {Link} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {
     AddressWithName,
     changeBillingAddress,
@@ -38,11 +38,6 @@ export default function Checkout() {
 
     const [addressWithName, setAddressWithName] = useState<AddressWithName>({address: new Address()})
     const hasCountryError = addressWithName.address.getCountry().length === 0
-
-    useEffect(() => {
-        if (state.shippingAddress) {
-        }
-    }, [state.shippingAddress?.address, state.billingAddress?.address])
 
     function getStepContent(step: number) {
         switch (step) {

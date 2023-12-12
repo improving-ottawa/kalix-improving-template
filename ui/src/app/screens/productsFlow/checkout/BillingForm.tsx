@@ -19,6 +19,9 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
     const paymentInfo = useAppSelector(selectPurchasingState).paymentInfo
     const dispatch = useAppDispatch()
 
+    const sixMonths: Date = (new Date())
+    sixMonths.setUTCMilliseconds(Date.now() + 15778800000)
+
     return (
         <React.Fragment>
             <Typography variant="h6" gutterBottom>
@@ -59,6 +62,8 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                 <Grid item xs={12} md={6}>
                     <DatePicker sx={{backgroundColor: "white"}}
                                 label="Expiry date"
+                                disablePast
+                        //referenceDate={sixMonths}
                                 value={paymentInfo?.expiryDate}
                                 onChange={(e) => {
                                     dispatch(changePaymentInfo({
