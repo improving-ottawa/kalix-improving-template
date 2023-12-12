@@ -6,7 +6,7 @@ epic CreateUserEpic {
     step take form NewUserForm from user AppUser, 
     step show document PricingPage to user AppUser // FIXME:. This line is out of order. I am trying to replicate the path resolution error. riddlc did not like a commented line between steps.
     //step send SignupParameters to SignupGateway, // FIXME:
-    //step goto page PricingPage //FIXME
+    //step goto page PricingPage // FIXME:
   }
   case CreateUserFacebook { ??? }
   case CreateUserGitHub { ??? }
