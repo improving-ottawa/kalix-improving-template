@@ -3,11 +3,12 @@ user AppUser is "Somebody who wants to use the application"
 epic CreateUserEpic {
   case CreateUserManually {
     user AppUser wants to "sign up as a registered user in the application" so "they can interact with the demo application"
-    step take form NewUserForm from user AppUser 
+    step take form NewUserForm from user AppUser, 
+    step show document PricingPage to user AppUser //FIXME. This line is out of order. I am trying to replicate the path resolution error. riddlc did not like a commented line between steps.
     //step send SignupParameters to SignupGateway, //FIXME
     //step goto page PricingPage //FIXME
   }
-  case CreateUserFacebook {} //FIXME
-  case CreateUserGitHub {} //FIXME
-  case CreateUserGmail {} //FIXME
+  case CreateUserFacebook {???} //FIXME
+  case CreateUserGitHub {???} //FIXME
+  case CreateUserGmail {???} //FIXME
 }
