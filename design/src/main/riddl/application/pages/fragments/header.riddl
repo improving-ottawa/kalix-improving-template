@@ -1,9 +1,3 @@
-type ShopLink is String
-type CustomerDashboardLink is String
-type OrderDashboardLink is String
-type AboutUsLink is String
-type ResourcesLink is String
-
 command GotoPricingPage is {???}
 command GotoCustomerDashboard is {???}
 command GotoOrderDashboard is {???}
