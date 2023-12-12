@@ -58,6 +58,9 @@ service Gateway {
         };
     }
 
+    // Update the roles assigned to a `User`
+    rpc UpdateUserRoles(domain.UpdateUserRolesRequest) returns (domain.UserInfo);
+
     /*************************
      * JWT/Admin Info routes *
      *************************/
