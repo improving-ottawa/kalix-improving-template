@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import {selectPurchasingState} from "../../../redux/slices/purchasingSlice";
 import {useAppSelector} from "../../../redux/hooks";
 import {printAddress} from "../../../utils";
+import {Box} from "@mui/material";
 
 export default function Review() {
     const state = useAppSelector(selectPurchasingState)
@@ -35,7 +36,7 @@ export default function Review() {
                 </ListItem>
             </List>
             <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={5}>
                     <Typography variant="h6" gutterBottom sx={{mt: 2}}>
                         Shipping
                     </Typography>
@@ -46,18 +47,26 @@ export default function Review() {
                         {state.shippingAddress?.address && printAddress(state.shippingAddress.address)}
                     </Typography>
                 </Grid>
-                <Grid item container direction="column" xs={12} sm={6}>
+                <Grid item container direction="column" xs={12} sm={7}>
                     <Typography variant="h6" gutterBottom sx={{mt: 2}}>
                         Payment details
                     </Typography>
-                    <Grid container>
+                    <Box>
                         {[{id: "Card Holder", info: state.paymentInfo?.cardHolder},
-                            {id: "Card Number", info: state.paymentInfo?.cardNumber},
+                            {
+                                id: "Card Number", info: state.paymentInfo?.cardNumber ?
+                                    state.paymentInfo?.cardNumber.slice(0, 12).split('').map(_ => 'X').join('')
+                                    + state.paymentInfo?.cardNumber.slice(12) : ""
+                            },
                             {
                                 id: "Expiry Date", info: state.paymentInfo?.expiryDate ?
-                                    (new Date(state.paymentInfo.expiryDate)).toDateString() : ""
+                                    (new Date(state.paymentInfo.expiryDate)).getMonth() +
+                                    "/" + (new Date(state.paymentInfo.expiryDate)).getFullYear().toString().slice(-2) : ""
                             },
-                            {id: "CVV", info: state.paymentInfo?.cvv},
+                            {
+                                id: "CVV",
+                                info: state.paymentInfo?.cvv ? state.paymentInfo?.cvv.split('').map(_ => 'X').join('') : ""
+                            },
                         ].map((info) => (
                             <React.Fragment key={info.id}>
                                 <Grid item xs={6}>
@@ -68,7 +77,7 @@ export default function Review() {
                                 </Grid>
                             </React.Fragment>
                         ))}
-                    </Grid>
+                    </Box>
                 </Grid>
             </Grid>
         </React.Fragment>

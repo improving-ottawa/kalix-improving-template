@@ -1,74 +1,71 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Paper from '@mui/material/Paper';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ShippingForm from './ShippingForm';
 import BillingForm from './BillingForm';
 import Review from './Review';
 import {Copyright} from "../../styledComponents/copyright";
-import {Link} from "@mui/material";
-import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {
     AddressWithName,
     changeBillingAddress,
     changeShippingAddress,
-    selectPurchasingState
 } from "../../../redux/slices/purchasingSlice";
 import {Address} from "../../../../generated/com/example/common/domain/address_pb";
-import {useAppDispatch, useAppSelector} from "../../../redux/hooks";
+import {useAppDispatch} from "../../../redux/hooks";
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 
 export default function Checkout() {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const [activeStep, setActiveStep] = React.useState(0);
-    const [showAddress, setShowAddress] = useState(true)
+    const [activeStep, setActiveStep] = useState<number>(0);
+    const [showAddress, setShowAddress] = useState<boolean>(true)
 
-    const state = useAppSelector(selectPurchasingState)
-
-    const [addressWithName, setAddressWithName] = useState<AddressWithName>({address: new Address()})
-    const hasCountryError = addressWithName.address.getCountry().length === 0
+    const [billingAddressWithName, setBillingAddressWithName] = useState<AddressWithName>({address: new Address()})
+    const [shippingAddressWithName, setShippingAddressWithName] = useState<AddressWithName>({address: new Address()})
+    const hasBillingCountryError = billingAddressWithName.address.getCountry().length === 0
+    const hasShippingCountryError = shippingAddressWithName.address.getCountry().length === 0
 
     function getStepContent(step: number) {
         switch (step) {
             case 0:
-                return <ShippingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}
-                                     hasCountryError={hasCountryError}/>;
+                return <ShippingForm addressWithName={shippingAddressWithName}
+                                     setAddressWithName={setShippingAddressWithName}
+                                     hasCountryError={hasShippingCountryError}
+                                     handleNext={() => {
+                                         dispatch(changeShippingAddress(shippingAddressWithName))
+                                         setActiveStep(activeStep + 1)
+                                     }}
+                                     handleBack={() => {
+                                         setActiveStep(activeStep - 1)
+                                     }}
+                                     showBack={false}
+                />;
             case 1:
-                return <BillingForm addressWithName={addressWithName} setAddressWithName={setAddressWithName}
-                                    hasCountryError={hasCountryError}
-                                    showAddress={showAddress} setShowAddress={setShowAddress}/>;
+                return <BillingForm addressWithName={billingAddressWithName}
+                                    setAddressWithName={setBillingAddressWithName}
+                                    hasCountryError={hasBillingCountryError}
+                                    showAddress={showAddress} setShowAddress={setShowAddress}
+                                    handleNext={() => {
+                                        dispatch(changeBillingAddress(billingAddressWithName))
+                                        setActiveStep(activeStep + 1)
+                                    }}
+                                    handleBack={() => {
+                                        setActiveStep(activeStep - 1)
+                                    }}/>;
             case 2:
                 return <Review/>;
             default:
                 throw new Error('Unknown step');
         }
     }
-
-    const handleNext = () => {
-        if (activeStep === 0) dispatch(changeShippingAddress(addressWithName))
-        else if (activeStep === 1) dispatch(changeBillingAddress(addressWithName))
-        setAddressWithName({address: new Address()})
-        setActiveStep(activeStep + 1);
-    };
-
-    const handleBack = () => {
-        setActiveStep(activeStep - 1);
-        if (activeStep === 0 && state.shippingAddress)
-            setAddressWithName(state.shippingAddress)
-        else if (activeStep === 1 && state.billingAddress) setAddressWithName(state.billingAddress)
-        else setAddressWithName({address: new Address()})
-    };
 
     return (
         <React.Fragment>
@@ -94,8 +91,10 @@ export default function Checkout() {
                         Checkout
                     </Typography>
                     <Stepper activeStep={activeStep} sx={{pt: 3, pb: 5}}>
-                        {steps.map((label) => (
-                            <Step key={label}>
+                        {steps.map((label, index) => (
+                            <Step key={label} onClick={() => {
+                                setActiveStep(index)
+                            }}>
                                 <StepLabel>{label}</StepLabel>
                             </Step>
                         ))}
@@ -114,28 +113,6 @@ export default function Checkout() {
                     ) : (
                         <React.Fragment>
                             {getStepContent(activeStep)}
-                            <Box sx={{display: 'flex'}}>
-                                <Box sx={{display: 'flex', justifyContent: 'flex-start'}}>
-                                    <Link underline="none" onClick={() => navigate("/pricing")}
-                                          sx={{mt: 3, ml: 1}}>
-                                        {"Continue shopping"}
-                                    </Link>
-                                </Box>
-                                <Box sx={{display: 'flex', marginLeft: 'auto'}}>
-                                    {activeStep !== 0 && (
-                                        <Button onClick={handleBack} sx={{mt: 3, ml: 1}}>
-                                            Back
-                                        </Button>
-                                    )}
-                                    <Button
-                                        variant="contained"
-                                        onClick={handleNext}
-                                        sx={{mt: 3, ml: 1}}
-                                    >
-                                        {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
-                                    </Button>
-                                </Box>
-                            </Box>
                         </React.Fragment>
                     )}
                 </Paper>

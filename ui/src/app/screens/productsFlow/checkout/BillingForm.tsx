@@ -8,7 +8,11 @@ import AddressFormFields, {AddressFormFieldProps} from "./AddressFormFields";
 import {changePaymentInfo, selectPurchasingState} from "../../../redux/slices/purchasingSlice";
 import {useAppDispatch, useAppSelector} from "../../../redux/hooks";
 import {DatePicker} from "@mui/x-date-pickers";
-import {FormHelperText} from "@mui/material";
+import {FormControl, FormHelperText, IconButton, Input, InputAdornment, InputLabel} from "@mui/material";
+import dayjs from "dayjs";
+import {useState} from "react";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import ShippingBillingFooter from "./ShippingBillingFooter";
 
 interface BillingFormProps {
     showAddress: boolean
@@ -19,11 +23,15 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
     const paymentInfo = useAppSelector(selectPurchasingState).paymentInfo
     const dispatch = useAppDispatch()
 
-    const sixMonths: Date = (new Date())
-    sixMonths.setUTCMilliseconds(Date.now() + 15778800000)
+    const [showCardNumber, setShowCardNumber] = useState<boolean>(false)
+    const [showCVV, setShowCVV] = useState<boolean>(false)
+
+    const cardNumberRegex = /^\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d$/i
+    const cvvRegex = /^\d\d\d$/i
 
     return (
-        <React.Fragment>
+        <ShippingBillingFooter handleBack={props.handleBack} handleNext={props.handleNext}
+                               showBack={props.showBack}>
             <Typography variant="h6" gutterBottom>
                 Payment method
             </Typography>
@@ -35,7 +43,7 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                         label="Name on card"
                         fullWidth
                         autoComplete="cc-name"
-                        variant="standard"
+                        variant="outlined"
                         value={paymentInfo?.cardHolder}
                         onChange={(e) => {
                             dispatch(changePaymentInfo({...paymentInfo, cardHolder: e.target.value}))
@@ -43,32 +51,48 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <TextField
-                        required
-                        id="cardNumber"
-                        label="Card number"
-                        fullWidth
-                        autoComplete="cc-number"
-                        variant="standard"
-                        value={paymentInfo?.cardNumber}
-                        error={paymentInfo?.cardNumber ? paymentInfo?.cardNumber.length < 12 : false}
-                        onChange={(e) => {
-                            dispatch(changePaymentInfo({...paymentInfo, cardNumber: e.target.value}))
-                        }}
-                        inputProps={{maxLength: 12}}
-                        helperText="Must be a 12 digit credit card number"
-                    />
+                    <FormControl sx={{m: 1, width: '25ch'}} variant="outlined">
+                        <InputLabel htmlFor="adornment-card-number">Card Number</InputLabel>
+                        <Input
+                            id="adornment-card-number"
+                            type={showCardNumber ? 'text' : 'password'}
+                            value={paymentInfo?.cardNumber}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => {
+                                            setShowCardNumber(!showCardNumber)
+                                        }}
+                                        onMouseDown={(e) => e.preventDefault()}
+                                    >
+                                        {showCardNumber ? <VisibilityOff/> : <Visibility/>}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            onChange={(e) => {
+                                dispatch(changePaymentInfo({...paymentInfo, cardNumber: e.target.value}))
+                            }}
+                            error={
+                                paymentInfo?.cardNumber ?
+                                    (paymentInfo.cardNumber.length < 16 || cardNumberRegex.exec(paymentInfo.cardNumber) === null) :
+                                    false
+                            }
+                            inputProps={{maxLength: 16}}
+                        />
+                    </FormControl>
+                    <FormHelperText id="card-number-helper-text">Must be a 16 digit credit card number</FormHelperText>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <DatePicker sx={{backgroundColor: "white"}}
                                 label="Expiry date"
                                 disablePast
-                        //referenceDate={sixMonths}
-                                value={paymentInfo?.expiryDate}
+                                views={['year', 'month']}
+                                value={paymentInfo?.expiryDate ? dayjs(paymentInfo?.expiryDate) : dayjs().add(6, 'months')}
                                 onChange={(e) => {
                                     dispatch(changePaymentInfo({
                                         ...paymentInfo,
-                                        expiryDate: e ?? undefined
+                                        expiryDate: e?.toDate()
                                     }))
 
                                 }}
@@ -79,21 +103,37 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                     }}>{!paymentInfo?.expiryDate && "Expiry Date is required"}</FormHelperText>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <TextField
-                        required
-                        id="cvv"
-                        label="CVV"
-                        helperText="Last three digits on signature strip"
-                        fullWidth
-                        autoComplete="cc-csc"
-                        variant="standard"
-                        error={paymentInfo?.cvv ? paymentInfo.cvv.length < 3 : false}
-                        inputProps={{maxLength: 3}}
-                        value={paymentInfo?.cvv}
-                        onChange={(e) => {
-                            dispatch(changePaymentInfo({...paymentInfo, cvv: e.target.value}))
-                        }}
-                    />
+                    <FormControl sx={{m: 1, width: '25ch'}} variant="outlined">
+                        <InputLabel htmlFor="adornment-cvv">CVV</InputLabel>
+                        <Input
+                            id="adornment-cvv"
+                            type={showCVV ? 'text' : 'password'}
+                            value={paymentInfo?.cvv}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => {
+                                            setShowCVV(!showCVV)
+                                        }}
+                                        onMouseDown={(e) => e.preventDefault()}
+                                    >
+                                        {showCVV ? <VisibilityOff/> : <Visibility/>}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            onChange={(e) => {
+                                dispatch(changePaymentInfo({...paymentInfo, cvv: e.target.value}))
+                            }}
+                            error={
+                                paymentInfo?.cvv ?
+                                    (paymentInfo.cvv.length < 3 || cvvRegex.exec(paymentInfo.cvv) === null) :
+                                    false
+                            }
+                            inputProps={{maxLength: 3}}
+                        />
+                    </FormControl>
+                    <FormHelperText id="cvv-helper-text">Last three digits on signature strip</FormHelperText>
                 </Grid>
                 <Grid item xs={12}>
                     <FormControlLabel
@@ -108,6 +148,6 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                                            hasCountryError={props.hasCountryError}/>}
                 </Grid>
             </Grid>
-        </React.Fragment>
+        </ShippingBillingFooter>
     );
 }

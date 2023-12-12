@@ -29,10 +29,11 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 label="First name"
                 fullWidth
                 autoComplete="given-name"
-                variant="standard"
+                variant="outlined"
                 onChange={(e) => {
                     props.setAddressWithName({...props.addressWithName, firstName: e.target.value})
                 }}
+                value={props.addressWithName.firstName}
             />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -43,10 +44,11 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 label="Last name"
                 fullWidth
                 autoComplete="family-name"
-                variant="standard"
+                variant="outlined"
                 onChange={(e) => {
                     props.setAddressWithName({...props.addressWithName, lastName: e.target.value})
                 }}
+                value={props.addressWithName.lastName}
             />
         </Grid>
         <Grid item xs={12}>
@@ -57,13 +59,14 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 label="Address line 1"
                 fullWidth
                 autoComplete="shipping address-line1"
-                variant="standard"
+                variant="outlined"
                 onChange={(e) => {
                     props.setAddressWithName({
                         ...props.addressWithName,
                         address: props.addressWithName.address.setLine1(e.target.value)
                     })
                 }}
+                value={props.addressWithName.address.getLine1()}
             />
         </Grid>
         <Grid item xs={12}>
@@ -73,56 +76,15 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 label="Address line 2"
                 fullWidth
                 autoComplete="shipping address-line2"
-                variant="standard"
+                variant="outlined"
                 onChange={(e) => {
                     props.setAddressWithName({
                         ...props.addressWithName,
                         address: props.addressWithName.address.setLine2(e.target.value)
                     })
                 }}
+                value={props.addressWithName.address.getLine2()}
             />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-            <TextField
-                required
-                id="city"
-                name="city"
-                label="City"
-                fullWidth
-                autoComplete="shipping address-level2"
-                variant="standard"
-                onChange={(e) => {
-                    props.setAddressWithName({
-                        ...props.addressWithName,
-                        address: props.addressWithName.address.setCity(e.target.value)
-                    })
-                }}
-            />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}>
-                <InputLabel
-                    id="companyStateProvinceField">{country === "Canada" ? "Province/Territory" : "State"}</InputLabel>
-                <Select fullWidth
-                        required
-                        value={props.addressWithName.address.getStateProvince()}
-                        labelId="companyStateProvinceField"
-                        error={stateProvinceError}
-                        onChange={(e) => {
-                            if (stateProvinceError) setStateProvinceError(false)
-                            props.setAddressWithName({
-                                ...props.addressWithName,
-                                address: props.addressWithName.address.setStateProvince(e.target.value)
-                            })
-                        }}
-                        id="changeStateProvince" label="State/Province" variant="outlined"
-                >
-                    {country ? ProvinceStates.get(country)?.map(ps =>
-                        <MenuItem divider value={ps}>{ps}</MenuItem>
-                    ) : []}
-                </Select>
-                <FormHelperText>{stateProvinceError ? `${country === "Canada" ? "Province/Territory" : "State"} is required` : ""}</FormHelperText>
-            </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
             <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}
@@ -152,6 +114,49 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
             </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required style={{marginTop: "8px", marginBottom: "4px"}}>
+                <InputLabel
+                    id="companyStateProvinceField">{country === "Canada" ? "Province/Territory" : "State"}</InputLabel>
+                <Select fullWidth
+                        required
+                        value={props.addressWithName.address.getStateProvince()}
+                        labelId="companyStateProvinceField"
+                        error={stateProvinceError}
+                        onChange={(e) => {
+                            if (stateProvinceError) setStateProvinceError(false)
+                            props.setAddressWithName({
+                                ...props.addressWithName,
+                                address: props.addressWithName.address.setStateProvince(e.target.value)
+                            })
+                        }}
+                        id="changeStateProvince" label="State/Province" variant="outlined"
+                >
+                    {country ? ProvinceStates.get(country)?.map(ps =>
+                        <MenuItem divider value={ps}>{ps}</MenuItem>
+                    ) : []}
+                </Select>
+                <FormHelperText>{stateProvinceError ? `${country === "Canada" ? "Province/Territory" : "State"} is required` : ""}</FormHelperText>
+            </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+            <TextField
+                required
+                id="city"
+                name="city"
+                label="City"
+                value={props.addressWithName.address.getCity()}
+                fullWidth
+                autoComplete="shipping address-level2"
+                variant="outlined"
+                onChange={(e) => {
+                    props.setAddressWithName({
+                        ...props.addressWithName,
+                        address: props.addressWithName.address.setCity(e.target.value)
+                    })
+                }}
+            />
+        </Grid>
+        <Grid item xs={12} sm={6}>
             <TextField
                 required
                 id="zip"
@@ -159,9 +164,14 @@ export default function AddressFormFields(props: AddressFormFieldProps) {
                 label={country === "Canada" ? "Postal Code" : "ZIP Code"}
                 fullWidth
                 autoComplete="shipping postal-code"
-                variant="standard"
+                variant="outlined"
+                inputProps={{maxLength: country === "Canada" ? 6 : 5}}
                 error={postalCodeValidationError !== undefined}
                 helperText={postalCodeValidationError ?? ""}
+                value={country === "Canada" ?
+                    props.addressWithName.address.getPostalCode()?.getCaPostalCodeMessage() :
+                    props.addressWithName.address.getPostalCode()?.getUsPostalCodeMessage()
+                }
                 onChange={(e) => {
                     const input = e.target.value
                     const regexCA = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i;
