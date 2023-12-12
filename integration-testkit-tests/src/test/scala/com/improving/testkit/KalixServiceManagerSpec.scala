@@ -9,7 +9,7 @@ object KalixServiceManagerSpec {
   val gatewayService: KalixService =
     KalixService(
       serviceName = "gateway",
-      kalix = com.example.gateway.Main.createKalix()
+      kalix = com.example.gateway.Main.createKalixForTest()
     )
 
   val boundedContextService: KalixService =

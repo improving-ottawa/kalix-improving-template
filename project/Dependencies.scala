@@ -8,6 +8,7 @@ object Dependencies {
     val akkaHttp        = "10.4.0"
     val akkaKafka       = "4.0.0"
     val alpakka         = "5.0.0"
+    val avro4s          = "5.0.7"
     val auth0           = "2.6.1"
     val chimney         = "0.6.2"
     val commonsCodec    = "1.15"
@@ -19,9 +20,11 @@ object Dependencies {
     val oidc4s          = "0.11.0"
     val pureconfig      = "0.17.4"
     val scapegoat       = "2.1.0"
+    val scalaCache      = "1.0.0-M6"
     val scalalogging    = "3.9.5"
     val scalamock       = "5.2.0"
-    val scalapbCompiler = "0.11.13"
+    val scalaJwk        = "1.2.24"
+    val scalapbCompiler = "0.11.11"
     val scalatest       = "3.2.16"
     val scalacheck      = "1.17.0"
     val sttp            = "3.8.13"
@@ -33,19 +36,18 @@ object Dependencies {
     val commons_io      = "20030203.000550"
     val commons_codec   = "20041127.091804"
     val compress        = "1.23.0"
-    val google_grpc     = "2.24.0"
+    val google_grpc     = "2.9.0"
     val kalixSDK        = "1.3.3"
     val lang3           = "3.13.0"
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
-    val chatwork        = "1.2.24"
-    val avro4s          = "5.0.7"
+    val lightbendGrpc   = "2.2.0"
   }
 
   import Versions._
 
-  lazy val akkaGrpcDepsPackage = Seq(
+  lazy val akkaDepsPackage = Seq(
     "com.typesafe.akka" %% "akka-actor"       % akka,
     "com.typesafe.akka" %% "akka-discovery"   % akka,
     "com.typesafe.akka" %% "akka-protobuf-v3" % akka,
@@ -61,24 +63,17 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-http2-support"   % akkaHttp,
   )
 
-  lazy val authentication = Seq(
-    "com.auth0"     % "auth0"        % auth0,
-    "me.wojnowski" %% "oidc4s-core"  % oidc4s,
-    "me.wojnowski" %% "oidc4s-circe" % oidc4s,
-    "me.wojnowski" %% "oidc4s-sttp"  % oidc4s,
-  ) ++
-    httpDepsPackage ++
-    functionalDepsPackage
-
   lazy val bouncyCastleCryptoPackage = Seq(
     "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
     "org.bouncycastle" % "bcpkix-jdk15on" % "1.70"
   )
 
+  lazy val akkaGrpc = "com.lightbend.akka.grpc" %% "akka-grpc-runtime" % lightbendGrpc
+
   lazy val pencilSmtp = "com.minosiants" %% "pencil" % "1.2.0"
 
   lazy val commons_io  = "commons-io"          % "commons-io"                 % Versions.commons_io
-  lazy val google_grpc = "com.google.api.grpc" % "proto-google-common-protos" % Versions.google_grpc % "protobuf"
+  lazy val google_grpc = "com.google.api.grpc" % "proto-google-common-protos" % Versions.google_grpc % "protobuf-src"
 
   lazy val lang3      = "org.apache.commons"     % "commons-lang3"   % Versions.lang3
   lazy val pureconfig = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureconfig
@@ -92,7 +87,6 @@ object Dependencies {
   lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 
   lazy val grpc: Seq[ModuleID] = Seq(
-    google_grpc,
     "com.typesafe.akka"    %% "akka-actor-typed"     % akka,
     "com.typesafe.akka"    %% "akka-discovery"       % akka,
     "com.typesafe.akka"    %% "akka-protobuf-v3"     % akka,
@@ -116,7 +110,7 @@ object Dependencies {
       "com.nrinaudo" %% "kantan.csv-generic" % kantanCsv
     )
 
-  lazy val jwtSupportPackage = Seq(
+  lazy val jwtSupportPackage: Seq[ModuleID] = Seq(
     "com.github.jwt-scala" %% "jwt-core"  % jwtScala,
     "com.github.jwt-scala" %% "jwt-circe" % jwtScala
   )
@@ -137,19 +131,8 @@ object Dependencies {
     "com.typesafe.scala-logging" %% "scala-logging"   % scalalogging
   )
 
-  val utilityDependencies: Seq[ModuleID] = Seq(
-    // "org.scala-lang.modules" %% "scala-xml" % scalaxml,
-    // "io.scalaland" %% "chimney" % chimney,
-    pureconfig,
-    scalacheck
-    // "deVersions.optics" %% "monocle-core" % monocle,
-    // "deVersions.optics" %% "monocle-macro" % monocle,
-    // noinspection SbtDependencyVersionInspection
-    // "commons-codec" % "commons-codec" % commonsCodec,
-    // "org.typelevel" %% "cats-core" % cats
-  )
-
   lazy val functionalDepsPackage: Seq[ModuleID] = Seq(
+    slf4jCats,
     "org.typelevel" %% "cats-core"   % cats,
     "org.typelevel" %% "cats-effect" % catsEffect,
     "org.typelevel" %% "cats-kernel" % cats,
@@ -194,29 +177,30 @@ object Dependencies {
     "io.circe"             %% "circe-parser"              % circe   % "test,it"
   )
 
-  val scalaPbDependencies: Seq[ModuleID] = Seq(
+  val kalixScalaPbDependencies: Seq[ModuleID] = Seq(
     "com.thesamet.scalapb" %% "scalapb-runtime"    % scalapb.compiler.Version.scalapbVersion % "protobuf",
-    "com.google.protobuf"   % "protobuf-java"      % "3.22.2"                                % "protobuf",
+    "com.google.protobuf"   % "protobuf-java"      % "3.17.3"                                % "protobuf",
     "io.kalix"              % "kalix-sdk-protocol" % KalixProtocolVersion                    % "protobuf-src"
   )
 
   val scalaPbCompilerPlugin: ModuleID = "com.thesamet.scalapb" %% "compilerplugin" % Versions.scalapbCompiler
 
   val scalaPbValidationDependencies: Seq[ModuleID] = Seq(
-    "io.grpc"               % "grpc-netty"            % scalapb.compiler.Version.grpcJavaVersion,
     "com.thesamet.scalapb" %% "scalapb-runtime"       % scalapb.compiler.Version.scalapbVersion     % "protobuf",
     "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
-    "com.thesamet.scalapb" %% "scalapb-runtime-grpc"  % scalapb.compiler.Version.scalapbVersion
   )
 
   val scalaPbGoogleCommonProtos: Seq[ModuleID] = Seq(
-    "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0" % "protobuf",
-    "com.thesamet.scalapb.common-protos" %% "proto-google-common-protos-scalapb_0.11" % "2.9.6-0"
+    google_grpc intransitive()
   )
 
-  val iamDependencies: Seq[ModuleID] = Seq(
-    "com.chatwork" %% "scala-jwk" % chatwork,
-    // "com.sksamuel.avro4s" %% "avro4s-core" % avro4s
+  val iamDepsPackage: Seq[ModuleID] = Seq(
+    "com.chatwork" %% "scala-jwk" % scalaJwk
+  ) ++ jwtSupportPackage
+
+  val cachingDependencies: Seq[ModuleID] = Seq(
+    "com.github.cb372" %% "scalacache-core"         % scalaCache,
+    "com.github.cb372" %% "scalacache-caffeine"     % scalaCache,
   )
 
 }

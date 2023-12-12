@@ -12,8 +12,9 @@ final private[testkit] class KalixServiceEntry(
   stopTimeout: Option[FiniteDuration],
   aclEnabled: Boolean,
   advancedViews: Boolean,
-  eventingSupport: EventingSupport
-) extends KalixService(serviceName, kalix, stopTimeout, aclEnabled, advancedViews, eventingSupport) {
+  eventingSupport: EventingSupport,
+  overrideProxyPort: Option[Int]
+) extends KalixService(serviceName, kalix, stopTimeout, aclEnabled, advancedViews, eventingSupport, overrideProxyPort) {
   private[this] var _jvmServicePort: Int = 0
   private[this] var _kalixProxyPort: Int = 0
 

@@ -9,6 +9,7 @@ import cats.Show
   */
 trait ShowConfig[A] extends Show[A] {
   def print(cfg: A, printer: StringPrinter): StringPrinter
+
   final def show(cfg: A): String = print(cfg, StringPrinter(indentSize = 4)).result
 }
 

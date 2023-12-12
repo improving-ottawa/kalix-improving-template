@@ -12,12 +12,10 @@ object CompilerPlugins {
   object V {
     val betterForComp = "0.3.1"
     val kindProjector = "0.13.2"
-    val scalaProtobuf = "0.11.9"
   }
 
   // Compiler Plugins
   val betterForComp  = "com.olegpy"           %% "better-monadic-for" % V.betterForComp
   val kindProjector  = ("org.typelevel"       %% "kind-projector"     % V.kindProjector).cross(CrossVersion.full)
-  val scalaPBRuntime = "com.thesamet.scalapb" %% "scalapb-runtime"    % V.scalaProtobuf % "protobuf"
 
 }

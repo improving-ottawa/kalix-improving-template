@@ -168,15 +168,18 @@ object OpenKalixRunner {
   private[this] val kalixClass = classOf[kalix.javasdk.Kalix]
   private type JavaHashMap[A, B] = java.util.HashMap[A, B]
 
-  def apply(instance: kalix.javasdk.Kalix, maybeConfig: Option[Config] = None): OpenKalixRunner = {
-
-    val services       = getPrivateField[JavaHashMap[java.lang.String, java.util.function.Function[ActorSystem, Service]]](
+  def fromSystem(
+    instance: kalix.javasdk.Kalix,
+    system: ActorSystem,
+    maybeConfig: Option[Config] = None
+  ): OpenKalixRunner = {
+    val services = getPrivateField[JavaHashMap[java.lang.String, java.util.function.Function[ActorSystem, Service]]](
       "services"
     )(instance)
+
     val aclDescriptors = getPrivateField[java.util.Optional[FileDescriptorProto]]("aclDescriptor")(instance)
     val sdkName        = kalix.javasdk.BuildInfo.name
     val kalixConfig    = maybeConfig.fold(ConfigFactory.load())(loadAndMergeConfig)
-    val system         = ActorSystem("kalix", KalixRunner.prepareConfig(kalixConfig))
 
     new OpenKalixRunner(
       system,
@@ -184,6 +187,18 @@ object OpenKalixRunner {
       scala.jdk.javaapi.OptionConverters.toScala(aclDescriptors),
       sdkName
     )
+  }
+
+  def apply(instance: kalix.javasdk.Kalix, maybeConfig: Option[Config] = None): OpenKalixRunner = {
+    val kalixConfig = maybeConfig.fold(ConfigFactory.load())(loadAndMergeConfig)
+    val system      = ActorSystem("kalix", KalixRunner.prepareConfig(kalixConfig))
+
+    fromSystem(instance, system, Some(kalixConfig))
+  }
+
+  def createActorSystem(systemName: String = "kalix", maybeConfig: Option[Config] = None): ActorSystem = {
+    val kalixConfig = maybeConfig.fold(ConfigFactory.load())(loadAndMergeConfig)
+    ActorSystem(systemName, KalixRunner.prepareConfig(kalixConfig))
   }
 
   private def loadAndMergeConfig(config: Config) = {

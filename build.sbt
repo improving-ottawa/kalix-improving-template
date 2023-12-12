@@ -42,66 +42,69 @@ lazy val root = project
     extensions
   )
 
+// ***
+// Shared / common libraries (not intended for customization)
+// ***
+
+lazy val utils: Project = project
+  .in(file("utils"))
+  .configure(Config.AsProjectType.basicLibrary)
+  .configure(Config.withDeps(Dependencies.kalixScalaSdk))
+  .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
+
+lazy val common: Project = project
+  .in(file("common"))
+  .configure(Config.AsProjectType.protobufLibrary)
+  .configure(Config.withDeps(Dependencies.javaLibRecur))
+  .dependsOn(utils)
+
+lazy val `integration-testkit`: Project = project
+  .in(file("integration-testkit"))
+  .configure(Config.AsProjectType.basicLibrary)
+  .configure(Config.withDeps(Dependencies.testContainers, Dependencies.kalixScalaTestkit))
+  .configure(Config.withDeps(Dependencies.scalatestCore))
+  .dependsOn(utils)
+
+lazy val extensions: Project = project
+  .in(file("extensions"))
+  .configure(Config.AsProjectType.basicLibrary)
+  .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
+  .configure(Config.withDeps(Dependencies.akkaGrpc))
+  .configure(Config.withDepsPackage(Dependencies.iamDepsPackage))
+  .configure(Config.withDepsPackage(Dependencies.cachingDependencies))
+  .configure(Config.withDepsPackage(Dependencies.grpc))
+  .dependsOn(common)
+
+// ***
+// Demo specific libraries and services (customize these!)
+// ***
+
 lazy val design: Project = project
   .in(file("design"))
   .configure(Config.riddl(appName))
 
-lazy val utils: Project = project
-  .in(file("utils"))
-  .configure(Config.Kalix.baseLibrary)
-  .configure(Config.withDeps(Dependencies.kalixScalaSdk))
-  .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
-  .configure(Config.withDepsPackage(Dependencies.httpDepsPackage))
-  .configure(Config.withDepsPackage(Dependencies.functionalDepsPackage))
-
-lazy val `integration-testkit`: Project = project
-  .in(file("integration-testkit"))
-  .configure(Config.Kalix.baseLibrary)
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.withDeps(Dependencies.testContainers, Dependencies.kalixScalaTestkit))
-  .configure(Config.withDeps(Dependencies.scalatestCore))
-
-lazy val `integration-testkit-tests`: Project = project
-  .in(file("integration-testkit-tests"))
-  .configure(Config.Kalix.kalixLibrary)
-  .configure(Config.Kalix.dependsOn(`integration-testkit`))
-  .configure(Config.Kalix.dependsOn(`bounded-context`))
-  .configure(Config.Kalix.dependsOn(gateway))
-
-lazy val common: Project = project
-  .in(file("common"))
-  .configure(Config.Kalix.baseLibrary)
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.withDeps(Dependencies.javaLibRecur))
-  .configure(Config.withDepsPackage(Dependencies.scalaPbGoogleCommonProtos))
-
 lazy val service3 = project
   .in(file("service3"))
-  .configure(Config.Kalix.kalixLibrary)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.Kalix.dependsOn(utils))
-
-lazy val extensions: Project = project
-  .in(file("extensions"))
-  .configure(Config.Kalix.baseLibrary)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
+  .configure(Config.AsKalix.library)
+  .dependsOn(common, utils)
 
 lazy val `bounded-context` = project
   .in(file("bounded-context"))
-  .configure(Config.Kalix.service)
-  .configure(Config.Kalix.dependsOn(common))
-  .configure(Config.Kalix.dependsOn(utils))
-  .configure(Config.Kalix.dependsOn(service3))
+  .configure(Config.AsKalix.service)
   .configure(Config.withDepsPackage(Dependencies.csvParsingDepsPackage))
-  .settings(Compile / run / fork := false)
+  .dependsOn(utils, common, service3)
 
 lazy val gateway = project
   .in(file("gateway"))
-  .configure(Config.Kalix.service)
-  .configure(Config.Kalix.dependsOn(`bounded-context`))
+  .configure(Config.AsKalix.service)
+  .dependsOn(`bounded-context`, extensions, `integration-testkit` % Test)
 
 lazy val `scheduled-tasks` = project
   .in(file("scheduled-tasks"))
-  .configure(Config.Kalix.service)
-  .configure(Config.Kalix.dependsOn(`bounded-context`))
+  .configure(Config.AsKalix.service)
+  .dependsOn(`bounded-context`)
+
+lazy val `integration-testkit-tests`: Project = project
+  .in(file("integration-testkit-tests"))
+  .configure(Config.AsProjectType.basicLibrary)
+  .dependsOn(`integration-testkit`, `bounded-context`, gateway)
