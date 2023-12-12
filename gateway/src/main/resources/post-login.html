@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Complete</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+</head>
+<body>
+    <input id="redirectTo" type="hidden" name="redirectTo" value="{{redirectTo}}" />
+    <script>
+        const csrfToken = Cookies.get('csrfToken')
+        console.log("Storing (and deleting) CSRF token...")
+        sessionStorage.setItem('csrfToken', csrfToken)
+        Cookies.remove('csrfToken')
+
+        const redirectToElement = document.getElementById('redirectTo')
+        const redirectTo = redirectToElement.value
+        console.log("Redirecting to target page: " + redirectTo)
+        window.location.href = redirectTo
+    </script>
+</body>
+</html>

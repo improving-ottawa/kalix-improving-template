@@ -16,7 +16,7 @@ object SecureRandomString {
     require(byteLength <= 4096, "Too many bytes requested for secure string (max: 4096)")
 
     val byteArray = Array.ofDim[Byte](byteLength)
-    val rng = rngSource.get()
+    val rng       = rngSource.get()
     rng.nextBytes(byteArray)
 
     Base64String(byteArray, urlSafe, withoutPadding)

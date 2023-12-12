@@ -1,7 +1,7 @@
 package com.example.gateway.entity
 
 import com.improving.utils.SystemClock
-import com.example.gateway.domain.UserInfo
+import com.example.gateway.domain._
 
 import com.google.protobuf.empty.Empty
 import kalix.scalasdk.valueentity.ValueEntity
@@ -49,4 +49,3 @@ class UserEntity(context: ValueEntityContext) extends AbstractUserEntity {
     }
 
 }
-

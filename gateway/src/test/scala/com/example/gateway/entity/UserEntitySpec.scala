@@ -8,9 +8,7 @@ import kalix.scalasdk.valueentity.ValueEntity
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class UserEntitySpec
-    extends AnyWordSpec
-    with Matchers {
+class UserEntitySpec extends AnyWordSpec with Matchers {
 
   "UserEntity" must {
 

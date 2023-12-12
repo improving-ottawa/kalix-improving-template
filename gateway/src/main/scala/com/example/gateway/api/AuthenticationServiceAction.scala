@@ -7,10 +7,8 @@ import com.improving.utils.{FutureUtils, SecureRandomString}
 
 import com.google.api.HttpBody
 import com.google.protobuf.empty.Empty
-import io.circe.Json
 import io.grpc.Status.{Code => StatusCode}
 import kalix.scalasdk.Metadata
-import kalix.scalasdk.MetadataEntry
 import kalix.scalasdk.action.Action
 import kalix.scalasdk.action.ActionCreationContext
 import org.slf4j.LoggerFactory
@@ -18,6 +16,27 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.Future
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
+
+object AuthenticationServiceAction {
+
+  final private[this] lazy val htmlResponseTemplate = {
+    val reader = scala.io.Source.fromResource("post-login.html")
+    try reader.getLines().mkString("\n")
+    finally reader.close()
+  }
+
+  final private lazy val authTestHtmlResponse = {
+    val reader = scala.io.Source.fromResource("auth-test.html")
+    try reader.getLines().mkString("\n")
+    finally reader.close()
+  }
+
+  final private def formattedHtmlResponse(redirectUri: String): String = {
+    val template = htmlResponseTemplate
+    template.replace("{{redirectTo}}", redirectUri)
+  }
+
+}
 
 class AuthenticationServiceAction(
   identityService: OIDCIdentityService[Future],
@@ -32,11 +51,6 @@ class AuthenticationServiceAction(
     val session        = OIDCState(request.providerId, request.redirectUri)
     val redirectUri    = identityService.beginAuthorizationCodeFlow(session)
     val redirectEffect = redirectUri.map { uri =>
-      val html =
-        s"""<head>
-           |  <meta http-equiv="Refresh" content="0; URL=${uri.toString}" />
-           |</head>""".stripMargin
-
       val emptyBody = HttpBody(
         contentType = "text/html",
         data = com.google.protobuf.ByteString.EMPTY
@@ -90,15 +104,15 @@ class AuthenticationServiceAction(
           val csrfTokenCookie = s"csrfToken=${csrfToken.toString}; Path=/; SameSite=Lax"
 
           val httpHeaders = Metadata.empty
-            .add("_kalix-http-code", "303")
-            .add("Location", state.redirectUri)
             .add("Cache-Control", "no-cache")
             .add("Set-Cookie", jwtIssuer.jwtToHttpCookie(jwtToken))
             .add("Set-Cookie", csrfTokenCookie)
 
+          val html = AuthenticationServiceAction.formattedHtmlResponse(state.redirectUri)
+
           val body = HttpBody(
             contentType = "text/html",
-            data = com.google.protobuf.ByteString.EMPTY
+            data = com.google.protobuf.ByteString.copyFromUtf8(html)
           )
 
           effects.reply(body, httpHeaders)
@@ -108,51 +122,14 @@ class AuthenticationServiceAction(
     }
 
   final def oidcCheck(empty: Empty): Action.Effect[HttpBody] = {
-    val requestMetadata = actionContext.metadata.view.collect {
-      case entry: MetadataEntry if Option(entry.value).nonEmpty => (entry.key, entry.value)
-    }.toMap
-
-    @inline def parseCookies(cookieValue: String) = {
-      val cookies = cookieValue.split(';')
-      cookies.view
-        .map(_.split('='))
-        .filter(_.length == 2)
-        .map { parts => (parts.head.trim, parts.last.trim) }
-        .filter { case (_, value) => value.nonEmpty }
-        .toMap
-        .map {
-          case ("authToken", value) => ("authToken", parseAuthToken(value))
-          case (key, value)         => (key, Json.fromString(value))
-        }
-    }
-
-    @inline def parseAuthToken(authToken: String): Json = {
-      val decoded  = jwtIssuer.decodeJwtToken(authToken).fold(throw _, identity)
-      val jsonText = decoded.toClaims.toJson
-
-      io.circe.parser.parse(decoded.toClaims.toJson).fold(throw _, identity)
-    }
-
-    val metadataJsonMap = requestMetadata.foldLeft(Map.empty[String, Json]) { case (acc, (key, value)) =>
-      key match {
-        case "Authorization" => acc + ("bearer_token" -> parseAuthToken(value.replace("Bearer", "").trim))
-        case "X-CSRF-Token"  => acc + ("csrfToken" -> Json.fromString(value))
-        case "Cookie"        => acc ++ parseCookies(value)
-        case _               => acc
-      }
-    }
-
-    val responseJson = Json.obj(metadataJsonMap.toSeq: _*)
-
-    if (metadataJsonMap.isEmpty)
-      effects.error("Invalid request, missing all authorization tokens.", StatusCode.UNAUTHENTICATED)
-    else
-      effects.reply(
-        HttpBody(
-          contentType = "application/json",
-          data = com.google.protobuf.ByteString.copyFromUtf8(responseJson.spaces2)
-        )
+    val responseHtml = AuthenticationServiceAction.authTestHtmlResponse
+    val responseBody =
+      HttpBody(
+        contentType = "text/html",
+        data = com.google.protobuf.ByteString.copyFromUtf8(responseHtml)
       )
+
+    effects.reply(responseBody)
   }
 
 }

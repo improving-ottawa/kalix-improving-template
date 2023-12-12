@@ -33,15 +33,19 @@ object AuthorizedAction {
 trait AuthorizedAction extends AuthenticatedAction {
   import AuthorizedAction._
 
-  protected final type AuthFn[T] = AuthToken => Action.Effect[T]
+  final protected type AuthFn[T] = AuthToken => Action.Effect[T]
 
   protected def log: Logger
 
-  private final def notAuthorizedError: Action.Effect[Nothing] =
+  final private def notAuthorizedError: Action.Effect[Nothing] =
     effects.error("You are not authorized to perform this action.", StatusCode.PERMISSION_DENIED)
 
-  protected final def withRequiredRole[F[+_], T](role: String)(body: => F[T])
-                                                (implicit AR: ActionResult[F]): AuthToken => F[T] = {
+  final protected def authorizeAll[F[+_], T](body: => F[T])(implicit AR: ActionResult[F]): AuthToken => F[T] =
+    _ => body
+
+  final protected def withRequiredRole[F[+_], T](
+    role: String
+  )(body: => F[T])(implicit AR: ActionResult[F]): AuthToken => F[T] = {
     val requiredRoles = Set(role)
     authToken =>
       withRequiredRolesInternal(requiredRoles, authToken)(
@@ -50,26 +54,32 @@ trait AuthorizedAction extends AuthenticatedAction {
       )
   }
 
-  protected final def withRequiredRoles[F[+_], T](first: String, second: String, rest: String*)(body: => F[T])
-                                                 (implicit AR: ActionResult[F]): AuthToken => F[T] = {
+  final protected def withRequiredRoles[F[+_], T](first: String, second: String, rest: String*)(
+    body: => F[T]
+  )(implicit AR: ActionResult[F]): AuthToken => F[T] = {
     val requiredRoles = (first +: second +: rest).toSet
-    authToken => withRequiredRolesInternal(requiredRoles, authToken)(
-      _ => body,
-      () => AR.raiseError(notAuthorizedError)
-    )
+    authToken =>
+      withRequiredRolesInternal(requiredRoles, authToken)(
+        _ => body,
+        () => AR.raiseError(notAuthorizedError)
+      )
   }
 
-  protected final def withRequiredRoles[F[+_], T](roles: NonEmptySet[String])(body: => F[T])
-                                                 (implicit AR: ActionResult[F]): AuthToken => F[T] = {
+  final protected def withRequiredRoles[F[+_], T](
+    roles: NonEmptySet[String]
+  )(body: => F[T])(implicit AR: ActionResult[F]): AuthToken => F[T] = {
     val requiredRoles = roles.toSortedSet
-    authToken => withRequiredRolesInternal(requiredRoles, authToken)(
-      _ => body,
-      () => AR.raiseError(notAuthorizedError)
-    )
+    authToken =>
+      withRequiredRolesInternal(requiredRoles, authToken)(
+        _ => body,
+        () => AR.raiseError(notAuthorizedError)
+      )
   }
 
-  private[this] final def withRequiredRolesInternal[Out](requiredRoles: Set[String], authToken: AuthToken)
-                                                    (onAuthorized: AuthToken => Out, onUnauthorized: () => Out): Out = {
+  final private[this] def withRequiredRolesInternal[Out](
+    requiredRoles: Set[String],
+    authToken: AuthToken
+  )(onAuthorized: AuthToken => Out, onUnauthorized: () => Out): Out = {
     val missingRoles = requiredRoles.removedAll(authToken.roles)
 
     if (missingRoles.nonEmpty) {

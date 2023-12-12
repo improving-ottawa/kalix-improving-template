@@ -4,4 +4,4 @@ package com.example.gateway.entity
 //
 // Keeping this as a marker file so Kalix does not try and regenerate this later!
 
-abstract class UserIntegrationSpec { }
+abstract class UserIntegrationSpec {}

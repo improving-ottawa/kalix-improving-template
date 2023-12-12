@@ -83,7 +83,7 @@ object AuthToken {
 
   }
 
-  @inline private final def printJsonValue(value: Json): String =
+  @inline final private def printJsonValue(value: Json): String =
     value.noSpaces.stripPrefix("\"").stripSuffix("\"")
 
 }

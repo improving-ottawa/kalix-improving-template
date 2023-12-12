@@ -4,8 +4,8 @@ import com.google.protobuf.Descriptors
 import kalix.scalasdk.action._
 import kalix.scalasdk.impl.action.ActionRouter
 
-final class AuthenticatedActionProvider[A <: Action with AuthenticatedAction] private(inner: ActionProvider[A])
-  extends ActionProvider[A] {
+final class AuthenticatedActionProvider[A <: Action with AuthenticatedAction] private (inner: ActionProvider[A])
+    extends ActionProvider[A] {
 
   val options: ActionOptions =
     ActionOptions.defaults.withForwardHeaders(Set("Cookie", "X-CSRF-Token"))

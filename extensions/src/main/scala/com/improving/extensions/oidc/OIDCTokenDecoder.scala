@@ -17,8 +17,8 @@ import scala.util.Try
 sealed abstract class OIDCTokenDecoder private {
   import OIDCTokenDecoder._
 
-  final def createDecoderUsingJWKS[P](jwkSet: JWKSet)(implicit
-    decoder: Decoder[P]
+  final def createDecoderUsingJWKS[P](jwkSet: JWKSet)(
+    implicit decoder: Decoder[P]
   ): Kleisli[Either[Throwable, *], String, P] = Kleisli(token => decode(jwkSet)(token))
 
   final def decode[P](jwkSet: JWKSet)(token: String)(implicit decoder: Decoder[P]): Either[Throwable, P] =

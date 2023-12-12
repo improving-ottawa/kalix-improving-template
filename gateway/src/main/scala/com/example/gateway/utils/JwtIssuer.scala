@@ -60,12 +60,12 @@ object JwtIssuer {
   /* Typed / specific errors */
 
   case class CsrfTokenMismatch(fromJwt: Base64String, fromHeader: Base64String)
-    extends Error(
-      s"CSRF verification failed, received different CSRF tokens from JWT ($fromJwt) and HTTP header ($fromHeader)."
-    )
+      extends Error(
+        s"CSRF verification failed, received different CSRF tokens from JWT ($fromJwt) and HTTP header ($fromHeader)."
+      )
 
   case class MissingCsrfToken(authToken: AuthToken)
-    extends Error(s"Authorization token missing `csrf_token` in claims: $authToken")
+      extends Error(s"Authorization token missing `csrf_token` in claims: $authToken")
 
 }
 
@@ -108,7 +108,8 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
 
   def validateAndExtract(jwt: String, csrfToken: Base64String): Either[Throwable, AuthToken] = {
     @inline def extractJwtAuthToken(authToken: AuthToken) =
-      authToken.additionalClaims.get("csrf_token")
+      authToken.additionalClaims
+        .get("csrf_token")
         .map(Base64String.fromBase64String(_).leftMap(_ => JwtIssuer.MissingCsrfToken(authToken)))
         .getOrElse(Left(JwtIssuer.MissingCsrfToken(authToken)))
 
@@ -117,9 +118,9 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
       else Left(JwtIssuer.CsrfTokenMismatch(fromJwt, csrfToken))
 
     for {
-      authToken     <- authTokenService.validateAndExtractToken(jwt)
-      jwtCsrfToken  <- extractJwtAuthToken(authToken)
-      _             <- verifyCsrfTokens(jwtCsrfToken)
+      authToken    <- authTokenService.validateAndExtractToken(jwt)
+      jwtCsrfToken <- extractJwtAuthToken(authToken)
+      _            <- verifyCsrfTokens(jwtCsrfToken)
     } yield authToken
   }
 
