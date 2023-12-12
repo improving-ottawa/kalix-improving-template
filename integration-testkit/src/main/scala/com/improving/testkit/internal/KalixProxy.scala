@@ -38,7 +38,7 @@ private[testkit] class KalixProxy private (
 
 object KalixProxy {
   final val proxyImageBaseName       = "gcr.io/kalix-public/kalix-proxy"
-  final val defaultProxyImageVersion = "1.1.23"
+  final val defaultProxyImageVersion = "1.1.24"
 
   @volatile private[this] var proxyImageName = s"$proxyImageBaseName:$defaultProxyImageVersion"
 

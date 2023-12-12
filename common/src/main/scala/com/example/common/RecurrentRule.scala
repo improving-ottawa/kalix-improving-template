@@ -168,8 +168,8 @@ sealed trait BuildableRule extends RecurrentRule {
 }
 
 sealed trait ProtobufRRuleConversion { self: RecurrentRule.type =>
-  import com.google.`type`.date.{Date => ProtoDate}
-  import com.google.`type`.month.{Month => ProtoMonth}
+  import com.google.`type`.{Date => ProtoDate}
+  import com.google.`type`.{Month => ProtoMonth}
 
   trait RRuleCompanion extends GeneratedMessageCompanion[protobuf.RRule] {
 

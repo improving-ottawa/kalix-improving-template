@@ -11,7 +11,8 @@ case class KalixService(
   stopTimeout: Option[FiniteDuration] = None,
   aclEnabled: Boolean = false,
   advancedViews: Boolean = false,
-  eventingSupport: EventingSupport = EventingSupport.TestBroker
+  eventingSupport: EventingSupport = EventingSupport.TestBroker,
+  overrideProxyPort: Option[Int] = None
 )
 
 object KalixService {
@@ -25,7 +26,8 @@ object KalixService {
         svc.stopTimeout,
         svc.aclEnabled,
         svc.advancedViews,
-        svc.eventingSupport
+        svc.eventingSupport,
+        svc.overrideProxyPort
       )
 
   }

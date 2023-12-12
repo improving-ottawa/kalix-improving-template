@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import {Copyright} from "../../styledComponents/copyright";
 import {AppBar} from "@mui/material";
 import {TopNav} from "../../styledComponents/navBars";
 import {Products, productsDisplay} from "../ProductsDisplay";

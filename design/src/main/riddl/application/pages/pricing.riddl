@@ -18,7 +18,7 @@ command RedirectUserToBlogHome is {???}
 command AddProductToOrder is {???}
 
 page PricingPage {
-  output PricingPageText shows record ProductOfferingText
+  output PricingPageText shows ProductOfferingText
   output ProductListDisplay shows ProductList
   text DashboardLink initiates command RedirectUserToDashboard
   text BlogLink initiates command RedirectUserToBlogHome

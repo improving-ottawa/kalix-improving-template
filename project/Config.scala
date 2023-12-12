@@ -1,4 +1,3 @@
-import Dependencies.{bouncyCastleCryptoPackage, iamDependencies, _}
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
@@ -31,8 +30,9 @@ import scalapb.GeneratorOption.{FlatPackage, _}
 import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
 import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
-import java.net.URI
 import java.util.Calendar
+
+import Dependencies._
 
 object Config {
 
@@ -99,20 +99,20 @@ object Config {
 
     def scalapbCodeGen(project: Project): Project = {
       project.settings(
-        libraryDependencies ++= scalaPbDependencies,
+        libraryDependencies ++= scalaPbValidationDependencies,
+        libraryDependencies += scalaPbCompilerPlugin,
         Compile / PB.targets := Seq(
           scalapb.gen(
             FlatPackage,
             SingleLineToProtoString,
             RetainSourceCodeInfo
-          ) -> (Compile / sourceManaged).value / "scalapb",
+          ) -> (Compile / sourceManaged).value,
           scalapb.validate.gen(
             FlatPackage,
             SingleLineToProtoString,
             RetainSourceCodeInfo
-          ) -> (Compile / sourceManaged).value / "scalapb"
-        ),
-        libraryDependencies += scalaPbCompilerPlugin
+          ) -> (Compile / sourceManaged).value
+        )
       )
     }
 
@@ -220,6 +220,7 @@ object Config {
         .enablePlugins(AkkaGrpcPlugin)
         .settings(
           libraryDependencies ++= Dependencies.scalaPbValidationDependencies,
+          libraryDependencies += Dependencies.scalaPbCompilerPlugin,
           Compile / PB.targets ++= Seq[Target](
             protocbridge.Target(
               scalapb.validate.preprocessor(FlatPackage),
@@ -235,16 +236,69 @@ object Config {
 
   val minCoverage: Int = 80
 
-  object Kalix {
+  object AsProjectType {
+
+    // Base/basic library, with the following:
+    //  - Akka/Akka streams
+    //  - Cats / Cats Effect
+    //  - STTP and related packages
+    //  - BouncyCastle for better cryptography support
+    //  - ScalaTest, ScalaCheck
+    // Does not include anything related to Kalix
+    def basicLibrary(proj: Project): Project =
+      proj
+        .configure(Config.Scala.withScala2)
+        .configure(Config.Scala.withCoverage(minCoverage))
+        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
+        .settings(addCompilerPlugin(CompilerPlugins.kindProjector))
+        .settings(
+          resolvers += "Sonatype OSS Release Repository".at("https://oss.sonatype.org/content/repositories/releases/"),
+          libraryDependencies ++=
+            akkaDepsPackage ++
+            testingDeps ++
+            bouncyCastleCryptoPackage ++
+            functionalDepsPackage ++
+            httpDepsPackage
+        )
+
+    // Extends `basicLibrary` to include the ability to generate code based on protobuf definitions
+    // Note: the protobuf definitions should be under "src/main/proto" or "src/test/proto"
+    def protobufLibrary(proj: Project): Project =
+      basicLibrary(proj)
+        .configure(Config.Scala.scalapbCodeGen)
+        .enablePlugins(sbtprotoc.ProtocPlugin)
+        .settings(
+          libraryDependencies ++= Dependencies.scalaPbGoogleCommonProtos,
+          Compile / PB.protoSources += { (Compile / sourceDirectory).value / "proto" },
+          Test / PB.protoSources += { (Test / sourceDirectory).value / "proto" },
+        )
+
+  }
+
+  object AsKalix {
+
+    // Defines a Kalix component library, which is also a `AsProjectType.basicLibrary`, but customized for Kalix
+    def library(proj: Project): Project = {
+      AsProjectType.basicLibrary(proj)
+        .enablePlugins(KalixPlugin)
+        .configure(Config.ScalaPB.protoGenValidate)
+        .settings(
+          libraryDependencies ++= akkaDepsPackage ++
+            akkaKalixServiceDepsPackage ++
+            scalaPbGoogleCommonProtos ++
+            kalixScalaPbDependencies,
+          runAll := {
+            val logger = streams.value.log
+            logger.error("You cannot run a library!")
+          }
+        )
+    }
 
     def service(proj: Project): Project = {
-      proj
+      AsProjectType.basicLibrary(proj)
         .enablePlugins(KalixPlugin, JavaAppPackaging, DockerPlugin)
-        .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Config.Scala.withScala2)
         .configure(Config.ScalaPB.protoGenValidate)
         .configure(Config.withDocker)
-        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
         .settings(
           dockerRepository := Some(KalixEnv.containerRepository),
           dockerAliases    := {
@@ -266,7 +320,7 @@ object Config {
           }
         )
         .settings(
-          exportJars          := true,
+          exportJars := true,
           run / envVars += ("HOST", "0.0.0.0"),
           // needed for the proxy to access the user function on all platforms
           run / javaOptions ++= Seq(
@@ -275,11 +329,13 @@ object Config {
           ),
           run / fork          := true,
           Global / cancelable := false, // ctrl-c
-          libraryDependencies ++= (
-            Dependencies.testingDeps ++
-              Dependencies.grpc ++
-              Dependencies.loggingDependencies ++
-              Dependencies.integrationTestDependencies
+          libraryDependencies ++= (Dependencies.akkaDepsPackage ++
+            Dependencies.akkaKalixServiceDepsPackage ++
+            Dependencies.scalaPbGoogleCommonProtos ++
+            Dependencies.kalixScalaPbDependencies ++
+            Dependencies.grpc ++
+            Dependencies.loggingDependencies ++
+            Dependencies.integrationTestDependencies
           ),
           Compile / scalacOptions ++= Seq(
             "-target:11",
@@ -310,41 +366,6 @@ object Config {
           }
         )
     }
-
-    def baseLibrary(proj: Project): Project =
-      proj
-        .configure(Config.Scala.withScala2)
-        .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Config.ScalaPB.protoGenValidate)
-        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
-        .settings(
-          libraryDependencies ++= testingDeps ++ akkaGrpcDepsPackage ++ iamDependencies ++ bouncyCastleCryptoPackage,
-          libraryDependencies += "io.kalix" % "kalix-sdk-protocol" % KalixPlugin.KalixProtocolVersion % "protobuf-src",
-          excludeDependencies ++= Seq(
-            ExclusionRule("com.lightbend.akka.grpc"),
-          ),
-          resolvers += "Sonatype OSS Release Repository".at("https://oss.sonatype.org/content/repositories/releases/")
-        )
-
-    def kalixLibrary(proj: Project): Project = {
-      proj
-        .enablePlugins(KalixPlugin)
-        .configure(Config.Scala.withScala2)
-        .configure(Config.Scala.withCoverage(minCoverage))
-        .configure(Config.ScalaPB.protoGenValidate)
-        .settings(addCompilerPlugin(CompilerPlugins.betterForComp))
-        .settings(
-          libraryDependencies ++= testingDeps ++ akkaKalixServiceDepsPackage,
-          runAll := {
-            val logger = streams.value.log
-            logger.warn("You cannot run a library!")
-          }
-        )
-    }
-
-    def dependsOn(dependency: Project)(project: Project): Project =
-      project
-        .dependsOn(dependency % "protobuf;compile->compile;test->test")
 
   }
 
