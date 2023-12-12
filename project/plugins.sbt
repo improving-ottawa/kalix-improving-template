@@ -1,4 +1,4 @@
-addSbtPlugin("io.kalix"         % "sbt-kalix"             % "1.3.3")
+addSbtPlugin("io.kalix"         % "sbt-kalix"             % "1.3.5")
 addSbtPlugin("io.gatling"       % "gatling-sbt"           % "4.5.0")
 addSbtPlugin("com.github.sbt"   % "sbt-native-packager"   % "1.9.16")
 addSbtPlugin("org.scalastyle"  %% "scalastyle-sbt-plugin" % "1.0.0")
@@ -15,9 +15,9 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates"           % "0.5.0")
 addSbtPlugin("com.reactific"   %% "sbt-riddl"             % "0.27.1")
 addSbtPlugin("com.typesafe.sbt" % "sbt-site"              % "1.4.1")
 
-// For ScalaPB 0.11.x we meed these items
+// For ScalaPB 0.11.x we need these items
 libraryDependencies ++= Seq(
-  "com.thesamet.scalapb" %% "compilerplugin"           % "0.11.13",
+  "com.thesamet.scalapb" %% "compilerplugin"           % "0.11.11",
   "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.4",
 )
 
