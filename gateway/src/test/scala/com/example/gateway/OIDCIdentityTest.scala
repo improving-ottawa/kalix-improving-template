@@ -42,7 +42,7 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
     // Should match what was set when configuring Keycloak (if instructions were followed, it should be `test-client`)
     clientId = "test-client",
     // Must be set after configuring Keycloak
-    clientSecret = "bCh0J0ZnjdWg0DQV9F2DdkyEX2o7890b",
+    clientSecret = "js0fqM4oflEMaXgqcoWimaNbUAWpGYKD",
     // This is fixed if you follow the Keycloak instructions in the `Test-Setup-Instructions.md`.
     // Otherwise you will have to adapt the Docker port and/or `realm` to match your docker instance and
     // configured Keycloak realm name.

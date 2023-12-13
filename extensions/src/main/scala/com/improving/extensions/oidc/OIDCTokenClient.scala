@@ -51,8 +51,8 @@ object OIDCTokenClient extends OIDCTokenClientErrors {
     new OIDCTokenClientBase[IO](config, WebClient.catsEffect)
 
   /** Get a new [[OIDCTokenClient]] for scala [[Future]]. */
-  def scalaFuture(config: OIDCClientConfig, blockingContext: ExecutionContext)(implicit
-    ec: ExecutionContext
+  def scalaFuture(config: OIDCClientConfig, blockingContext: ExecutionContext)(
+    implicit ec: ExecutionContext
   ): OIDCTokenClient[Future] =
     new OIDCTokenClientBase[Future](config, WebClient.scalaFuture(blockingContext))
 

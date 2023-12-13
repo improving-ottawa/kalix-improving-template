@@ -52,8 +52,8 @@ sealed abstract class OIDCClientErrors { self: OIDCClient.type =>
 object OIDCClient extends OIDCClientErrors with OIDCClientUtils {
 
   /** Create a new [[OIDCClient]], which can be used for the OIDC "Authorization Code" flow. */
-  final def apply[F[_]](config: OIDCClientConfig, providerCallbackUri: Uri)(implicit
-    effect: SupportedEffect[F]
+  final def apply[F[_]](config: OIDCClientConfig, providerCallbackUri: Uri)(
+    implicit effect: SupportedEffect[F]
   ): OIDCClient[F] =
     new OIDCClientImpl[F](
       config,
@@ -153,9 +153,8 @@ final private class OIDCClientImpl[F[_]](
   metadataClient: DiscoveryClient[F],
   metadataCache: InMemCache[F],
   tokenClient: OIDCTokenClient[F]
-)(implicit
-  F: MonadThrow[F]
-) extends OIDCClient[F] {
+)(implicit F: MonadThrow[F])
+    extends OIDCClient[F] {
 
   /* OIDCClient Implementation */
 

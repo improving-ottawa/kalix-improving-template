@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Info</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/cjs/index.min.js"
+            integrity="sha384-l89YQCnUYETME/w3/Inrf9FsxtHcMVNxmTUOaoYKqjuHT7yKP0reCvw6zF0JGWmi"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"
+            integrity="sha384-/vxhYfM1LENRhdpZ8dwEsQn/X4VhpbEZSiU4m/FwR+PVpzar4fkEOw8FP9Y+OfQN"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <h2>With JWT cookie and CSRF Token:</h2>
+    <div id="result_area"></div>
+    <p></p>
+    <h2>With JWT cookie and without CSRF Token:</h2>
+    <div id="no_token"></div>
+    <p></p>
+    <h2>Without JWT cookie and with CSRF Token:</h2>
+    <div id="no_cookie"></div>
+
+    <script>
+        function prettifyJson(jsonText) {
+            const json = JSON.parse(jsonText)
+            return JSON.stringify(json, null, 2)
+        }
+
+        function makeHandler(req, elementId, pretty = false) {
+            return () => {
+                const resultArea = document.getElementById(elementId)
+                const respText = pretty ? prettifyJson(req.responseText) : req.responseText
+                resultArea.innerText = "Status: " + req.statusText + "\n" + "Response: " + respText
+            };
+        }
+
+        const jwt = Cookies.get('authToken')
+        const decoded = jwtDecode(jwt)
+        const userId = decoded.sub
+        const csrfToken = sessionStorage.getItem('csrfToken')
+
+        // Valid (authenticated) request
+        const req = new XMLHttpRequest()
+        const okRespHandler = makeHandler(req, 'result_area', true)
+        req.onload = () => {
+            Cookies.remove('authToken')
+
+            // Invalid request (no JWT cookie)
+            const noCookieReq = new XMLHttpRequest()
+            const respHandler = makeHandler(noCookieReq, 'no_cookie')
+            noCookieReq.onload = () => {
+                Cookies.set('authToken', jwt)
+                respHandler()
+            }
+
+            noCookieReq.open('GET', '/user/' + userId, true)
+            noCookieReq.setRequestHeader('X-CSRF-Token', csrfToken)
+            noCookieReq.send()
+
+            okRespHandler()
+        }
+
+        req.open('GET', '/user/' + userId, true)
+        req.setRequestHeader('X-CSRF-Token', csrfToken)
+        req.send()
+
+        // Invalid request (no "X-CSRF-Token" HTTP header)
+
+        const noTokenReq = new XMLHttpRequest()
+        noTokenReq.onload = makeHandler(noTokenReq, 'no_token')
+        noTokenReq.open('GET', '/user/' + userId, true);
+        noTokenReq.send();
+    </script>
+</body>
+</html>

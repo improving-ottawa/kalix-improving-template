@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package com.example.gateway.entity;
+
+import "com/example/common/timestamp.proto";
+import "com/example/gateway/domain/user_domain.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+/* (Value) Entity (Kalix) Service */
+
+service User {
+  option (kalix.service).acl.allow = {service: "gateway"};
+  option (kalix.codegen) = {
+    value_entity: {
+      name: "com.example.gateway.entity.UserEntity"
+      entity_type: "user"
+      state: "com.example.gateway.domain.UserInfo"
+    }
+  };
+
+  // Get an existing `User` if they exist
+  rpc GetUser(domain.GetUserRequest) returns (domain.GetUserResponse) {}
+
+  // Create (or update/sync) a `User` from identity provider information
+  rpc CreateOrUpdateUserInfo(domain.UserInfo) returns (google.protobuf.Empty) {}
+
+  // Update the roles assigned to a `User`
+  rpc UpdateUserRoles(domain.UpdateUserRolesRequest) returns (domain.UserInfo) {}
+}
