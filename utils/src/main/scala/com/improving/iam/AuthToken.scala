@@ -59,7 +59,7 @@ object AuthToken {
       issuedAt = Instant.ofEpochSecond(iat),
       roles = roles.toSet,
       audience = claim.audience,
-      additionalClaims = extra.map(_.toMap.view.mapValues(Printer.noSpaces.print).toMap).getOrElse(Map.empty)
+      additionalClaims = extra.map(_.toMap.view.mapValues(printJsonValue).toMap).getOrElse(Map.empty)
     )
 
   /** Converts an [[AuthToken authorization token]] into a set of [[JwtClaim JWT claims]]. */
@@ -82,5 +82,8 @@ object AuthToken {
     @inline final def toClaims: JwtClaim = AuthToken.toClaims(token)
 
   }
+
+  @inline final private def printJsonValue(value: Json): String =
+    value.noSpaces.stripPrefix("\"").stripSuffix("\"")
 
 }

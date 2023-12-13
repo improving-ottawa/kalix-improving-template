@@ -16,14 +16,14 @@ trait EmailService {
 
 object EmailService {
 
-  final def apply(emailSystem: EmailSystem, logAuthTokens: Boolean = false)(implicit
-    executionContext: ExecutionContext
+  final def apply(emailSystem: EmailSystem, logAuthTokens: Boolean = false)(
+    implicit executionContext: ExecutionContext
   ): EmailService = EmailServiceImpl(emailSystem, logAuthTokens)
 
 }
 
-final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens: Boolean)(implicit
-  executionContext: ExecutionContext
+final private class EmailServiceImpl private (system: EmailSystem, logAuthTokens: Boolean)(
+  implicit executionContext: ExecutionContext
 ) extends EmailService {
   import EmailServiceImpl._
 
@@ -89,8 +89,8 @@ private object EmailServiceImpl {
 
   final private val adminLoginEmailTemplate = "/TokenForAdminLoginEmail.html"
 
-  def apply(emailSystem: EmailSystem, logAuthTokens: Boolean)(implicit
-    executionContext: ExecutionContext
+  def apply(emailSystem: EmailSystem, logAuthTokens: Boolean)(
+    implicit executionContext: ExecutionContext
   ): EmailServiceImpl =
     new EmailServiceImpl(emailSystem, logAuthTokens)
 

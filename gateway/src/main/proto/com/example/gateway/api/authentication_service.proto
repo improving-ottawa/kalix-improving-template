@@ -13,9 +13,6 @@ message BeginAuthenticationRequest {
 
   // The client (UI) URI that the user will be redirected to after the OIDC authorization code flow is complete
   string redirect_uri = 2;
-
-  // Optional (but suggested) CSRF token
-  string csrf_token = 3;
 }
 
 message OIDCAccessCodeData {
@@ -25,7 +22,7 @@ message OIDCAccessCodeData {
   // The state
   string state = 2;
 
-  // Additional query string params we might receive
+  // Additional query string params we might receive (will need to be expanded to handle new / additional OIDC providers)
   string session_state = 3;
   string iss = 4;
 }

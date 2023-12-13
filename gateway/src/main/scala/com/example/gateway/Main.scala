@@ -1,6 +1,8 @@
 package com.example.gateway
 
 import com.example.gateway.api._
+import com.example.gateway.entity._
+import com.example.gateway.middleware._
 import com.example.gateway.utils._
 import com.improving.iam._
 import com.improving.extensions.oidc._
@@ -21,7 +23,7 @@ import scala.concurrent.duration.FiniteDuration
 
 object Main {
 
-  private val log = LoggerFactory.getLogger("com.example.template.Main")
+  private val log = LoggerFactory.getLogger("com.example.gateway.Main")
 
   def createKalixForTest(): Kalix = {
     implicit val testEffect: OIDCClient.SupportedEffect[Future] =
@@ -45,8 +47,9 @@ object Main {
 
     KalixFactory.withComponents(
       new LoginTokenService(_, algorithmWithKeys),
+      new UserEntity(_),
       new AuthenticationServiceAction(identityService, jwtIssuer, _),
-      new GatewayProxy(_)
+      new GatewayProxy(_, jwtIssuer)
     )
   }
 
@@ -54,9 +57,7 @@ object Main {
     keyLoaderConfig: KeyLoaderConfig,
     identityServiceConfig: OIDCIdentityServiceConfig,
     jwtIssuerConfig: JwtIssuerConfig
-  )(implicit
-    asyncContext: AsyncContext
-  ): Kalix = {
+  )(implicit asyncContext: AsyncContext): Kalix = {
     val algorithmWithKeys = KeyLoader
       .load(keyLoaderConfig)
       .fold(
@@ -72,15 +73,20 @@ object Main {
 
     val authServiceProvider = AuthenticationServiceActionProvider(
       ctx => new AuthenticationServiceAction(identityService, jwtIssuer, ctx),
-      ActionOptions.defaults.withForwardHeaders(Set("Authorization", "Cookie"))
+      ActionOptions.defaults.withForwardHeaders(Set("Authorization", "Cookie", "X-CSRF-Token"))
+    )
+
+    val gatewayAuthedProvider = AuthenticatedActionProvider(
+      GatewayProxyProvider(new GatewayProxy(_, jwtIssuer))
     )
 
     printServiceConfig(keyLoaderConfig, identityServiceConfig, jwtIssuerConfig)
 
     Kalix()
       .register(authServiceProvider)
+      .register(gatewayAuthedProvider)
       .register(LoginTokenServiceProvider(new LoginTokenService(_, algorithmWithKeys)))
-      .register(GatewayProxyProvider(new GatewayProxy(_)))
+      .register(UserEntityProvider(new UserEntity(_)))
   }
 
   def main(args: Array[String]): Unit = {

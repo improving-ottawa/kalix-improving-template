@@ -19,7 +19,6 @@ object OIDCStateServiceSpec {
   private val expected =
     OIDCState(
       "Google",
-      SecureRandomString(16).toString,
       "http://localhost:9000/"
     )
 
