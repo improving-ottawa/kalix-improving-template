@@ -1,10 +1,11 @@
 // See https://redux.js.org/tutorials/typescript-quick-start
 
 import {Action, configureStore, ThunkAction} from '@reduxjs/toolkit'
-import exampleReducer from './slices/exampleSlice'
+import purchasingReducer from './slices/purchasingSlice'
+
 export const store = configureStore({
     reducer: {
-        example: exampleReducer
+        purchasing: purchasingReducer
     }
 })
 
