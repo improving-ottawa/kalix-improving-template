@@ -9,9 +9,7 @@ import SignIn from "./screens/login/SignIn";
 import SignUp from "./screens/login/SignUp";
 import OrdersPage from "./screens/dashboard/orders/OrdersPage";
 import CustomersPage from "./screens/dashboard/customers/CustomersPage";
-import SessionsPage from "./screens/dashboard/sessions/SessionsPage";
 import Pricing from "./screens/productsFlow/pricing/Pricing";
-import Checkout from "./screens/productsFlow/checkout/Checkout";
 
 const theme = createTheme({
     palette: {
@@ -43,9 +41,6 @@ function App() {
                                 <Route path="pricing">
                                     <Route index element={<Pricing/>}/>
                                 </Route>
-                                <Route path="checkout">
-                                    <Route index element={<Checkout/>}/>
-                                </Route>
                                 <Route path="dashboard">
                                     <Route index element={<Navigate to="orders"/>}/>
                                     <Route path="orders">
@@ -53,9 +48,6 @@ function App() {
                                     </Route>
                                     <Route path="customers">
                                         <Route index element={<CustomersPage/>}/>
-                                    </Route>
-                                    <Route path="sessions">
-                                        <Route index element={<SessionsPage/>}/>
                                     </Route>
                                 </Route>
                             </Route>
