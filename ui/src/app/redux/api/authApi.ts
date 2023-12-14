@@ -1,25 +1,25 @@
-import {getClient} from "./client";
-import {DoNothingTwiceCommand} from "../../../generated/com/example/gateway/domain/gateway_commands_pb";
-import {DoNothingTwiceResponse} from "../../../generated/com/example/gateway/domain/gateway_responses_pb";
+import {BeginAuthenticationRequest} from "../../../generated/com/example/gateway/api/authentication_service_pb";
+import {getAuthClient} from "./clients";
+import {HttpBody} from "../../../generated/google/api/httpbody_pb";
 
-export function sendDoNothingTwiceCommand(req: DoNothingTwiceCommand) {
+export function sendBeginAuthenticationRequest(req: BeginAuthenticationRequest) {
     var deadline = new Date();
     deadline.setSeconds(deadline.getSeconds() + 30);
 
-    return new Promise<{ doNothingTwice: DoNothingTwiceResponse }>((resolve, reject) => {
-        getClient().then(client => {
-            client.doNothingTwice(req, {
+    return new Promise<{ response: HttpBody }>((resolve, reject) => {
+        getAuthClient().then(client => {
+            client.oidcAuthentication(req, {
                     //TODO: uncomment for routes that are authorized using JWT
                     //authorization: 'Bearer ' + window.BEARER_TOKEN,
                     deadline: deadline.getTime().toString()
                 },
                 (err, response) => {
                     if (err) {
-                        console.error(`Unexpected error sending DoNothingTwice: code = ${err.code}` +
+                        console.error(`Unexpected error sending BeginAuthenticationRequest: code = ${err.code}` +
                             `, message = "${err.message}"`)
                         reject(err)
                     } else {
-                        const resp = {doNothingTwice: response}
+                        const resp = {response: response}
                         console.log(resp)
                         resolve(resp)
                     }
