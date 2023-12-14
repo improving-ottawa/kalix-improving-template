@@ -172,5 +172,5 @@ Make sure first to run the script `proto-gen`. Then use the command `npm start` 
 1) Copy the local configuration template file from `gateway/src/user-local.conf.template`
    to `gateway/src/user-local.conf`
    Don't worry, it is in the `.gitignore`, so your local changes will not be pushed up to the git server!
-2) Follow the instructions in `src/test/scala/com/example/gateway/Test-Setup-Instructions.md`
+2) Follow the instructions in `gateway/src/Test-Setup-Instructions.md`
 3) Profit!
