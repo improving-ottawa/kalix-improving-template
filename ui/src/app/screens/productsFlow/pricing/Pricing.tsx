@@ -12,46 +12,14 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import {Copyright} from "../styledComponents/copyright";
 import {AppBar} from "@mui/material";
-import {TopNav} from "../styledComponents/navBars";
+import {TopNav} from "../../styledComponents/navBars";
+import {Products, productsDisplay} from "../ProductsDisplay";
+import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {addProduct} from "../../../redux/slices/purchasingSlice";
+import {Copyright} from "../../styledComponents/copyright";
 
-const tiers = [
-    {
-        title: 'Lorem ipsum',
-        price: '0',
-        description: [
-            'Lorem ipsum ',
-            'dolor sit amet, ',
-            'consectetur adipiscing elit',
-        ],
-        buttonText: 'Buy',
-        buttonVariant: 'outlined',
-    },
-    {
-        title: 'Lorem ipsum A',
-        subheader: 'Most popular',
-        price: '0',
-        description: [
-            'Lorem ipsum ',
-            'dolor sit amet, ',
-            'consectetur adipiscing elit',
-        ],
-        buttonText: 'Buy',
-        buttonVariant: 'contained',
-    },
-    {
-        title: 'Lorem ipsum',
-        price: '0',
-        description: [
-            'Lorem ipsum ',
-            'dolor sit amet, ',
-            'consectetur adipiscing elit',
-        ],
-        buttonText: 'Buy',
-        buttonVariant: 'outlined',
-    },
-];
 const footers = [
     {
         title: 'Legal',
@@ -60,6 +28,8 @@ const footers = [
 ];
 
 export default function Pricing() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     return (
         <Box>
@@ -90,20 +60,20 @@ export default function Pricing() {
             </Container>
             <Container maxWidth="md" component="main">
                 <Grid container spacing={5} alignItems="flex-end">
-                    {tiers.map((tier) => (
+                    {productsDisplay.map((product) => (
                         <Grid
                             item
-                            key={tier.title}
+                            key={product.title}
                             xs={12}
-                            sm={tier.title === 'Enterprise' ? 12 : 6}
+                            sm={product.title === 'Lorem ipsum C' ? 12 : 6}
                             md={4}
                         >
                             <Card>
                                 <CardHeader
-                                    title={tier.title}
-                                    subheader={tier.subheader}
+                                    title={product.title}
+                                    subheader={product.subheader}
                                     titleTypographyProps={{align: 'center'}}
-                                    action={tier.title === 'Pro' ? <StarIcon/> : null}
+                                    action={product.title === 'Lorem ipsum A' ? <StarIcon/> : null}
                                     subheaderTypographyProps={{
                                         align: 'center',
                                     }}
@@ -124,14 +94,14 @@ export default function Pricing() {
                                         }}
                                     >
                                         <Typography component="h2" variant="h3" color="text.primary">
-                                            ${tier.price}
+                                            ${product.price}
                                         </Typography>
                                         <Typography variant="h6" color="text.secondary">
                                             /mo
                                         </Typography>
                                     </Box>
                                     <ul>
-                                        {tier.description.map((line) => (
+                                        {product.description.map((line) => (
                                             <Typography
                                                 component="li"
                                                 variant="subtitle1"
@@ -145,10 +115,15 @@ export default function Pricing() {
                                 </CardContent>
                                 <CardActions>
                                     <Button
+                                        onClick={() => {
+                                            const productToAdd = Products.find(_ => _.name === product.title)
+                                            if (productToAdd) dispatch(addProduct(productToAdd))
+                                            navigate("/checkout")
+                                        }}
                                         fullWidth
-                                        variant={tier.buttonVariant as 'outlined' | 'contained'}
+                                        variant={product.buttonVariant as 'outlined' | 'contained'}
                                     >
-                                        {tier.buttonText}
+                                        {product.buttonText}
                                     </Button>
                                 </CardActions>
                             </Card>
@@ -174,7 +149,8 @@ export default function Pricing() {
                             <ul>
                                 {footer.description.map((item) => (
                                     <li key={item}>
-                                        <Link href="#" variant="subtitle1" color="text.secondary">
+                                        <Link variant="subtitle1"
+                                              color="text.secondary">
                                             {item}
                                         </Link>
                                     </li>
