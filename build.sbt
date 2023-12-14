@@ -69,7 +69,6 @@ lazy val extensions: Project = project
   .in(file("extensions"))
   .configure(Config.AsProjectType.basicLibrary)
   .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
-  .configure(Config.withDeps(Dependencies.akkaGrpc))
   .configure(Config.withDepsPackage(Dependencies.iamDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.cachingDependencies))
   .configure(Config.withDepsPackage(Dependencies.grpc))
