@@ -20,9 +20,19 @@
     - [Utils](#utils)
     - [Services](#services)
     - [Gateway](#gateway)
+    - [UI](#ui)
     - [Extensions](#ext)
     - [Integration Tests](#integration-tests)
     - [ScheduledTasks](#scheduled)
+- [Pre-Installation](#pre-install)
+    - [Protoc-Gen-Js](#protoc-gen)
+    - [GRPC-Web](#grpc-web)
+- [Backend](#backend)
+    - [Running Locally](#be-local-run)
+    - [Testing Locally](#be-local-test)
+    - [Deploying Locally](#be-deploy)
+- [Frontent/UI](#frontend)
+    - [Running Locally](#fe-local)
 
 # <a id="submodules"></a>  Submodules
 
@@ -51,25 +61,34 @@ separate deployable (service3)
     - Service 2 (just an Action)
 - Service 3 (Value Entity w/ View)
 
-## Gateway
+## <a id="gateway"></a>  Gateway
 
 The Kalix Gateway will serve as the interface between the client & the microservices
 The Gateway contains integration tests for all services
 
-## Scheduled Tasks
+# <a id="ui"></a> UI
+
+The front-end client PWA (typescript)
+
+## <a id="ext"></a>  Extensions
+
+Email & OIDC/JWK capabilities
+
+## <a id="integation-tests"></a>  Integration Tests
+
+`integration-testkit` contains extensions to the Kalix testkit that allow for testing a multi-deployment system
+`integration-testkit-tests` contains the tests themselves
+
+## <a id="scheduled"></a>  Scheduled Tasks
 
 Includes `ScheduledTaskAction`, a trait implementing `Start`, `Run`, and `RunForTest`, which allows for enabling
 scheduled actions
 In the example, every 2 hours,  `DoNothingService1` implements a `DoNothingAction` call to `Service1` and then reads
 from `NoDataView`
 
-# UI
+# <a id="pre-install"></a> Pre-Build Dependency Installation
 
-The front-end client PWA (typescript)
-
-## Pre-Build Dependency Installation
-
-### Protoc-gen-js
+## <a id="protoc-gen"></a> Protoc-gen-js
 
 ```
 npm install --global protoc-gen-js
@@ -77,7 +96,7 @@ npm install --global protoc-gen-js
 
 For more info, [see link](https://github.com/yinzara/protoc-gen-js)
 
-### GRPC-Web Plugin Generator
+### <a id="grpc-web"></a> GRPC-Web Plugin Generator
 
 After
 downloading [an appropriate image](https://github.com/grpc/grpc-web#code-generator-plugin:~:text=plugin%20from%20our-,release,-page%3A),
@@ -94,9 +113,9 @@ for Mac or a similar command for Lunix.
 See [grpc-web docs](https://github.com/improving-ottawa/kalix-improving-template/actions/runs/6866116754/job/18671628548)
 more thorough instructions
 
-# Backend
+# <a id="backend"></a> Backend
 
-## Running services locally
+## <a id="be-local-run"></a> Running services locally
 
 To run any of the Kalix services locally, use the following command:
 
@@ -107,11 +126,11 @@ sbt "{service-name}/runAll -Dlogback.configurationFile=logback-local.xml -Dconfi
 So for example, to run the `gateway` service locally, run:
 > sbt "gateway/runAll -Dlogback.configurationFile=logback-local.xml -Dconfig.resource=integration-test.conf"
 
-# Local Testing
+# <a id="be-local-test"></a> Local Testing
 
 The integration tests can be run locally via the command `sbt "integration-test/test"`
 
-## How to publish and deploy the Kalix services to Kalix
+## <a id="be-deploy"></a> How to publish and deploy the Kalix services to Kalix
 
 In order to publish and deploy the Kalix services to the Kalix cloud, you'll need to perform the following:
 
@@ -141,8 +160,8 @@ In order to publish and deploy the Kalix services to the Kalix cloud, you'll nee
 
 *Note:* there is also a compound command `publishAndDeploy` which will run steps #3 and #4 back to back for you.
 
-# Front End
+# <a id="frontend"></a> Front End
 
-## Running locally
+## <a id="fe-local"></a> Running locally
 
 Make sure first to run the script `proto-gen`. Then use the command `npm start` to get the app running in browser.
