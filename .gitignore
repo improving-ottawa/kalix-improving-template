@@ -12,3 +12,4 @@ project/project
 /www/themes/small-apps/package-lock.json
 .metals/
 .vscode/
+**/src/**/user-local.conf

@@ -69,4 +69,9 @@ for Mac or a similar command for Lunix.
 See [grpc-web docs](https://github.com/improving-ottawa/kalix-improving-template/actions/runs/6866116754/job/18671628548)
 more thorough instructions
 
+# Local testing with Keycloak
 
+1) Copy the local configuration template file from `gateway/src/user-local.conf.template` to `gateway/src/user-local.conf`
+   Don't worry, it is in the `.gitignore`, so your local changes will not be pushed up to the git server!
+2) Follow the instructions in `src/test/scala/com/example/gateway/Test-Setup-Instructions.md`
+3) Profit!

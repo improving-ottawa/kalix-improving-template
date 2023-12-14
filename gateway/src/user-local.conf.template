@@ -1,0 +1,16 @@
+# TODO - Rename me to `user-local.conf` and customize as needed!
+
+com.example.gateway {
+  identity = {
+    providers = {
+      "local_keycloak" = {
+        # You won't need to change `discovery-uri` below if you follow the `Test-Setup-Instructions.md`
+        discovery-uri = "http://localhost:8080/realms/master/.well-known/openid-configuration"
+        # You won't need to change `client-id` below if you follow the `Test-Setup-Instructions.md`
+        client-id = "test-client"
+        # You __will__ need to change this to match your local Keycloak instance!
+        client-secret = ""
+      }
+    }
+  }
+}

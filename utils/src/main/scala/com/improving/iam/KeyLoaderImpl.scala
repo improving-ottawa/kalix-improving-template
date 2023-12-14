@@ -10,7 +10,7 @@ import org.bouncycastle.util.io.pem.PemReader
 import scala.util._
 
 import java.io._
-import java.nio.file.{Files, Paths}
+import java.nio.file.Paths
 import java.security.{Provider, Security}
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 
@@ -37,11 +37,10 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
    */
   protected def readFilePrivateKey(filePath: String, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
     for {
-      file    <- getFileFromText(filePath)
-      _       <- checkFileExits(file)
-      keySpec <- getFileExtension(file) match {
-                   case "pem" => readPEMPrivateKey(file, password)
-                   case "der" => readDERPrivateKey(file, password)
+      stream  <- getFileStreamFromPath(filePath)
+      keySpec <- getFileExtension(filePath) match {
+                   case "pem" => readPEMPrivateKey(stream, password)
+                   case "der" => readDERPrivateKey(stream, password)
                    case other =>
                      Left(new UnsupportedOperationException(s"Cannot read keys from file with extension: $other"))
                  }
@@ -49,11 +48,10 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
 
   protected def readFilePublicKey(filePath: String): Either[Throwable, X509EncodedKeySpec] =
     for {
-      file    <- getFileFromText(filePath)
-      _       <- checkFileExits(file)
-      keySpec <- getFileExtension(file) match {
-                   case "pem" => readPEMPublicKey(file)
-                   case "der" => readDERPublicKey(file)
+      stream  <- getFileStreamFromPath(filePath)
+      keySpec <- getFileExtension(filePath) match {
+                   case "pem" => readPEMPublicKey(stream)
+                   case "der" => readDERPublicKey(stream)
                    case other =>
                      Left(new UnsupportedOperationException(s"Cannot read keys from file with extension: $other"))
                  }
@@ -62,26 +60,44 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
   /*
    * Read public/private keys from specific file types
    */
-  final protected def readDERPrivateKey(file: File, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
-    readFileBytesThen(file)(extractDERPrivateKey(_, password)).toEither
+  final protected def readDERPrivateKey(source: InputStream, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
+    readStreamBytesThen(source)(extractDERPrivateKey(_, password)).toEither
 
-  final protected def readDERPublicKey(file: File): Either[Throwable, X509EncodedKeySpec] =
-    readFileBytesThen(file)(extractDERPublicKey).toEither
+  final protected def readDERPublicKey(source: InputStream): Either[Throwable, X509EncodedKeySpec] =
+    readStreamBytesThen(source)(extractDERPublicKey).toEither
 
-  final protected def readPEMPrivateKey(file: File, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
-    fileReaderThen(file)(extractPEMPrivateKey(_, password)).toEither
+  final protected def readPEMPrivateKey(source: InputStream, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
+    streamReaderThen(source)(extractPEMPrivateKey(_, password)).toEither
 
-  final protected def readPEMPublicKey(file: File): Either[Throwable, X509EncodedKeySpec] =
-    fileReaderThen(file)(extractPEMPublicKey).toEither
+  final protected def readPEMPublicKey(source: InputStream): Either[Throwable, X509EncodedKeySpec] =
+    streamReaderThen(source)(extractPEMPublicKey).toEither
 
   /*
    * Implementation
    */
-  final private def readFileBytesThen[A](file: File)(thenF: Array[Byte] => Try[A]): Try[A] =
-    Try(Files.readAllBytes(file.toPath)).flatMap(thenF)
 
-  final private def fileReaderThen[A](file: File)(thenF: Reader => Try[A]): Try[A] =
-    usingResource(new InputStreamReader(new FileInputStream(file)))(thenF)
+  final private def readStreamBytesThen[A](source: InputStream)(thenF: Array[Byte] => Try[A]): Try[A] =
+    usingResource(new ByteArrayOutputStream()) { baos =>
+      usingResource(source) { inputStream =>
+        val readFileTry = Try {
+          val buffer = new Array[Byte](4096)
+          var read = inputStream.read(buffer)
+          while(read != 0) {
+            baos.write(buffer, 0, read)
+            read = inputStream.read(buffer)
+          }
+
+          baos.toByteArray
+        }
+
+        readFileTry.flatMap(thenF)
+      }
+    }
+
+  final private def streamReaderThen[A](stream: InputStream)(thenF: Reader => Try[A]): Try[A] =
+    usingResource(stream)(inputStream =>
+      usingResource(new InputStreamReader(inputStream))(thenF)
+    )
 
   final private def extractDERPrivateKey(fileBytes: Array[Byte], password: Password) =
     Try {
@@ -147,18 +163,19 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
       err => Try(resource.close()).flatMap(_ => Failure(err))
     )
 
-  final private def getFileFromText(path: String) =
+  final private def getFileStreamFromPath(path: String) =
     if (path.startsWith("resource:"))
       Try {
-        val resourcePath = path.stripPrefix("resource:")
-        val url          = getClass.getResource(resourcePath)
-        new java.io.File(url.toURI)
-      }.toEither
-    else Try(Paths.get(path).toFile).toEither
+        val resourcePath   = path.stripPrefix("resource:")
+        val classResPath   = if (resourcePath.startsWith("/")) resourcePath else "/" + resourcePath
 
-  final private def checkFileExits(file: File) =
-    if (file.exists) Right(file) else Left(new FileNotFoundException(file.getAbsolutePath))
+        Try(getClass.getResourceAsStream(classResPath))
+          .recoverWith(error =>
+            Failure(new RuntimeException(s"Could not load key from resource: $classResPath", error))
+          )
+      }.flatten.toEither
+    else Try(new FileInputStream(Paths.get(path).toFile)).toEither
 
-  final private def getFileExtension(file: File) = file.getName.split('.').last.toLowerCase
+  final private def getFileExtension(filePath: String) = filePath.split('.').last.toLowerCase
 
 }
