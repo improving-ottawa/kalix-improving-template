@@ -34,7 +34,7 @@ export const ChartSelectors = (props: ChartSelectorsProps) => {
                         }}
                         id="changeSelectedChart" label="Chart Type" variant="outlined"
                 >
-                    {OrdersChartTypes.map(chart =>
+                    {props.chartTypes.map(chart =>
                         <MenuItem divider value={chart}>{chart}</MenuItem>
                     )}
                 </Select>
