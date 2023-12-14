@@ -9,7 +9,6 @@ import SignIn from "./screens/login/SignIn";
 import SignUp from "./screens/login/SignUp";
 import OrdersPage from "./screens/dashboard/orders/OrdersPage";
 import CustomersPage from "./screens/dashboard/customers/CustomersPage";
-import SessionsPage from "./screens/dashboard/sessions/SessionsPage";
 import Pricing from "./screens/productsFlow/pricing/Pricing";
 import Checkout from "./screens/productsFlow/checkout/Checkout";
 
@@ -53,9 +52,6 @@ function App() {
                                     </Route>
                                     <Route path="customers">
                                         <Route index element={<CustomersPage/>}/>
-                                    </Route>
-                                    <Route path="sessions">
-                                        <Route index element={<SessionsPage/>}/>
                                     </Route>
                                 </Route>
                             </Route>
