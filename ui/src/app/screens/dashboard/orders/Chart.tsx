@@ -18,7 +18,6 @@ export default function Chart() {
 
     const maxAvg = _.maxBy(averageByDate, item => item.avg)?.avg
     const roundedAvg = maxAvg ? Math.round(maxAvg / 50) * 50 : maxAvg
-    console.log(roundedAvg)
 
     return <React.Fragment>
         <CardTitle>Today</CardTitle>
