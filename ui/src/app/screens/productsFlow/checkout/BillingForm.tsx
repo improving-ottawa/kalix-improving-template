@@ -8,7 +8,7 @@ import AddressFormFields, {AddressFormFieldProps} from "./AddressFormFields";
 import {changePaymentInfo, selectPurchasingState} from "../../../redux/slices/purchasingSlice";
 import {useAppDispatch, useAppSelector} from "../../../redux/hooks";
 import {DatePicker} from "@mui/x-date-pickers";
-import {FormControl, FormHelperText, IconButton, Input, InputAdornment, InputLabel} from "@mui/material";
+import {FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput} from "@mui/material";
 import dayjs from "dayjs";
 import {useState} from "react";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
@@ -51,12 +51,13 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <FormControl sx={{m: 1, width: '25ch'}} variant="outlined">
+                    <FormControl variant="outlined">
                         <InputLabel htmlFor="adornment-card-number">Card Number</InputLabel>
-                        <Input
+                        <OutlinedInput
                             id="adornment-card-number"
                             type={showCardNumber ? 'text' : 'password'}
                             value={paymentInfo?.cardNumber}
+                            label="Card Number"
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
@@ -65,6 +66,7 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                                             setShowCardNumber(!showCardNumber)
                                         }}
                                         onMouseDown={(e) => e.preventDefault()}
+                                        edge="end"
                                     >
                                         {showCardNumber ? <VisibilityOff/> : <Visibility/>}
                                     </IconButton>
@@ -103,12 +105,13 @@ export default function BillingForm(props: AddressFormFieldProps & BillingFormPr
                     }}>{!paymentInfo?.expiryDate && "Expiry Date is required"}</FormHelperText>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <FormControl sx={{m: 1, width: '25ch'}} variant="outlined">
+                    <FormControl variant="outlined">
                         <InputLabel htmlFor="adornment-cvv">CVV</InputLabel>
-                        <Input
+                        <OutlinedInput
                             id="adornment-cvv"
                             type={showCVV ? 'text' : 'password'}
                             value={paymentInfo?.cvv}
+                            label="CVV"
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
