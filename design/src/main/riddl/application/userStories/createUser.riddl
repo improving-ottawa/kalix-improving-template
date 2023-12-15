@@ -4,13 +4,8 @@ user AppUser is "Somebody who wants to use the application"
 epic CreateUserEpic {
   case CreateUserManually {
     user AnonUser wants to "sign up as a registered user in the application" so "they can interact with the demo application"
-    step take form NewUserForm from user AnonUser
-    /* FIXME: step send command CreateUser from application ExampleApp to ExampleAppGateway */,
-    step focus on page PricingPage for user AuthedUser
-  }
-    user AppUser wants to "sign up as a registered user in the application" so "they can interact with the demo application"
-    step take form NewUserForm from user AppUser,
-    step focus user AppUser on group PricingPage
+    step take form NewUserForm from user AnonUser,
+    step focus user AuthedUser on group PricingPage
   } // FIXME: add this before step focus: step send SignupParameters to SignupGateway,
 
   case CreateUserFacebook { ??? }
