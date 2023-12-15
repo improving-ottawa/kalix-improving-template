@@ -109,8 +109,8 @@ private[testkit] object TestKitImpl {
     implicit def executionContext: ExecutionContext = ExecutionContext.global
   }
 
-  private case class RunningState(system: ActorSystem, materializer: Materializer)(implicit
-    val executionContext: ExecutionContext
+  private case class RunningState(system: ActorSystem, materializer: Materializer)(
+    implicit val executionContext: ExecutionContext
   ) extends State {
     val grpcClients: GrpcClients = GrpcClients(system)
   }

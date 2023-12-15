@@ -4,7 +4,7 @@ import com.example.boundedContext.api._
 import com.example.boundedContext.domain._
 import com.example.gateway.HealthCheckResponse
 import com.example.gateway.domain.{DoNothingTwiceCommand, DoNothingTwiceResponse}
-import com.example.gateway.utils.ServiceOnlineUtil
+import com.example.gateway.utils.{JwtIssuer, ServiceOnlineUtil}
 import com.example.service3.api.Service3
 import com.google.protobuf.empty.Empty
 import com.improving.iam.KalixAuthorization
@@ -18,13 +18,13 @@ import org.slf4j.{Logger, LoggerFactory}
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class GatewayProxy(protected val creationContext: ActionCreationContext)
+class GatewayProxy(protected val creationContext: ActionCreationContext, protected val jwtIssuer: JwtIssuer)
     extends GatewayProxyBase
     with Service1Proxy
     with Service2Proxy
     with Service3Proxy
     with LoginProxy
-    with KalixAuthorization {
+    with UserProxy {
 
   final protected val system: akka.actor.ActorSystem                  = creationContext.materializer.system
   implicit final protected val materializer: akka.stream.Materializer = creationContext.materializer

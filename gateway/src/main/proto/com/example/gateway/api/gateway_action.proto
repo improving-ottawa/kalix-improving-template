@@ -6,6 +6,7 @@ import "com/example/bounded-context/domain/service1_domain.proto";
 import "com/example/bounded-context/domain/service2_domain.proto";
 import "com/example/gateway/domain/gateway_commands.proto";
 import "com/example/gateway/domain/gateway_responses.proto";
+import "com/example/gateway/domain/user_domain.proto";
 import "com/example/gateway/domain/login_token.proto";
 import "com/example/gateway/messages/online_check_messages.proto";
 import "com/example/service3/domain/service3_domain.proto";
@@ -46,6 +47,19 @@ service Gateway {
 
     // Attempts to claim a previously created login token
     rpc ClaimLoginToken (domain.ClaimTokenRequest) returns (domain.ClaimTokenResponse);
+
+    /**********************
+     * User Entity routes *
+     **********************/
+
+    rpc GetUser (domain.GetUserRequest) returns (domain.GetUserResponse) {
+        option (google.api.http) = {
+            get: "/user/{user_id}"
+        };
+    }
+
+    // Update the roles assigned to a `User`
+    rpc UpdateUserRoles(domain.UpdateUserRolesRequest) returns (domain.UserInfo);
 
     /*************************
      * JWT/Admin Info routes *

@@ -1,7 +1,6 @@
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import {IconButton} from "@mui/material";
 import {AccountCircleTwoTone} from "@mui/icons-material";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
@@ -13,6 +12,7 @@ import Divider from "@mui/material/Divider";
 import {mainNavItems, secondaryNavItems} from "../dashboard/navItems";
 import {Drawer} from "../dashboard/components";
 import List from "@mui/material/List";
+import {IconButton} from "@mui/material";
 
 interface TopNavProps {
     forDashboard?: boolean
@@ -25,7 +25,7 @@ interface SideNavProps {
     toggleDrawer?: () => void
 }
 
-export const TopNav = (readonly props: TopNavProps) => {
+export const TopNav = (props: TopNavProps) => {
     const navigate = useNavigate()
 
     return <Toolbar sx={props.forDashboard ? {pr: '24px'} : {flexWrap: 'wrap'}}>
@@ -79,7 +79,7 @@ export const TopNav = (readonly props: TopNavProps) => {
     </Toolbar>
 }
 
-export const SideNav = (readonly props: SideNavProps) => {
+export const SideNav = (props: SideNavProps) => {
     return <Drawer variant="permanent" open={props.open}>
         <Toolbar
             sx={{

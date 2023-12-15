@@ -37,12 +37,12 @@ object Dependencies {
     val commons_codec   = "20041127.091804"
     val compress        = "1.23.0"
     val google_grpc     = "2.9.0"
-    val kalixSDK        = "1.3.3"
+    val kalixSDK        = "1.3.5"
     val lang3           = "3.13.0"
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
-    val lightbendGrpc   = "2.2.0"
+    val lightbendGrpc   = "2.1.6"
   }
 
   import Versions._
@@ -161,7 +161,7 @@ object Dependencies {
     "com.typesafe.akka"  %% "akka-testkit"                                  % akka      % Test,
     "com.typesafe.akka"  %% "akka-actor-testkit-typed"                      % akka      % Test,
     "com.typesafe.akka"  %% "akka-stream"                                   % akka      % Test,
-    "com.lightbend.akka" %% "akka-stream-alpakka-google-cloud-pub-sub-grpc" % alpakka   % Test,
+    // "com.lightbend.akka" %% "akka-stream-alpakka-google-cloud-pub-sub-grpc" % alpakka   % Test,
     "com.typesafe.akka"  %% "akka-stream-kafka"                             % akkaKafka % Test,
     "com.typesafe.akka"  %% "akka-http"                                     % akkaHttp  % Test,
     "com.typesafe.akka"  %% "akka-http2-support"                            % akkaHttp  % Test
