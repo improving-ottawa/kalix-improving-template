@@ -12,4 +12,5 @@ application ExampleApp is {
   include "pages/fragments/checkoutStepper"
 }
 
+include "userStories/userDefinitions"
 include "userStories/createUser"

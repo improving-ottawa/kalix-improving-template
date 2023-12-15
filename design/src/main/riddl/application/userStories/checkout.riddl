@@ -1,0 +1,7 @@
+epic CheckoutEpic {
+  case UserProvidesShippingInformation is {???}
+  case UserProvidesBillingInformation is {???}
+  case UserPlacesOrder is {???}
+  case UserReceivesOrderConfirmation is {???}
+  case UserClicks
+}

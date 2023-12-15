@@ -1,6 +1,11 @@
-type ActiveStep is any of {SHIP, PAY, CONFIRM}
+type ActiveStep is any of {SHIP_STEP, PAY_STEP, CONFIRM_STEP}
+constant SHIP is String = "Shipping address"
+constant PAY is String = "Payment details"
+constant CONFIRM is String = "Review your order"
 
 group CheckoutFlowStepper is {
   output CheckoutStepperProgress shows ActiveStep briefly "which step in the checkout flow is the user in?"
   input CheckoutStepperSelection takes ActiveStep briefly "which step in the checkout flow would the user like to revisit?"
+  /* output ShipStep shows String SHIP */
+
 }
