@@ -25,14 +25,15 @@
     - [Integration Tests](#integration-tests)
     - [ScheduledTasks](#scheduled)
 - [Pre-Installation](#pre-install)
-    - [Protoc-Gen-Js](#protoc-gen)
-    - [GRPC-Web](#grpc-web)
+    - [protoc-gen-js](#protoc-gen)
+    - [grpc-web](#grpc-web)
 - [Backend](#backend)
     - [Running Locally](#be-local-run)
     - [Testing Locally](#be-local-test)
-    - [Deploying Locally](#be-deploy)
+    - [Deploying to Kalix](#be-deploy)
 - [Frontent/UI](#frontend)
     - [Running Locally](#fe-local)
+    - [With Local Keycloak](#fe-keycloak)
 
 # <a id="submodules"></a>  Submodules
 
@@ -126,7 +127,7 @@ sbt "{service-name}/runAll -Dlogback.configurationFile=logback-local.xml -Dconfi
 So for example, to run the `gateway` service locally, run:
 > sbt "gateway/runAll -Dlogback.configurationFile=logback-local.xml -Dconfig.resource=integration-test.conf"
 
-# <a id="be-local-test"></a> Local Testing
+## <a id="be-local-test"></a> Local Testing
 
 The integration tests can be run locally via the command `sbt "integration-test/test"`
 
@@ -165,3 +166,11 @@ In order to publish and deploy the Kalix services to the Kalix cloud, you'll nee
 ## <a id="fe-local"></a> Running locally
 
 Make sure first to run the script `proto-gen`. Then use the command `npm start` to get the app running in browser.
+
+# <a id="fe-keycloak"></a> Local testing with Keycloak
+
+1) Copy the local configuration template file from `gateway/src/user-local.conf.template`
+   to `gateway/src/user-local.conf`
+   Don't worry, it is in the `.gitignore`, so your local changes will not be pushed up to the git server!
+2) Follow the instructions in `gateway/src/Test-Setup-Instructions.md`
+3) Profit!

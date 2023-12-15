@@ -5,9 +5,10 @@ import com.example.gateway.entity._
 import com.example.gateway.middleware._
 import com.example.gateway.utils._
 import com.improving.iam._
+import com.improving.config._
 import com.improving.extensions.oidc._
 import com.improving.utils.{AsyncContext, StringPrinter}
-import com.typesafe.config.ConfigFactory
+
 import kalix.javasdk._
 import kalix.scalasdk.action.ActionOptions
 import kalix.scalasdk.{Kalix, WrappedKalix}
@@ -97,7 +98,8 @@ object Main {
       throw error
     }
 
-    val systemConfig = ConfigFactory.load()
+    val systemConfig =
+      ConfigLoader.loadOptionalFileSystemConfig("gateway/src/user-local.conf").fold(throw _, identity)
 
     val keyLoaderConfig = KeyLoaderConfig
       .fromConfig(systemConfig, Some("com.example.gateway.key-loader"))

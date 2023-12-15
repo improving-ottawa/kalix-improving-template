@@ -1,6 +1,7 @@
 package com.example.gateway
 
 import com.improving.iam._
+import com.improving.config._
 import com.improving.extensions.oidc._
 import com.improving.testkit._
 import com.improving.utils._
@@ -27,6 +28,24 @@ import scala.concurrent.duration._
 /** Test configuration */
 object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
 
+  // We test against a local instance of RedHat's Keycloak identity server. It must be setup according to the
+  // instructions in the corresponding `Test-Setup-Instructions.md`
+  private val keycloakProvider: OIDCClientConfig = {
+    val baseKeysPath = "com.example.gateway.identity.providers.local_keycloak"
+    val config = ConfigLoader.loadOptionalFileSystemConfig("gateway/src/user-local.conf", includeDefaultConfig = false)
+      .fold(throw _, identity)
+
+    if (config.hasPath(baseKeysPath)) {
+      OIDCClientConfig(
+        clientId = config.getString(baseKeysPath + ".client-id"),
+        clientSecret = config.getString(baseKeysPath + ".client-secret"),
+        discoveryUri = config.getString(baseKeysPath + ".discovery-uri")
+      )
+    } else {
+      throw new RuntimeException("You have not configured your `user-local.conf`! Follow the setup instructions!")
+    }
+  }
+
   // The `KeyLoader` configuration, which will load the test ECDSA public/private keypair contained in `resources`.
   // Should not need to change this!
   private val keyLoaderConfig = KeyLoaderConfig(
@@ -34,19 +53,6 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
     publicKeyFilePath = "resource:/ec_test_pub.pem",
     privateKeyFilePath = "resource:/ec_test_key.pem",
     privateKeyPassword = Some("test")
-  )
-
-  // We test against a local instance of RedHat's Keycloak identity server. It must be setup according to the
-  // instructions in the corresponding `Test-Setup-Instructions.md`
-  private val keycloakProvider = OIDCClientConfig(
-    // Should match what was set when configuring Keycloak (if instructions were followed, it should be `test-client`)
-    clientId = "test-client",
-    // Must be set after configuring Keycloak
-    clientSecret = "js0fqM4oflEMaXgqcoWimaNbUAWpGYKD",
-    // This is fixed if you follow the Keycloak instructions in the `Test-Setup-Instructions.md`.
-    // Otherwise you will have to adapt the Docker port and/or `realm` to match your docker instance and
-    // configured Keycloak realm name.
-    discoveryUri = "http://localhost:8080/realms/master/.well-known/openid-configuration",
   )
 
   private val identityServiceConfig = OIDCIdentityServiceConfig(

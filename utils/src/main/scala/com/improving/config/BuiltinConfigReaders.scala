@@ -1,7 +1,6 @@
 package com.improving.config
 
-import cats.effect.SyncIO
-import cats.syntax.all._
+import com.typesafe.config.ConfigObject
 
 import scala.util.Try
 
@@ -45,7 +44,10 @@ abstract private[config] class BuiltinConfigReaders { self: readers.type =>
 
   final val getKeyedConfigMap = pathInputReader { path => cfg =>
     val cfgObject = cfg.getObject(path).asScala
-    cfgObject.view.mapValues(cfgValue => cfgValue.asInstanceOf[Config]).toMap
+    val cfgMapView = cfgObject.view.collect {
+      case (key, cfgObject: ConfigObject) => (key, cfgObject.toConfig)
+    }
+    cfgMapView.toMap
   }
 
 }
