@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package com.example.service3.domain;
+
+import "com/example/common/timestamp.proto";
+import "com/example/common/domain/line_item.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+// The shopping cart events
+
+message CartCreated {
+  string cart_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  string user_id = 2 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  common.Timestamp when_created = 3 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
+message LineItemAdded {
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  common.domain.LineItem item = 2 [(validate.rules).message.required = true];
+}
+
+message LineItemRemoved {
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  common.domain.LineItem item = 2 [(validate.rules).message.required = true];
+}
+
+message CartAbandoned {
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  common.Timestamp when_abandoned = 2 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
+message CheckoutStarted {
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  common.Timestamp when_checkout_started = 2 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
+// The shopping cart state
+message Cart {
+  string user_id = 1;
+
+  common.Timestamp when_created = 2;
+
+  repeated common.domain.LineItem items = 3 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
+
+  bool checkout_started = 4;
+
+  bool cart_abandoned = 5;
+}

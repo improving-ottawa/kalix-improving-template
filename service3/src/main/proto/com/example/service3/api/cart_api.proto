@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package com.example.service3.api;
+
+import "com/example/common/timestamp.proto";
+import "com/example/common/domain/line_item.proto";
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+// The shopping cart commands
+
+message CreateShoppingCart {
+  string user_id = 1 [(validate.rules).string.uuid = true];
+}
+
+message AddLineItem {
+  string cart_id = 1 [(kalix.field).entity_key = true];
+
+  common.domain.LineItem line_item = 2 [
+    (scalapb.field).required = true,
+    (validate.rules).message.required = true
+  ];
+}
+
+message RemoveLineItem {
+  string cart_id = 1 [(kalix.field).entity_key = true];
+
+  common.domain.LineItem line_item = 2 [
+    (scalapb.field).required = true,
+    (validate.rules).message.required = true
+  ];
+}
+
+message GetShoppingCart {
+  string cart_id = 1 [(kalix.field).entity_key = true];
+}
+
+message AbandonShoppingCart {
+  string cart_id = 1 [(kalix.field).entity_key = true];
+}
+
+message CheckoutShoppingCart {
+  string cart_id = 1 [(kalix.field).entity_key = true];
+}

@@ -1,4 +1,4 @@
-record OrderConfirmation{ 
+record OrderConfirmation {
   thankYou: String,
   orderNotification: String,
   orderNumber: Pattern("[0-9]{8}")

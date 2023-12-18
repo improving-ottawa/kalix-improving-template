@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package common.domain;
+
+import "com/example/common/domain/product.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option java_package = "com.example.common.domain";
+
+message LineItem {
+  Product product = 1 [(validate.rules).message.required = true];
+
+  uint32 quantity = 2 [
+    (validate.rules).uint32.gt = 0,
+    (validate.rules).uint32.lte = 100
+  ];
+}

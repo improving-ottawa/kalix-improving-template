@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.example.common.common.domain;
+package common.domain;
 
 import "validate/validate.proto";
 import "com/example/common/domain/address.proto";
@@ -10,12 +10,12 @@ message Contact {
     string first_name = 1 [(validate.rules).string.min_len = 1];
     string last_name = 2 [(validate.rules).string.min_len = 1];
     string email_address = 3 [(validate.rules).string.email = true];
-    com.example.common.domain.address.PhoneNumber mobile_number = 4;
+    PhoneNumber mobile_number = 4;
 }
 
 message EditableContact {
     optional string first_name = 1 [(validate.rules).string.min_len = 1];
     optional string last_name = 2 [(validate.rules).string.min_len = 1];
     optional string email_address = 3 [(validate.rules).string.email = true];
-    optional com.example.common.domain.address.PhoneNumber mobile_number = 4;
+    optional PhoneNumber mobile_number = 4;
 }

@@ -12,7 +12,11 @@ option (scalapb.options) = {
     }
 };
 
-//Records
+// Records
+
+message Product {
+
+}
 
 message DoNothingCommand3 {
     DoNothing3 nothing = 1;
