@@ -174,3 +174,10 @@ Make sure first to run the script `proto-gen`. Then use the command `npm start` 
    Don't worry, it is in the `.gitignore`, so your local changes will not be pushed up to the git server!
 2) Follow the instructions in `gateway/src/Test-Setup-Instructions.md`
 3) Profit!
+
+## Running the (local testing) CORS proxy
+
+Simply run this command:
+> sbt "gateway/test:runMain com.example.gateway.LocalCorsProxy"
+
+...after the Gateway and related services are started.
