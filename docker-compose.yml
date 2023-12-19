@@ -14,4 +14,4 @@ services:
         -Dconfig.resource=dev-mode.conf
         -Dlogback.configurationFile=logback-dev-mode.xml
       USER_FUNCTION_HOST: ${USER_FUNCTION_HOST:-host.docker.internal}
-      USER_FUNCTION_PORT: ${USER_FUNCTION_PORT:-8080}
+      USER_FUNCTION_PORT: ${USER_FUNCTION_PORT:-8000}
