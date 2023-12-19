@@ -5,6 +5,8 @@ package common.domain;
 import "validate/validate.proto";
 import "com/example/common/domain/address.proto";
 
+option java_package = "com.example.common.domain";
+
 // A generalized north american postal address
 message Contact {
     string first_name = 1 [(validate.rules).string.min_len = 1];

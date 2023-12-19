@@ -1,6 +1,6 @@
 package com.improving.extensions.email
 
-import com.example.common.common.domain.Contact
+import com.example.common.domain.Contact
 
 import cats.data.NonEmptyList
 import cats.effect._

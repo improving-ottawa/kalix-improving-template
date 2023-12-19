@@ -1,6 +1,5 @@
 package com.example.common.domain
 
-import com.example.common.domain.address._
 import scalapb.GeneratedMessage
 import scalapb.json4s.JsonFormat
 

@@ -1,7 +1,7 @@
 package com.example.common.domain
 
-import com.example.common.domain.address.PostalCode
-import com.example.common.domain.address.PostalCode.PostalCodeValue
+import com.example.common.domain.PostalCode
+import com.example.common.domain.PostalCode.PostalCodeValue
 import scalapb.TypeMapper
 
 /**
