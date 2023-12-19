@@ -15,9 +15,10 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^17.0.45",
-    "@types/react-dom": "^18.2.17",
     "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
     "dayjs": "^1.11.10",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
@@ -46,7 +47,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "proxy": "lcp --proxyUrl http://localhost:9000"
   },
   "eslintConfig": {
     "extends": [
@@ -68,6 +70,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/lodash": "^4.14.202",
     "google-protobuf": "^3.21.2",
     "grpc-web": "^1.5.0"
   }

@@ -13,18 +13,18 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Copyright} from "../styledComponents/copyright";
 import {useNavigate} from "react-router-dom";
+import {useAppDispatch} from "../../redux/hooks";
+import {getBeginAuthResponse} from "../../redux/slices/authSlice";
 
 export default function SignIn() {
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-    };
+        dispatch(getBeginAuthResponse())
+    }
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -71,7 +71,6 @@ export default function SignIn() {
                         type="submit"
                         fullWidth
                         variant="contained"
-                        onClick={() => navigate("/pricing")}
                         sx={{mt: 3, mb: 2}}
                     >
                         Sign In

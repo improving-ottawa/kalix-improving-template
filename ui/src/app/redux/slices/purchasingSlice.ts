@@ -33,7 +33,7 @@ const initialState: PurchasingState = {
 }
 
 export const purchasingSlice = createSlice({
-    name: 'username',
+    name: 'purchasing',
     initialState,
     reducers: {
         addProduct: (state, action: PayloadAction<Product>) => {

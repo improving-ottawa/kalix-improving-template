@@ -1,26 +1,27 @@
 import {getConfig} from "../../config";
-import {GatewayClient} from "../../../generated/com/example/gateway/api/Gateway_actionServiceClientPb";
-import {LoginTokenClient} from "../../../generated/com/example/gateway/api/Login_serviceServiceClientPb";
 import {
     AuthenticationServiceClient
 } from "../../../generated/com/example/gateway/api/Authentication_serviceServiceClientPb";
+import {GatewayClient} from "../../../generated/com/example/gateway/api/Gateway_actionServiceClientPb";
 
-let cachedGatewayClient: undefined | GatewayClient = undefined
-let cachedAuthClient: undefined | AuthenticationServiceClient = undefined
+let cachedGatewayClient: GatewayClient | undefined = undefined
+
+let cachedAuthClient: AuthenticationServiceClient | undefined = undefined
+
 export const getGatewayClient = async () => {
-    if (cachedGatewayClient) return cachedGatewayClient
-    else {
-        const config = await getConfig()
+    const config = await getConfig()
+    if (!cachedGatewayClient) {
         cachedGatewayClient = new GatewayClient(config.exampleApiBaseUrl)
-        return cachedGatewayClient
     }
+    return cachedGatewayClient
 }
 
 export const getAuthClient = async () => {
-    if (cachedAuthClient) return cachedAuthClient
-    else {
-        const config = await getConfig()
+    const config = await getConfig()
+    console.log(config)
+
+    if (!cachedAuthClient) {
         cachedAuthClient = new AuthenticationServiceClient(config.exampleApiBaseUrl)
-        return cachedAuthClient
     }
+    return cachedAuthClient
 }
