@@ -27,6 +27,8 @@ import scala.concurrent.duration._
 
 /** Test configuration */
 object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
+  // Change this if you are (`Some("...")`) or are not (`None`) running with a local CORS proxy
+  private val localProxy: Option[String] = Some("http://localhost:8010")
 
   // We test against a local instance of RedHat's Keycloak identity server. It must be setup according to the
   // instructions in the corresponding `Test-Setup-Instructions.md`
@@ -46,6 +48,9 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
     }
   }
 
+  // DO NOT change this!
+  private val localPrefix: String = localProxy.getOrElse("http://localhost:9000")
+
   // The `KeyLoader` configuration, which will load the test ECDSA public/private keypair contained in `resources`.
   // Should not need to change this!
   private val keyLoaderConfig = KeyLoaderConfig(
@@ -57,14 +62,14 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
 
   private val identityServiceConfig = OIDCIdentityServiceConfig(
     // Assuming no changes to `docker-compose.yml`
-    providerCallback = Uri.unsafeParse("http://localhost:9000/oidc/callback"),
+    providerCallback = Uri.unsafeParse(s"$localPrefix/oidc/callback"),
     // Single registered OIDC provider for local Keycloak running in Docker
     providers = Map("local_keycloak" -> keycloakProvider)
   )
 
   private val jwtIssuerConfig = JwtIssuerConfig(
     // Note: this will need to change if you change your Kalix proxy configuration!
-    tokenIssuerUrl = "http://localhost:9000",
+    tokenIssuerUrl = localPrefix,
     tokenValidDuration = FiniteDuration(1, "hour"),
     defaultUserRole = "Test"
   )
@@ -101,8 +106,8 @@ sealed abstract class OIDCIdentityTest { self: OIDCIdentityTest.type =>
     val keycloakEndpointUri = Uri.unsafeParse(keycloakProvider.discoveryUri).withPath("")
 
     val beginAuthUri = {
-      val base        = Uri.unsafeParse("http://localhost:9000")
-      val redirectUri = base.withPath("oidc", "check")
+      val base        = Uri.unsafeParse(localPrefix)
+      val redirectUri = base.addPath("oidc", "check")
       base
         .withPath("oidc", "auth")
         .addQuerySegment(Uri.QuerySegment.KeyValue("provider_id", identityServiceConfig.providers.head._1))
