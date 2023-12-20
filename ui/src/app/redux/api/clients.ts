@@ -4,7 +4,7 @@ import {
 } from "../../../generated/com/example/gateway/api/Authentication_serviceServiceClientPb";
 import {GatewayClient} from "../../../generated/com/example/gateway/api/Gateway_actionServiceClientPb";
 import Cookies from "cookies-ts";
-import {AppIdentity} from "../../../generated/com/example/gateway/domain/gateway_responses_pb";
+import {jwtDecode} from "jwt-decode";
 
 let cachedGatewayClient: GatewayClient | undefined = undefined
 
@@ -31,4 +31,10 @@ export const getAuthClient = async () => {
 export const getCsrfToken = () => {
     const token = sessionStorage.getItem('csrfToken')
     return token ?? ""
+}
+
+export const decodedJwtToken = () => {
+    const cookies = new Cookies()
+    const cookie = cookies.get('authToken')
+    return cookie ? jwtDecode(cookie) : null
 }

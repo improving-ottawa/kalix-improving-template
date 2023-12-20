@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {sendBeginAuthenticationRequest, sendCompleteAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
+import {sendBeginAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
 import {RootState} from "../store";
 import {GetUserRequest} from "../../../generated/com/example/gateway/domain/user_domain_pb";
 import {retrieveIdentity} from "../../identity";
@@ -7,13 +7,11 @@ import {retrieveIdentity} from "../../identity";
 interface AuthState {
     beginAuthStatus: string
     getUserStatus: string
-    authHeaders: Uint8Array | string
 }
 
 const initialState: AuthState = {
     getUserStatus: "none",
     beginAuthStatus: "none",
-    authHeaders: ""
 }
 
 export const beginAuth = createAsyncThunk(
@@ -62,7 +60,6 @@ export const authSlice = createSlice({
 
 
 //export reducer actions here
-export const {} = authSlice.actions
 
 export const selectAuthState = (state: RootState) => state.auth
 
