@@ -14,6 +14,8 @@ on:
       - '**.proto'
       - '**.conf'
       - '**.sbt'
+      - '**.yml'
+      - '**.sh'
 
   push:
     branches:
@@ -24,6 +26,8 @@ on:
       - '**.proto'
       - '**.conf'
       - '**.sbt'
+      - '**.yml'
+      - '**.sh'
 
 permissions:
   contents: read
