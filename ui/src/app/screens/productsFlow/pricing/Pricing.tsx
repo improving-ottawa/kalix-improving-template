@@ -19,11 +19,6 @@ import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {addProduct} from "../../../redux/slices/purchasingSlice";
 import {Copyright} from "../../styledComponents/copyright";
-import Cookies from "cookies-ts";
-import {useEffect} from "react";
-import {getUser} from "../../../redux/slices/authSlice";
-import {decodedJwtToken} from "../../../redux/api/clients";
-import moment from "moment";
 import {AppDispatch} from "../../../redux/store";
 
 const footers = [
@@ -37,28 +32,6 @@ export default function Pricing() {
 
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
-    const initializeStorageForAuth = () => {
-        const cookies = new Cookies()
-
-        const csrfToken = cookies.get('csrfToken')
-        console.log("Storing (and deleting) CSRF token...")
-        csrfToken ? sessionStorage.setItem('csrfToken', csrfToken) : console.log("csrfToken is invalid")
-        cookies.remove('csrfToken')
-
-        const redirectToElement = document.getElementById('redirectTo')
-        console.log("Redirecting to target page: " + redirectToElement?.innerText)
-        redirectToElement?.click()
-
-        const jwt = decodedJwtToken()
-        if (jwt?.exp && jwt.exp < moment.now()) {
-            dispatch(getUser())
-        } else {
-            console.log(jwt?.exp)
-            navigate("/login")
-        }
-    }
-
-    useEffect(initializeStorageForAuth, [])
 
     return (
         <Box>

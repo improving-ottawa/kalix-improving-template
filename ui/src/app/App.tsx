@@ -11,6 +11,7 @@ import OrdersPage from "./screens/dashboard/orders/OrdersPage";
 import CustomersPage from "./screens/dashboard/customers/CustomersPage";
 import Pricing from "./screens/productsFlow/pricing/Pricing";
 import Checkout from "./screens/productsFlow/checkout/Checkout";
+import AuthRedirect from "./screens/login/AuthRedirect";
 
 const theme = createTheme({
     palette: {
@@ -39,6 +40,7 @@ function App() {
                                 <Route path="sign-up">
                                     <Route index element={<SignUp/>}/>
                                 </Route>
+                                <Route path="auth-refirect" element={<AuthRedirect/>}/>
                                 <Route path="pricing">
                                     <Route index element={<Pricing/>}/>
                                 </Route>

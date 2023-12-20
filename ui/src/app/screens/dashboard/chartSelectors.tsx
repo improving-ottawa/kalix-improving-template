@@ -1,5 +1,5 @@
 import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
-import {DateRanges, OrdersChartTypes} from "./types";
+import {DateRanges} from "./types";
 import Grid from "@mui/material/Grid";
 import * as React from "react";
 import {Dayjs} from "dayjs";
