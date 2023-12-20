@@ -30,7 +30,7 @@ export const getAuthClient = async () => {
 
 export const csrfHeader = () => {
     const token = sessionStorage.getItem('csrfToken')
-    return 'X-CSRF-Token ' + token ?? ""
+    return 'X-CSRF-Token ' + (token ?? "")
 }
 
 export const decodedJwtToken = () => {

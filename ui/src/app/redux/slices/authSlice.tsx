@@ -7,13 +7,11 @@ import {decodedJwtToken} from "../api/clients";
 interface AuthState {
     beginAuthStatus: string
     getUserStatus: string
-    authHeaders: Uint8Array | string
 }
 
 const initialState: AuthState = {
     getUserStatus: "none",
     beginAuthStatus: "none",
-    authHeaders: ""
 }
 
 export const beginAuth = createAsyncThunk(
@@ -62,7 +60,6 @@ export const authSlice = createSlice({
 
 
 //export reducer actions here
-export const {} = authSlice.actions
 
 export const selectAuthState = (state: RootState) => state.auth
 

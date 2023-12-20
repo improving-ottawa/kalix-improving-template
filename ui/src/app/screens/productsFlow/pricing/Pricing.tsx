@@ -50,7 +50,7 @@ export default function Pricing() {
         redirectToElement?.click()
 
         const jwt = decodedJwtToken()
-        if (jwt && jwt.exp && jwt.exp < moment.now()) {
+        if (jwt?.exp && jwt.exp < moment.now()) {
             dispatch(getUser())
         } else {
             console.log(jwt?.exp)

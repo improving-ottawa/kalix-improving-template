@@ -2,11 +2,11 @@ import {GetUserRequest, GetUserResponse} from "../../../generated/com/example/ga
 import {csrfHeader, getGatewayClient} from "./clients";
 
 export const sendBeginAuthenticationRequest = () => {
-    return window.location.href = "http://localhost:8010/oidc/auth?provider_id=local_keycloak&redirect_uri=http://localhost:3000/pricing"
+    window.location.href = "http://localhost:8010/oidc/auth?provider_id=local_keycloak&redirect_uri=http://localhost:3000/pricing"
 }
 
 export function sendGetUserRequest(req: GetUserRequest) {
-    var deadline = new Date();
+    const deadline = new Date();
     deadline.setSeconds(deadline.getSeconds() + 30);
 
     return new Promise<{ getUserResponse: GetUserResponse }>((resolve, reject) => {
