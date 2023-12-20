@@ -14,7 +14,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Copyright} from "../styledComponents/copyright";
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch} from "../../redux/hooks";
-import {getBeginAuthResponse} from "../../redux/slices/authSlice";
+import {beginAuth} from "../../redux/slices/authSlice";
 
 export default function SignIn() {
     const navigate = useNavigate()
@@ -22,7 +22,7 @@ export default function SignIn() {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        dispatch(getBeginAuthResponse())
+        dispatch(beginAuth())
     }
 
 

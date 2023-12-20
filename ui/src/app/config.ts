@@ -16,7 +16,7 @@ const getConfig = async () => {
         {
             //TODO: Change api.example.io based on project hostname
             exampleUiBaseUri: process.env.EXAMPLE_UI_BASE_URI ?? 'http://localhost:3000',
-            exampleApiBaseUrl: process.env.EXAMPLE_API_BASE_URL ?? 'http://localhost:9000'
+            exampleApiBaseUrl: process.env.EXAMPLE_API_BASE_URL ?? 'http://localhost:8010'
         } as Config
     );
 };

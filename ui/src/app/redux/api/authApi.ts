@@ -1,29 +1,40 @@
-import {BeginAuthenticationRequest} from "../../../generated/com/example/gateway/api/authentication_service_pb";
-import {getAuthClient} from "./clients";
-import {HttpBody} from "../../../generated/google/api/httpbody_pb";
+import {GetUserRequest, GetUserResponse} from "../../../generated/com/example/gateway/domain/user_domain_pb";
+import {csrfHeader, getGatewayClient} from "./clients";
 
-export const sendBeginAuthenticationRequest = async (req: BeginAuthenticationRequest) => {
+export const sendBeginAuthenticationRequest = () => {
+    return window.location.href = "http://localhost:8010/oidc/auth?provider_id=local_keycloak&redirect_uri=http://localhost:3000/pricing"
+}
+
+export function sendGetUserRequest(req: GetUserRequest) {
     var deadline = new Date();
     deadline.setSeconds(deadline.getSeconds() + 30);
 
-    const client = await getAuthClient()
+    return new Promise<{ getUserResponse: GetUserResponse }>((resolve, reject) => {
+        getGatewayClient().then(client => {
+            console.log(csrfHeader())
+            client.getUser(req, {
+                    deadline: deadline.getTime().toString(),
+                    authorization: csrfHeader()
+                },
+                (err, response) => {
+                    if (err) {
+                        console.error(`Unexpected error sending admin login link: code = ${err.code}` +
+                            `, message = "${err.message}"`)
+                        reject(err)
+                    } else {
+                        const resp = {getUserResponse: response}
+                        console.log(resp)
+                        resolve(resp)
+                    }
+                })
+        }).catch(err => {
+            console.error(
+                `Unexpected error creating client: code = ${err.code}` +
+                `, message = "${err.message}"`
+            )
+            reject(err)
+        })
 
-    return new Promise<HttpBody>((resolve, reject) => {
-        client.oidcAuthentication(req, {
-                //TODO: uncomment for routes that are authorized using JWT
-                //authorization: 'Bearer ' + window.BEARER_TOKEN,
-                deadline: deadline.getTime().toString()
-            },
-            (err, response) => {
-                if (err) {
-                    console.error(`Unexpected error sending BeginAuthenticationRequest: code = ${err.code}` +
-                        `, message = "${err.message}"`)
-                    reject(err)
-                } else {
-                    console.log(response)
-                    resolve(response)
-                }
-            })
     });
 
 }

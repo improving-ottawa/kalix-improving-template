@@ -1,27 +1,37 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {BeginAuthenticationRequest} from "../../../generated/com/example/gateway/api/authentication_service_pb";
-import {sendBeginAuthenticationRequest} from "../api/authApi";
+import {sendBeginAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
 import {RootState} from "../store";
+import {GetUserRequest} from "../../../generated/com/example/gateway/domain/user_domain_pb";
+import {decodedJwtToken} from "../api/clients";
 
 interface AuthState {
     beginAuthStatus: string
+    getUserStatus: string
     authHeaders: Uint8Array | string
 }
 
 const initialState: AuthState = {
-    beginAuthStatus: "",
+    getUserStatus: "none",
+    beginAuthStatus: "none",
     authHeaders: ""
 }
 
-export const getBeginAuthResponse = createAsyncThunk(
+export const beginAuth = createAsyncThunk(
     // TypePrefix must be unique across all slices
     'example/beginAuth',
     async () => {
-        let req = new BeginAuthenticationRequest()
-        req = req.setProviderId("local_keycloak")
-        req = req.setRedirectUri("http://localhost:9000/pricing")
-        // The value we return becomes the `fulfilled` action payload
-        return await sendBeginAuthenticationRequest(req);
+        return sendBeginAuthenticationRequest();
+    }
+);
+
+export const getUser = createAsyncThunk(
+    // TypePrefix must be unique across all slices
+    'example/getUser',
+    async () => {
+        const jwt = decodedJwtToken()
+        let req = new GetUserRequest()
+        req = jwt && jwt.sub ? req.setUserId(jwt.sub) : req
+        return sendGetUserRequest(req);
     }
 );
 
@@ -29,17 +39,25 @@ export const authSlice = createSlice({
     name: 'login',
     initialState,
     reducers: {},
-    extraReducers: (builder) => {
+    extraReducers: (builder) =>
         builder
-            .addCase(getBeginAuthResponse.pending, (state) => {
+            .addCase(beginAuth.pending, (state) => {
                 state.beginAuthStatus = 'loading';
             })
-            .addCase(getBeginAuthResponse.fulfilled, (state, response) => {
-                state.beginAuthStatus = 'none';
-                state.authHeaders = response.payload.getData()
-                console.log(response.payload.getExtensionsList)
+            .addCase(beginAuth.fulfilled, (state, response) => {
+                state.beginAuthStatus = 'none'
+
+                console.log("Success logging in")
+            }).addCase(getUser.pending, (state) => {
+            state.getUserStatus = 'loading';
+        })
+            .addCase(getUser.fulfilled, (state, response) => {
+                state.getUserStatus = 'none'
+
+                console.log("Success logging in")
+
+                console.log(response.payload.getUserResponse.getUserInfo())
             })
-    },
 })
 
 
