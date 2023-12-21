@@ -58,7 +58,7 @@ class AuthenticationServiceAction(
 
   /* Internal Implementation */
 
-  private final type ResponseGen[T] = (String, String, String, OIDCIdentity) => Action.Effect[T]
+  private final type ResponseGen[T] = (String, String, Long, String, OIDCIdentity) => Action.Effect[T]
 
   private def oidcCallbackResponseInternal[T](code: String, stateToken: String, genResp: ResponseGen[T]): Action.Effect[T] =
     if (code.isEmpty) {
@@ -85,9 +85,9 @@ class AuthenticationServiceAction(
       val redirectEffect =
         for {
           (identity, state) <- identityService.completeAuthorizationCodeFlow(code, stateToken)
-          jwtToken          <- Future.fromEither(jwtIssuer.createJwtFor(identity, csrfToken))
+          (jwtToken, exp)   <- Future.fromEither(jwtIssuer.createJwtFor(identity, csrfToken))
           _                 <- syncUserIdentity(identity, state)
-        } yield genResp(state.redirectUri, jwtToken, csrfToken.toString, identity)
+        } yield genResp(state.redirectUri, jwtToken, exp, csrfToken.toString, identity)
 
       effects.asyncEffect(redirectEffect)
     }
@@ -95,6 +95,7 @@ class AuthenticationServiceAction(
   private def generateCallbackResponse(
     redirectUri: String,
     jwt: String,
+    expEpoch: Long,
     csrfToken: String,
     identity: OIDCIdentity
   ): Action.Effect[HttpBody] = {
@@ -119,6 +120,7 @@ class AuthenticationServiceAction(
   private def generateCompleteLoginResponse(
     redirectUri: String,
     jwt: String,
+    expEpoch: Long,
     csrfToken: String,
     identity: OIDCIdentity
   ): Action.Effect[CompleteLoginResponse] = {
@@ -139,7 +141,7 @@ class AuthenticationServiceAction(
     val response = CompleteLoginResponse(
       redirectUri,
       csrfToken,
-      jwt,
+      expEpoch,
       appIdentity
     )
 

@@ -18,6 +18,7 @@ export const sendCompleteAuthenticationRequest = async (code: string, state: str
 
     const response = await client.completeLogin(request, null)
     const csrfToken = response.getCsrfToken()
+    const expTime = response.getSessionExpiration()
     const redirectTo = response.getRedirectUri()
     const identity = response.getIdentity()
 
@@ -28,16 +29,12 @@ export const sendCompleteAuthenticationRequest = async (code: string, state: str
         } else if (!redirectTo) {
             console.log("Did not receive `redirectTo`")
             reject()
-        } else if (!decodedJwtToken()) {
-            console.log("Did not receive `jwtToken`")
-            reject()
         } else if (!identity) {
             console.log("Did not receive `identity`")
             reject()
         } else {
-            const jwtExpiration = decodedJwtToken()?.exp ?? 0
-
-            storeIdentityToken(identity, jwtExpiration)
+            // Store the App identity and session expiration time together
+            storeIdentityToken(identity, expTime)
 
             // Store the `csrfToken` in *session* storage
             sessionStorage.setItem('csrfToken', csrfToken)

@@ -90,8 +90,9 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
     s"authToken=$jwt; Path=/; Domain=$jwtCookieDomain; SameSite=None; Max-Age=$maxAge$secure"
   }
 
-  def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, String] = {
+  def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, (String, Long)] = {
     val nowInstant       = SystemClock.currentInstant
+    val tokenExpiration  = nowInstant.plus(javaDuration)
     val additionalClaims = Map("csrf_token" -> csrfToken.toString)
 
     val authToken =
@@ -106,7 +107,7 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
         additionalClaims = additionalClaims
       )
 
-    authTokenService.encodeToken(authToken)
+    authTokenService.encodeToken(authToken).map(jwt => (jwt, tokenExpiration.getEpochSecond))
   }
 
   def decodeJwtToken(token: String): Either[Throwable, AuthToken] =
