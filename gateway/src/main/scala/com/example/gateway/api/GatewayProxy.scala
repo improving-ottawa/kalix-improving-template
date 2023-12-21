@@ -3,23 +3,20 @@ package com.example.gateway.api
 import com.example.boundedContext.api._
 import com.example.boundedContext.domain._
 import com.example.gateway.HealthCheckResponse
-import com.example.gateway.domain.{DoNothingTwiceCommand, DoNothingTwiceResponse}
+import com.example.gateway.domain._
 import com.example.gateway.utils.{JwtIssuer, ServiceOnlineUtil}
 import com.example.service3.api.Service3
+
 import com.google.protobuf.empty.Empty
-import com.improving.iam.KalixAuthorization
 import com.typesafe.config.{Config, ConfigFactory}
 import kalix.javasdk.impl.GrpcClients
 import kalix.scalasdk.action.{Action, ActionCreationContext}
 import org.slf4j.{Logger, LoggerFactory}
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
-//
-// As long as this file exists it will not be overwritten: you can maintain it yourself,
-// or delete it so it is regenerated as needed.
 
 class GatewayProxy(protected val creationContext: ActionCreationContext, protected val jwtIssuer: JwtIssuer)
-    extends GatewayProxyBase
+  extends GatewayProxyBase
     with Service1Proxy
     with Service2Proxy
     with Service3Proxy
@@ -61,5 +58,8 @@ class GatewayProxy(protected val creationContext: ActionCreationContext, protect
       _ <- service1Client.doNothing(DoNothingCommand1.defaultInstance)
       _ <- service2Client.doNothing(DoNothingCommand2.defaultInstance)
     } yield DoNothingTwiceResponse.defaultInstance)
+
+  override def completeLogin(request: CompleteLoginRequest): Action.Effect[CompleteLoginResponse] =
+    effects.forward(components.authenticationServiceAction.oidcCompleteLogin(request))
 
 }

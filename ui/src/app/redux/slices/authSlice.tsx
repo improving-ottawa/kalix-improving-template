@@ -1,8 +1,8 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {sendBeginAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
+import {sendBeginAuthenticationRequest, sendCompleteAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
 import {RootState} from "../store";
 import {GetUserRequest} from "../../../generated/com/example/gateway/domain/user_domain_pb";
-import {decodedJwtToken} from "../api/clients";
+import {retrieveIdentity} from "../../identity";
 
 interface AuthState {
     beginAuthStatus: string
@@ -20,7 +20,7 @@ export const beginAuth = createAsyncThunk(
     // TypePrefix must be unique across all slices
     'example/beginAuth',
     async () => {
-        return sendBeginAuthenticationRequest();
+        return await sendBeginAuthenticationRequest();
     }
 );
 
@@ -28,9 +28,9 @@ export const getUser = createAsyncThunk(
     // TypePrefix must be unique across all slices
     'example/getUser',
     async () => {
-        const jwt = decodedJwtToken()
+        const identity = retrieveIdentity()
         let req = new GetUserRequest()
-        req = jwt && jwt.sub ? req.setUserId(jwt.sub) : req
+        req = identity && identity.sub ? req.setUserId(identity.sub) : req
         return sendGetUserRequest(req);
     }
 );

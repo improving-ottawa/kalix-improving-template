@@ -4,8 +4,8 @@ import com.improving.iam._
 import com.improving.config._
 import com.improving.extensions.oidc.OIDCIdentity
 import com.improving.utils.{Base64String, SystemClock}
-
 import cats.syntax.all._
+import sttp.model.Uri
 
 import scala.concurrent.duration.FiniteDuration
 import java.util.UUID
@@ -71,17 +71,23 @@ object JwtIssuer {
 
 final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: AlgorithmWithKeys) {
   private val authTokenService = AuthTokenService(algorithmWithKeys)
+  private val jwtCookieDomain = Uri.unsafeParse(config.tokenIssuerUrl)
+    .authority
+    .map(_.host)
+    .getOrElse("localhost")
 
   private val javaDuration = {
     val scalaDuration = config.tokenValidDuration
     java.time.Duration.of(scalaDuration.length, scalaDuration.unit.toChronoUnit)
   }
 
+  def jwtTokenValidDuration: Long = config.tokenValidDuration.toSeconds
+
   def jwtToHttpCookie(jwt: String): String = {
     val maxAge = config.tokenValidDuration.toSeconds
     val secure = if (config.tokenIssuerUrl.startsWith("https")) "; Secure" else ""
 
-    s"authToken=$jwt; Path=/; MaxAge=$maxAge$secure"
+    s"authToken=$jwt; Path=/; Domain=$jwtCookieDomain; SameSite=None; Max-Age=$maxAge$secure"
   }
 
   def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, String] = {

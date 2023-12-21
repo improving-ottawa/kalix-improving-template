@@ -27,8 +27,8 @@ import scala.concurrent.duration._
 
 /** Test configuration */
 object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
-  // Change this if you are (`Some("...")`) or are not (`None`) running with a local CORS proxy
-  private val localProxy: Option[String] = Some("http://localhost:8010")
+  // Change this if you are testing from the UI vs just testing the API
+  private val testingFromBrowser = true
 
   // We test against a local instance of RedHat's Keycloak identity server. It must be setup according to the
   // instructions in the corresponding `Test-Setup-Instructions.md`
@@ -48,8 +48,13 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
     }
   }
 
-  // DO NOT change this!
-  private val localPrefix: String = localProxy.getOrElse("http://localhost:9000")
+  // DO NOT change these
+  private val localPrefix: String = "http://localhost:9000"
+  private val callbackUri =
+    if (testingFromBrowser) "http://localhost:3000/oidc/callback"
+    else s"$localPrefix/oidc/callback"
+
+  private val issuerUri = "http://localhost:8010"
 
   // The `KeyLoader` configuration, which will load the test ECDSA public/private keypair contained in `resources`.
   // Should not need to change this!
@@ -62,14 +67,14 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
 
   private val identityServiceConfig = OIDCIdentityServiceConfig(
     // Assuming no changes to `docker-compose.yml`
-    providerCallback = Uri.unsafeParse(s"$localPrefix/oidc/callback"),
+    providerCallback = Uri.unsafeParse(callbackUri),
     // Single registered OIDC provider for local Keycloak running in Docker
     providers = Map("local_keycloak" -> keycloakProvider)
   )
 
   private val jwtIssuerConfig = JwtIssuerConfig(
     // Note: this will need to change if you change your Kalix proxy configuration!
-    tokenIssuerUrl = localPrefix,
+    tokenIssuerUrl = issuerUri,
     tokenValidDuration = FiniteDuration(1, "hour"),
     defaultUserRole = "Test"
   )
@@ -155,11 +160,12 @@ sealed abstract class OIDCIdentityTest { self: OIDCIdentityTest.type =>
 
   private val tryCreateGateway: IO[KalixService] = IO.delay {
     log.info("Creating `gateway` service Kalix instance...")
+    val kalixProxyPort = Uri.unsafeParse(localPrefix).authority.flatMap(_.port).getOrElse(9000)
     val kalix = com.example.gateway.Main.createKalix(keyLoaderConfig, identityServiceConfig, jwtIssuerConfig)
     KalixService(
       serviceName = "gateway",
       kalix,
-      overrideProxyPort = Some(9000)
+      overrideProxyPort = Some(kalixProxyPort)
     )
   }
 

@@ -22,9 +22,9 @@ import {Copyright} from "../../styledComponents/copyright";
 import Cookies from "cookies-ts";
 import {useEffect} from "react";
 import {getUser} from "../../../redux/slices/authSlice";
-import {decodedJwtToken} from "../../../redux/api/clients";
 import moment from "moment";
 import {AppDispatch} from "../../../redux/store";
+import {retrieveIdentity} from "../../../identity";
 
 const footers = [
     {
@@ -40,21 +40,27 @@ export default function Pricing() {
     const initializeStorageForAuth = () => {
         const cookies = new Cookies()
 
-        const csrfToken = cookies.get('csrfToken')
-        console.log("Storing (and deleting) CSRF token...")
-        csrfToken ? sessionStorage.setItem('csrfToken', csrfToken) : console.log("csrfToken is invalid")
-        cookies.remove('csrfToken')
+        const maybeExistingToken = sessionStorage.getItem('csrfToken')
+        const csrfTokenCookie = cookies.get('csrfToken')
 
-        const redirectToElement = document.getElementById('redirectTo')
-        console.log("Redirecting to target page: " + redirectToElement?.innerText)
-        redirectToElement?.click()
+        let validCsrfToken = false
 
-        const jwt = decodedJwtToken()
-        if (jwt && jwt.exp && jwt.exp < moment.now()) {
+        if (maybeExistingToken && maybeExistingToken.length != 0) {
+            console.log("Using existing CSRF token in sessionStorage.")
+            validCsrfToken = true
+        } else if (csrfTokenCookie) {
+            console.log("Storing (and deleting) CSRF token...")
+            sessionStorage.setItem('csrfToken', csrfTokenCookie)
+            cookies.remove('csrfToken')
+            validCsrfToken = true
+        }
+
+        const identity = retrieveIdentity()
+        if (validCsrfToken && identity && identity.exp < moment.now()) {
             dispatch(getUser())
         } else {
-            console.log(jwt?.exp)
-            navigate("/login")
+            console.log(`Invalid or expired Identity (${identity}) or missing CSRF token.`)
+            navigate("/")
         }
     }
 

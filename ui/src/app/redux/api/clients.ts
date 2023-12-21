@@ -3,8 +3,8 @@ import {
     AuthenticationServiceClient
 } from "../../../generated/com/example/gateway/api/Authentication_serviceServiceClientPb";
 import {GatewayClient} from "../../../generated/com/example/gateway/api/Gateway_actionServiceClientPb";
-import {jwtDecode} from "jwt-decode";
 import Cookies from "cookies-ts";
+import {AppIdentity} from "../../../generated/com/example/gateway/domain/gateway_responses_pb";
 
 let cachedGatewayClient: GatewayClient | undefined = undefined
 
@@ -13,7 +13,7 @@ let cachedAuthClient: AuthenticationServiceClient | undefined = undefined
 export const getGatewayClient = async () => {
     const config = await getConfig()
     if (!cachedGatewayClient) {
-        cachedGatewayClient = new GatewayClient(config.exampleApiBaseUrl)
+        cachedGatewayClient = new GatewayClient(config.exampleApiBaseUrl, null, {withCredentials: true})
     }
     return cachedGatewayClient
 }
@@ -28,13 +28,7 @@ export const getAuthClient = async () => {
     return cachedAuthClient
 }
 
-export const csrfHeader = () => {
+export const getCsrfToken = () => {
     const token = sessionStorage.getItem('csrfToken')
-    return 'X-CSRF-Token ' + token ?? ""
-}
-
-export const decodedJwtToken = () => {
-    const cookies = new Cookies()
-    const cookie = cookies.get('authToken')
-    return cookie ? jwtDecode(cookie) : null
+    return token ?? ""
 }
