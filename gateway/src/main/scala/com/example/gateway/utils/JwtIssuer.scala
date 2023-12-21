@@ -87,7 +87,7 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
     val maxAge = config.tokenValidDuration.toSeconds
     val secure = if (config.tokenIssuerUrl.startsWith("https")) "; Secure" else ""
 
-    s"authToken=$jwt; Path=/; Domain=$jwtCookieDomain; SameSite=None; Max-Age=$maxAge$secure"
+    s"authToken=$jwt; Path=/; Domain=$jwtCookieDomain; SameSite=Lax; Max-Age=$maxAge$secure"
   }
 
   def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, (String, Long)] = {
