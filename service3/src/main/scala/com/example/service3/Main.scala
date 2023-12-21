@@ -1,9 +1,8 @@
 package com.example.service3
 
-import com.example.service3.api.NoData3Service
-import com.example.service3.api.PingPong
+import com.example.service3.api._
+import com.example.service3.domain._
 import com.example.service3.entity.Service3Entity
-import com.example.service3.domain.CartService
 import kalix.scalasdk.Kalix
 import org.slf4j.LoggerFactory
 
@@ -23,9 +22,15 @@ object Main {
     // `Kalix()` instance.
     KalixFactory.withComponents(
       new CartService(_),
+      new OrderNumberIssuerService(_),
+      new OrderService(_),
       new Service3Entity(_),
       new NoData3Service(_),
-      new PingPong(_)
+      new OrderNumbersService(_),
+      new OrdersService(_),
+      new PingPong(_),
+      new ProductsService(_),
+      new ShoppingCartsService(_)
     )
   }
 
