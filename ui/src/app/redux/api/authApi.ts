@@ -1,12 +1,7 @@
 import {getConfig} from "../../config";
 import {GetUserRequest, GetUserResponse} from "../../../generated/com/example/gateway/domain/user_domain_pb";
-import {getAuthClient, getCsrfToken, getGatewayClient} from "./clients";
-import {OIDCAccessCodeData} from "../../../generated/com/example/gateway/api/authentication_service_pb";
+import {decodedJwtToken, getCsrfToken, getGatewayClient} from "./clients";
 import {CompleteLoginRequest} from "../../../generated/com/example/gateway/domain/gateway_commands_pb";
-import {AppIdentity} from "../../../generated/com/example/gateway/domain/gateway_responses_pb";
-import Cookies from "cookies-ts";
-import {CookiesOption} from "cookies-ts";
-import {jwtDecode} from "jwt-decode";
 import {storeIdentityToken} from "../../identity";
 
 export const sendBeginAuthenticationRequest = async () => {
@@ -21,9 +16,8 @@ export const sendCompleteAuthenticationRequest = async (code: string, state: str
     request.setCode(code)
     request.setState(state)
 
-    const response = await client.completeLogin(request)
+    const response = await client.completeLogin(request, null)
     const csrfToken = response.getCsrfToken()
-    const jwtToken = response.getJwtToken()
     const redirectTo = response.getRedirectUri()
     const identity = response.getIdentity()
 
@@ -34,15 +28,14 @@ export const sendCompleteAuthenticationRequest = async (code: string, state: str
         } else if (!redirectTo) {
             console.log("Did not receive `redirectTo`")
             reject()
-        } else if (!jwtToken) {
+        } else if (!decodedJwtToken()) {
             console.log("Did not receive `jwtToken`")
             reject()
         } else if (!identity) {
             console.log("Did not receive `identity`")
             reject()
         } else {
-            const jwtBody = jwtDecode(jwtToken)
-            const jwtExpiration = jwtBody?.exp ?? 0
+            const jwtExpiration = decodedJwtToken()?.exp ?? 0
 
             storeIdentityToken(identity, jwtExpiration)
 
@@ -69,7 +62,7 @@ export function sendGetUserRequest(req: GetUserRequest) {
                 },
                 (err, response) => {
                     if (err) {
-                        console.error(`Unexpected error sending admin login link: code = ${err.code}` +
+                        console.error(`Unexpected error sending get user: code = ${err.code}` +
                             `, message = "${err.message}"`)
                         reject(err)
                     } else {
