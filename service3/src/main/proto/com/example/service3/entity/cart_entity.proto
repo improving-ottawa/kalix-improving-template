@@ -22,7 +22,8 @@ service CartEntity {
         "com.example.service3.domain.LineItemAdded",
         "com.example.service3.domain.LineItemRemoved",
         "com.example.service3.domain.CartAbandoned",
-        "com.example.service3.domain.CheckoutStarted"
+        "com.example.service3.domain.CheckoutStarted",
+        "com.example.service3.domain.CheckoutCompleted"
       ]
     }
   };
@@ -39,5 +40,7 @@ service CartEntity {
 
   rpc AbandonCart (api.AbandonShoppingCart) returns (domain.CartAbandoned) { }
 
-  rpc StartCheckout (api.CheckoutShoppingCart) returns (domain.CheckoutStarted) { }
+  rpc StartCheckout (api.StartCheckout) returns (domain.CheckoutStarted) { }
+
+  rpc CompleteCheckout (api.CompleteCheckout) returns (domain.CheckoutCompleted) { }
 }

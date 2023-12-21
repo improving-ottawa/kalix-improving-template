@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.example.service3.domain;
+
+import "com/example/service3/api/order_number_api.proto";
+import "com/example/service3/domain/order_number_domain.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+// The Order number issuer entity
+service OrderNumberIssuer {
+  option (kalix.codegen) = {
+    value_entity: {
+      name: "com.example.service3.domain.OrderNumberIssuerService"
+      entity_type: "order-number-issuer"
+      state: "com.example.service3.domain.OrderNumberIssuerState"
+    }
+  };
+
+  rpc IssueNextOrderNumber(api.IssueNextOrderNumber) returns (api.NextOrderNumber);
+
+}

@@ -9,7 +9,7 @@ import "validate/validate.proto";
 option java_package = "com.example.common.domain";
 
 message LineItem {
-  Product product = 1 [(validate.rules).message.required = true];
+  string product_sku = 1 [(validate.rules).string.min_len = 1];
 
   uint32 quantity = 2 [
     (validate.rules).uint32.gt = 0,

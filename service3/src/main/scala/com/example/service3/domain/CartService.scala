@@ -1,12 +1,7 @@
 package com.example.service3.domain
 
-import com.example.service3.api.AbandonShoppingCart
-import com.example.service3.api.AddLineItem
-import com.example.service3.api.CheckoutShoppingCart
-import com.example.service3.api.CreateShoppingCart
-import com.example.service3.api.GetShoppingCart
-import com.example.service3.api.RemoveLineItem
-import com.example.service3.domain
+import com.example.service3.api._
+
 import kalix.scalasdk.eventsourcedentity.EventSourcedEntity
 import kalix.scalasdk.eventsourcedentity.EventSourcedEntityContext
 
@@ -16,26 +11,32 @@ import kalix.scalasdk.eventsourcedentity.EventSourcedEntityContext
 // or delete it so it is regenerated as needed.
 
 class CartService(context: EventSourcedEntityContext) extends AbstractCartService {
-  override def emptyState: Cart =
-    throw new UnsupportedOperationException("Not implemented yet, replace with your empty entity state")
+  override def emptyState: Cart = Cart.defaultInstance
 
-  override def createCart(currentState: Cart, createShoppingCart: CreateShoppingCart): EventSourcedEntity.Effect[CartCreated] =
+  /* Command Handlers */
+
+  override def createCart(currentState: Cart, req: CreateShoppingCart): EventSourcedEntity.Effect[CartCreated] =
     effects.error("The command handler for `CreateCart` is not implemented, yet")
 
-  override def addLineItem(currentState: Cart, addLineItem: AddLineItem): EventSourcedEntity.Effect[LineItemAdded] =
+  override def addLineItem(currentState: Cart, req: AddLineItem): EventSourcedEntity.Effect[LineItemAdded] =
     effects.error("The command handler for `AddLineItem` is not implemented, yet")
 
-  override def removeLineItem(currentState: Cart, removeLineItem: RemoveLineItem): EventSourcedEntity.Effect[LineItemRemoved] =
+  override def removeLineItem(currentState: Cart, req: RemoveLineItem): EventSourcedEntity.Effect[LineItemRemoved] =
     effects.error("The command handler for `RemoveLineItem` is not implemented, yet")
 
-  override def getCart(currentState: Cart, getShoppingCart: GetShoppingCart): EventSourcedEntity.Effect[Cart] =
-    effects.error("The command handler for `GetCart` is not implemented, yet")
+  override def getCart(currentState: Cart, req: GetShoppingCart): EventSourcedEntity.Effect[Cart] =
+    effects.reply(currentState)
 
-  override def abandonCart(currentState: Cart, abandonShoppingCart: AbandonShoppingCart): EventSourcedEntity.Effect[CartAbandoned] =
+  override def abandonCart(currentState: Cart, req: AbandonShoppingCart): EventSourcedEntity.Effect[CartAbandoned] =
     effects.error("The command handler for `AbandonCart` is not implemented, yet")
 
-  override def startCheckout(currentState: Cart, checkoutShoppingCart: CheckoutShoppingCart): EventSourcedEntity.Effect[CheckoutStarted] =
+  override def startCheckout(currentState: Cart, req: StartCheckout): EventSourcedEntity.Effect[CheckoutStarted] =
     effects.error("The command handler for `StartCheckout` is not implemented, yet")
+
+  override def completeCheckout(currentState: Cart, req: CompleteCheckout): EventSourcedEntity.Effect[CheckoutCompleted] =
+    effects.error("The command handler for `CompleteCheckout` is not implemented, yet")
+
+  /* Event Handlers */
 
   override def cartCreated(currentState: Cart, cartCreated: CartCreated): Cart =
     throw new RuntimeException("The event handler for `CartCreated` is not implemented, yet")
@@ -51,5 +52,8 @@ class CartService(context: EventSourcedEntityContext) extends AbstractCartServic
 
   override def checkoutStarted(currentState: Cart, checkoutStarted: CheckoutStarted): Cart =
     throw new RuntimeException("The event handler for `CheckoutStarted` is not implemented, yet")
+
+  override def checkoutCompleted(currentState: Cart, checkoutCompleted: CheckoutCompleted): Cart =
+    throw new RuntimeException("The event handler for `CheckoutCompleted` is not implemented, yet")
 
 }

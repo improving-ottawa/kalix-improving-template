@@ -70,6 +70,18 @@ message CheckoutStarted {
   ];
 }
 
+message CheckoutCompleted {
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  common.Timestamp when_checkout_started = 2 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
 // The shopping cart state
 message Cart {
   string user_id = 1;

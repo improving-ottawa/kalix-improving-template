@@ -39,6 +39,7 @@ object Dependencies {
     val google_grpc     = "2.9.0"
     val kalixSDK        = "1.3.5"
     val lang3           = "3.13.0"
+    val scodec          = "1.1.38"
     val scopt           = "4.1.0"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
@@ -83,6 +84,7 @@ object Dependencies {
   lazy val scalacheck = "org.scalacheck"        %% "scalacheck"      % Versions.scalacheck % Test
   lazy val slf4j      = "org.slf4j"              % "slf4j-nop"       % Versions.slf4j
   lazy val slf4jCats  = "org.typelevel"         %% "log4cats-slf4j"  % Versions.slf4jCats
+  lazy val scodecBits = "org.scodec"            %% "scodec-bits"     % Versions.scodec
 
   lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 

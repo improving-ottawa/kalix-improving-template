@@ -12,7 +12,7 @@ import "kalix/annotations.proto";
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";
 
-message CreateOrder {
+message OrderFromCart {
   // The user (identity by ID) who is placing the order
   string user_id = 1 [
     (validate.rules).string.uuid = true,
@@ -32,17 +32,45 @@ message CreateOrder {
     (scalapb.field).no_default_value_in_constructor = true
   ];
 
-  // The line items (from the cart) in this order
-  repeated common.domain.LineItem items = 4 [
-    (validate.rules).repeated.min_items = 1,
-    (scalapb.field).collection_type = "scala.collection.immutable.List"
-  ];
-
   // The payment information for this order
-  domain.PaymentInfo payment_info = 5 [
+  domain.PaymentInfo payment_info = 4 [
     (validate.rules).message.required = true,
     (scalapb.field).required = true,
     (scalapb.field).no_default_value_in_constructor = true
   ];
 
+}
+
+// The confirmation of a new order placed
+message OrderConfirmation {
+  // The unique ID for this order (globally unique throughout time/space)
+  string order_id = 1;
+
+  // The user (identity by ID) who is placing the order
+  string user_id = 2;
+
+  // A human readable/understandable (unique-ish) order number for this order (8 digits)
+  string order_number = 3 [(validate.rules).string.len = 8];
+}
+
+message OrderById {
+  string order_id = 1 [(validate.rules).string.uuid = true];
+}
+
+message GetOrderByNumber {
+  string order_number = 1 [(validate.rules).string.len = 8];
+}
+
+// The "Orders" service
+
+service Orders {
+  option (kalix.codegen) = {
+    action: {
+      name: "com.example.service3.api.OrdersService"
+    }
+  };
+
+  rpc CreateOrderFromCart(OrderFromCart) returns (OrderConfirmation);
+
+  rpc GetOrderById(OrderById) returns (domain.Order);
 }

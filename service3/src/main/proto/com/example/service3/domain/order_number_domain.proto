@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.example.service3.domain;
+
+import "com/example/common/timestamp.proto";
+import "com/example/common/domain/address.proto";
+import "com/example/common/domain/line_item.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+// OrderNumber issuer state
+message OrderNumberIssuerState {
+  uint64 last_order_number = 1;
+}

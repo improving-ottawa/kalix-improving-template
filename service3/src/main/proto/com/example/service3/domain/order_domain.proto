@@ -11,6 +11,44 @@ import "kalix/annotations.proto";
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";
 
+// Create a new order
+message CreateOrder {
+  // The user (identity by ID) who is placing the order
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The (shopping) cart which the order is from
+  string cart_id = 2 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  uint64 order_number = 3;
+
+  // The buyer's shipping address
+  common.domain.Address shipping_address = 4 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The line items (from the cart) in this order
+  repeated common.domain.LineItem items = 5 [
+    (validate.rules).repeated.min_items = 1,
+    (scalapb.field).collection_type = "scala.collection.immutable.List"
+  ];
+
+  // The payment information for this order
+  domain.PaymentInfo payment_info = 6 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+}
+
 // Payment information (record)
 message PaymentInfo {
   // The name on the credit-card used in in `creditCardNumber`
@@ -41,21 +79,27 @@ message PaymentInfo {
 
 // The state of an order
 message Order {
+  // The unique ID for this order
+  string order_id = 1;
+
   // The user (identity by ID) who is placing the order
-  string user_id = 1;
+  string user_id = 2;
 
   // The (shopping) cart which the order is from
-  string cart_id = 2;
+  string cart_id = 3;
+
+  // The order number assigned to this order
+  string order_number = 4;
 
   // When the order was created/placed
-  common.Timestamp when_created = 3;
+  common.Timestamp when_created = 5;
 
   // The buyer's shipping address
-  common.domain.Address shipping_address = 4;
+  common.domain.Address shipping_address = 6;
 
   // The line items in this order
-  repeated common.domain.LineItem items = 5 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
+  repeated common.domain.LineItem items = 7 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
 
   // The payment information for this order
-  domain.PaymentInfo payment_info = 6;
+  domain.PaymentInfo payment_info = 8;
 }

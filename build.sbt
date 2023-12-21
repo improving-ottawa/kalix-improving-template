@@ -49,7 +49,7 @@ lazy val root = project
 lazy val utils: Project = project
   .in(file("utils"))
   .configure(Config.AsProjectType.basicLibrary)
-  .configure(Config.withDeps(Dependencies.kalixScalaSdk))
+  .configure(Config.withDeps(Dependencies.kalixScalaSdk, Dependencies.scodecBits))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
 
 lazy val common: Project = project

@@ -4,6 +4,8 @@ package com.example.service3.api;
 
 import "com/example/common/timestamp.proto";
 import "com/example/common/domain/line_item.proto";
+import "com/example/service3/domain/cart_domain.proto";
+
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 import "scalapb/scalapb.proto";
@@ -41,6 +43,34 @@ message AbandonShoppingCart {
   string cart_id = 1 [(kalix.field).entity_key = true];
 }
 
-message CheckoutShoppingCart {
+message StartCheckout {
   string cart_id = 1 [(kalix.field).entity_key = true];
+}
+
+message CompleteCheckout {
+  string cart_id = 1 [(kalix.field).entity_key = true];
+}
+
+message ShoppingCartId {
+  string id = 1 [(validate.rules).string.uuid = true];
+}
+
+service ShoppingCarts {
+  option (kalix.codegen) = {
+    action: {
+      name: "com.example.service3.api.ShoppingCartsService"
+    }
+  };
+
+  rpc GetCart(GetShoppingCart) returns (domain.Cart);
+
+  rpc CreateCart(CreateShoppingCart) returns (ShoppingCartId);
+
+  rpc AddItemToCart(AddLineItem) returns (google.protobuf.Empty);
+
+  rpc RemoveItemFromCart(RemoveLineItem) returns (google.protobuf.Empty);
+
+  rpc StartCartCheckout(StartCheckout) returns (google.protobuf.Empty);
+
+  rpc CompleteCartCheckout(CompleteCheckout) returns (google.protobuf.Empty);
 }
