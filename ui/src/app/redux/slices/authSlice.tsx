@@ -4,7 +4,7 @@ import {RootState} from "../store";
 import {GetUserRequest} from "../../../generated/com/example/gateway/domain/user_domain_pb";
 import {retrieveIdentity} from "../../identity";
 
-interface AuthState {
+export interface AuthState {
     beginAuthStatus: string
     getUserStatus: string
 }
