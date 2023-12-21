@@ -56,10 +56,23 @@ export default function Pricing() {
         }
 
         const identity = retrieveIdentity()
-        if (validCsrfToken && identity && identity.exp < moment.now()) {
+        const epochSeconds = (new Date()).getUTCSeconds()
+
+        // Check that: we have a CSRF token, we have an identity, and the identity is not expired...
+        // Note: the `identity.exp`(iration) is in Unix epoch _seconds_ (not milliseconds!)
+        if (validCsrfToken && identity && identity.exp > epochSeconds) {
             dispatch(getUser())
         } else {
-            console.log(`Invalid or expired Identity (${identity}) or missing CSRF token.`)
+            if (validCsrfToken && identity) {
+                const expiredDate = new Date(identity.exp)
+                console.log(`Expired Identity: ${identity} (expired at: ${expiredDate}).`)
+            } else if (validCsrfToken) {
+                console.log(`Invalid or missing Identity.`)
+            } else {
+                console.log(`Missing CSRF token.`)
+            }
+
+            // Send the user to the login page
             navigate("/")
         }
     }

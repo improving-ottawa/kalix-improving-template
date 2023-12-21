@@ -1,8 +1,29 @@
 # Modified from https://github.com/lightbend/kalix-jvm-sdk/blob/main/samples/scala-protobuf-customer-registry-quickstart/docker-compose.yml
 
 services:
-  kalix-proxy:
-    image: gcr.io/kalix-public/kalix-proxy:1.1.18
+  # Backend service
+  proxy-bounded-context:
+    image: gcr.io/kalix-public/kalix-proxy:1.1.24
+    depends_on:
+      - bounded-context
+    ports:
+      - "9001:9000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      USER_FUNCTION_HOST: ${USER_FUNCTION_HOST:-host.docker.internal}
+      USER_FUNCTION_PORT: "8001"
+
+  bounded-context:
+    image: bounded-context:latest
+    ports:
+      - "8001:8080"
+    environment:
+      HOST: bounded-context
+
+  # Needs all the port mappings, uses default Kalix ports
+  proxy-gateway:
+    image: gcr.io/kalix-public/kalix-proxy:1.1.24
     depends_on:
       - gateway
     ports:
@@ -11,19 +32,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       JAVA_TOOL_OPTIONS: >
-        -Dkalix.dev-mode.service-port-mappings.bounded-cotnext=host.docker.internal:9001
-      USER_FUNCTION_HOST: ${USER_FUNCTION_HOST:-host.docker.internal}
-      USER_FUNCTION_PORT: "8001"
-
-  kalix-proxy-gateway:
-    image: gcr.io/kalix-public/kalix-proxy:1.1.18
-    depends_on:
-      - bounded-context
-    ports:
-      - "9000:9000"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    environment:
+        -Dkalix.dev-mode.service-port-mappings.bounded-context=host.docker.internal:9001
       USER_FUNCTION_HOST: ${USER_FUNCTION_HOST:-host.docker.internal}
       USER_FUNCTION_PORT: "8000"
 
@@ -33,10 +42,3 @@ services:
       - "8000:8080"
     environment:
       HOST: gateway
-
-  bounded-context:
-    image: bounded-context:latest
-    ports:
-      - "9001:8080"
-    environment:
-      HOST: service1

@@ -18,7 +18,7 @@ message DoNothingTwiceResponse {
 message CompleteLoginResponse {
     string redirect_uri = 1;
     string csrf_token = 2;
-    string jwt_token = 3;
+    int64 session_expiration = 3;
     AppIdentity identity = 4 [(scalapb.field).required = true];
 }
 
