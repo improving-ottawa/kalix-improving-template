@@ -100,7 +100,7 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
         UUID.randomUUID,
         config.tokenIssuerUrl,
         identity.id.toString,
-        nowInstant.plus(javaDuration),
+        tokenExpiration,
         nowInstant,
         nowInstant,
         Set(config.defaultUserRole),
