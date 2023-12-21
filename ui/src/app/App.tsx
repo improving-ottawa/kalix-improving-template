@@ -55,8 +55,10 @@ function App() {
                                         <Route index element={<CustomersPage/>}/>
                                     </Route>
                                 </Route>
-                                // OIDC Callback route
-                                <Route path="oidc/callback" element={<OIDCCallback/>} />
+                                {
+                                    // OIDC Callback route
+                                }
+                                <Route path="oidc/callback" element={<OIDCCallback/>}/>
                             </Route>
                         </Routes>
                     </BrowserRouter>

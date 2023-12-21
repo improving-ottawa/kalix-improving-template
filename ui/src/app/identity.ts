@@ -36,7 +36,7 @@ export const retrieveIdentity = () => {
     }
 
     if (identityObject && isIdentity(identityObject)) {
-        return identityObject as Identity;
+        return identityObject;
     } else {
         return null
     }

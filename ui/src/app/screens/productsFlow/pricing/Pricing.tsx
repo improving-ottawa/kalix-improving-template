@@ -22,7 +22,6 @@ import {Copyright} from "../../styledComponents/copyright";
 import Cookies from "cookies-ts";
 import {useEffect} from "react";
 import {getUser} from "../../../redux/slices/authSlice";
-import moment from "moment";
 import {AppDispatch} from "../../../redux/store";
 import {retrieveIdentity} from "../../../identity";
 
@@ -45,7 +44,7 @@ export default function Pricing() {
 
         let validCsrfToken = false
 
-        if (maybeExistingToken && maybeExistingToken.length != 0) {
+        if (maybeExistingToken && maybeExistingToken.length !== 0) {
             console.log("Using existing CSRF token in sessionStorage.")
             validCsrfToken = true
         } else if (csrfTokenCookie) {

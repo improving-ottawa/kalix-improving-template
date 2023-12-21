@@ -1,7 +1,6 @@
 import {Typography} from "@mui/material";
 import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {useAppDispatch} from "../../redux/hooks";
 import {sendCompleteAuthenticationRequest} from "../../redux/api/authApi";
 
 const OIDCCallback = () => {
@@ -18,7 +17,7 @@ const OIDCCallback = () => {
             console.log(`Invalid query params - code: ${code}, state: ${state}`)
             navigate("/")
         } else {
-            const completeLoginAsync = async() => {
+            const completeLoginAsync = async () => {
                 const redirectUri = await sendCompleteAuthenticationRequest(code, state)
                 navigate(redirectUri)
             }

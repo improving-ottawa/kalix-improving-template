@@ -28,7 +28,7 @@ export const getUser = createAsyncThunk(
     async () => {
         const identity = retrieveIdentity()
         let req = new GetUserRequest()
-        req = identity && identity.sub ? req.setUserId(identity.sub) : req
+        req = identity?.sub ? req.setUserId(identity.sub) : req
         return sendGetUserRequest(req);
     }
 );
