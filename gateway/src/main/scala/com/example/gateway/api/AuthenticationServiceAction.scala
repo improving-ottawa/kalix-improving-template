@@ -22,7 +22,8 @@ class AuthenticationServiceAction(
   identityService: OIDCIdentityService[Future],
   jwtIssuer: JwtIssuer,
   creationContext: ActionCreationContext
-) extends AbstractAuthenticationServiceAction with FutureUtils {
+) extends AbstractAuthenticationServiceAction
+    with FutureUtils {
 
   private val log = LoggerFactory.getLogger(classOf[AuthenticationServiceAction])
 
@@ -58,15 +59,19 @@ class AuthenticationServiceAction(
 
   /* Internal Implementation */
 
-  private final type ResponseGen[T] = (String, String, Long, String, OIDCIdentity) => Action.Effect[T]
+  final private type ResponseGen[T] = (String, String, Long, String, OIDCIdentity) => Action.Effect[T]
 
-  private def oidcCallbackResponseInternal[T](code: String, stateToken: String, genResp: ResponseGen[T]): Action.Effect[T] =
+  private def oidcCallbackResponseInternal[T](
+    code: String,
+    stateToken: String,
+    genResp: ResponseGen[T]
+  ): Action.Effect[T] =
     if (code.isEmpty) {
       effects.error("No access `code` in query string", StatusCode.INVALID_ARGUMENT)
     } else if (stateToken.isEmpty) {
       effects.error("No session `state` in query string", StatusCode.INVALID_ARGUMENT)
     } else {
-      val csrfToken  = SecureRandomString(8)
+      val csrfToken = SecureRandomString(8)
 
       def syncUserIdentity(identity: OIDCIdentity, state: OIDCState) = {
         val userInfo = UserInfo(
@@ -105,8 +110,8 @@ class AuthenticationServiceAction(
 
     val json = Json.obj(
       "redirectUri" -> redirectUri.asJson,
-      "csrfToken" -> csrfToken.asJson,
-      "identity" -> identity.asJson
+      "csrfToken"   -> csrfToken.asJson,
+      "identity"    -> identity.asJson
     )
 
     val body = HttpBody(

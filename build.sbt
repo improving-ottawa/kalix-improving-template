@@ -49,7 +49,7 @@ lazy val root = project
 lazy val utils: Project = project
   .in(file("utils"))
   .configure(Config.AsProjectType.basicLibrary)
-  .configure(Config.withDeps(Dependencies.kalixScalaSdk, Dependencies.scodecBits))
+  .configure(Config.withDeps(Dependencies.kalixScalaSdk, Dependencies.scodecBits, Dependencies.shapeless))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
 
 lazy val common: Project = project
@@ -85,7 +85,7 @@ lazy val design: Project = project
 lazy val service3 = project
   .in(file("service3"))
   .configure(Config.AsKalix.library)
-  .dependsOn(common, utils)
+  .dependsOn(utils, common, extensions)
 
 lazy val `bounded-context` = project
   .in(file("bounded-context"))

@@ -16,7 +16,7 @@ import org.slf4j.{Logger, LoggerFactory}
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
 class GatewayProxy(protected val creationContext: ActionCreationContext, protected val jwtIssuer: JwtIssuer)
-  extends GatewayProxyBase
+    extends GatewayProxyBase
     with Service1Proxy
     with Service2Proxy
     with Service3Proxy

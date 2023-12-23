@@ -2,9 +2,9 @@ package com.example.boundedContext
 
 import com.example.boundedContext.api._
 import com.example.boundedContext.entity._
-import com.example.service3.api.{NoData3Service, NoData3ServiceProvider}
-import com.example.service3.entity.{Service3Entity, Service3EntityProvider}
-import kalix.scalasdk.Kalix
+
+import com.example.service3.{Main => Service3}
+import kalix.scalasdk._
 import org.slf4j.LoggerFactory
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
@@ -17,25 +17,21 @@ object Main {
   private val log = LoggerFactory.getLogger("com.example.boundedContext.Main")
 
   def createKalix(): Kalix = {
-    // The KalixFactory automatically registers any generated Actions, Views or Entities,
-    // and is kept up-to-date with any changes in your protobuf definitions.
-    // If you prefer, you may remove this and manually register these components in a
-    // `Kalix()` instance.
-    KalixFactory
-      .withComponents(
-        new Service1Entity(_),
-        new NoData1View(_),
-        new PingPong(_),
-        new Service1Impl(_),
-        new Service2Impl(_)
-      )
-      .register(Service3EntityProvider(new Service3Entity(_)))
-      .register(NoData3ServiceProvider(new NoData3Service(_)))
+    val service3Builder = Service3.kalixBuilder
 
+    val boundedContextBuilder = KalixBuilder.emptyBuilder
+      .registerProvider(Service1EntityProvider(new Service1Entity(_)))
+      .registerView(new NoData1View(_), NoData1ViewProvider.apply)
+      .registerProvider(PingPongProvider(new PingPong(_)))
+      .registerProvider(Service1ImplProvider(new Service1Impl(_)))
+      .registerProvider(Service2ImplProvider(new Service2Impl(_)))
+      .mergeWith(service3Builder)
+
+    boundedContextBuilder.build
   }
 
   def main(args: Array[String]): Unit = {
-    log.info("starting the Kalix service")
+    log.info("Starting the Kalix service")
     createKalix().start()
   }
 

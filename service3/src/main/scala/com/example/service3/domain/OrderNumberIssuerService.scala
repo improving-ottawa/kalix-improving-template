@@ -8,13 +8,16 @@ import kalix.scalasdk.valueentity.ValueEntityContext
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
 class OrderNumberIssuerService(context: ValueEntityContext) extends AbstractOrderNumberIssuerService {
-  private final val maximumOrderNumber = 99999999L
+  final private val maximumOrderNumber = 99999999L
 
   override def emptyState: OrderNumberIssuerState = OrderNumberIssuerState.defaultInstance
 
-  override def issueNextOrderNumber(state: OrderNumberIssuerState, req: IssueNextOrderNumber): ValueEntity.Effect[NextOrderNumber] = {
+  override def issueNextOrderNumber(
+    state: OrderNumberIssuerState,
+    req: IssueNextOrderNumber
+  ): ValueEntity.Effect[NextOrderNumber] = {
     val nextOrderNumber = issueNextOrderNumber(state)
-    val updatedState = OrderNumberIssuerState(nextOrderNumber)
+    val updatedState    = OrderNumberIssuerState(nextOrderNumber)
 
     effects
       .updateState(updatedState)

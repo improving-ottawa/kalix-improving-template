@@ -1,6 +1,7 @@
 package com.improving.hashing
 
 abstract class HashAlgorithm {
+
   /** The default seed for this hashing algorithm */
   def defaultSeed: Long
 

@@ -1,13 +1,9 @@
 package com.example.service3.domain
 
-import akka.actor.ActorSystem
 import com.example.service3.Main
-import com.example.service3.api.AbandonShoppingCart
-import com.example.service3.api.AddLineItem
-import com.example.service3.api.CheckoutShoppingCart
-import com.example.service3.api.CreateShoppingCart
-import com.example.service3.api.GetShoppingCart
-import com.example.service3.api.RemoveLineItem
+import com.example.service3.api._
+
+import akka.actor.ActorSystem
 import kalix.scalasdk.testkit.KalixTestKit
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
@@ -22,11 +18,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class CartEntityIntegrationSpec
-    extends AnyWordSpec
-    with Matchers
-    with BeforeAndAfterAll
-    with ScalaFutures {
+class CartEntityIntegrationSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
 
   implicit private val patience: PatienceConfig =
     PatienceConfig(Span(5, Seconds), Span(500, Millis))
@@ -49,4 +41,5 @@ class CartEntityIntegrationSpec
     testKit.stop()
     super.afterAll()
   }
+
 }

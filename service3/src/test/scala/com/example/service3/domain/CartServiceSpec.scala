@@ -1,11 +1,6 @@
 package com.example.service3.domain
 
-import com.example.service3.api.AbandonShoppingCart
-import com.example.service3.api.AddLineItem
-import com.example.service3.api.CheckoutShoppingCart
-import com.example.service3.api.CreateShoppingCart
-import com.example.service3.api.GetShoppingCart
-import com.example.service3.api.RemoveLineItem
+import com.example.service3.api._
 import com.example.service3.domain
 import kalix.scalasdk.eventsourcedentity.EventSourcedEntity
 import kalix.scalasdk.testkit.EventSourcedResult

@@ -9,15 +9,15 @@ trait MoneyImpl { self: Money =>
   override def toString: String = f"${currencyCode.getSymbol}$amount%,.02f"
 
   // Mathematical operators
-  @inline final def + (other: Money): Money = Money(currencyCode, amount + other.amount)
-  @inline final def - (other: Money): Money = Money(currencyCode, amount - other.amount)
-  @inline final def * (other: Money): Money = Money(currencyCode, amount * other.amount)
-  @inline final def / (other: Money): Money = Money(currencyCode, amount / other.amount)
+  @inline final def +(other: Money): Money = Money(currencyCode, amount + other.amount)
+  @inline final def -(other: Money): Money = Money(currencyCode, amount - other.amount)
+  @inline final def *(other: Money): Money = Money(currencyCode, amount * other.amount)
+  @inline final def /(other: Money): Money = Money(currencyCode, amount / other.amount)
 
-  @inline final def + (amount: Double): Money = Money(currencyCode, this.amount + amount)
-  @inline final def - (amount: Double): Money = Money(currencyCode, this.amount - amount)
-  @inline final def * (amount: Double): Money = Money(currencyCode, this.amount * amount)
-  @inline final def / (amount: Double): Money = Money(currencyCode, this.amount / amount)
+  @inline final def +(amount: Double): Money = Money(currencyCode, this.amount + amount)
+  @inline final def -(amount: Double): Money = Money(currencyCode, this.amount - amount)
+  @inline final def *(amount: Double): Money = Money(currencyCode, this.amount * amount)
+  @inline final def /(amount: Double): Money = Money(currencyCode, this.amount / amount)
 
 }
 

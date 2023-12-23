@@ -7,13 +7,13 @@ private[hashing] object HashUtils {
 
   @inline final def readInt64(data: Array[Byte], index: Int): Long = {
     (data(index).toLong & 0xff) |
-      ((data(index + 1).toLong & 0xff) << 8) |
-      ((data(index + 2).toLong & 0xff) << 16) |
-      ((data(index + 3).toLong & 0xff) << 24) |
-      ((data(index + 4).toLong & 0xff) << 32) |
-      ((data(index + 5).toLong & 0xff) << 40) |
-      ((data(index + 6).toLong & 0xff) << 48) |
-      ((data(index + 7).toLong & 0xff) << 56)
+    ((data(index + 1).toLong & 0xff) << 8) |
+    ((data(index + 2).toLong & 0xff) << 16) |
+    ((data(index + 3).toLong & 0xff) << 24) |
+    ((data(index + 4).toLong & 0xff) << 32) |
+    ((data(index + 5).toLong & 0xff) << 40) |
+    ((data(index + 6).toLong & 0xff) << 48) |
+    ((data(index + 7).toLong & 0xff) << 56)
   }
 
   @inline final def readInt64Partial(data: Array[Byte], index: Int): Long = {

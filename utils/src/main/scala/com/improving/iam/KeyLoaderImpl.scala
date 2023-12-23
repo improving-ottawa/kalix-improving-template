@@ -60,13 +60,19 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
   /*
    * Read public/private keys from specific file types
    */
-  final protected def readDERPrivateKey(source: InputStream, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
+  final protected def readDERPrivateKey(
+    source: InputStream,
+    password: Password
+  ): Either[Throwable, PKCS8EncodedKeySpec] =
     readStreamBytesThen(source)(extractDERPrivateKey(_, password)).toEither
 
   final protected def readDERPublicKey(source: InputStream): Either[Throwable, X509EncodedKeySpec] =
     readStreamBytesThen(source)(extractDERPublicKey).toEither
 
-  final protected def readPEMPrivateKey(source: InputStream, password: Password): Either[Throwable, PKCS8EncodedKeySpec] =
+  final protected def readPEMPrivateKey(
+    source: InputStream,
+    password: Password
+  ): Either[Throwable, PKCS8EncodedKeySpec] =
     streamReaderThen(source)(extractPEMPrivateKey(_, password)).toEither
 
   final protected def readPEMPublicKey(source: InputStream): Either[Throwable, X509EncodedKeySpec] =
@@ -81,8 +87,8 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
       usingResource(source) { inputStream =>
         val readFileTry = Try {
           val buffer = new Array[Byte](4096)
-          var read = inputStream.read(buffer)
-          while(read != 0) {
+          var read   = inputStream.read(buffer)
+          while (read != 0) {
             baos.write(buffer, 0, read)
             read = inputStream.read(buffer)
           }
@@ -95,9 +101,7 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
     }
 
   final private def streamReaderThen[A](stream: InputStream)(thenF: Reader => Try[A]): Try[A] =
-    usingResource(stream)(inputStream =>
-      usingResource(new InputStreamReader(inputStream))(thenF)
-    )
+    usingResource(stream)(inputStream => usingResource(new InputStreamReader(inputStream))(thenF))
 
   final private def extractDERPrivateKey(fileBytes: Array[Byte], password: Password) =
     Try {
@@ -166,8 +170,8 @@ abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>
   final private def getFileStreamFromPath(path: String) =
     if (path.startsWith("resource:"))
       Try {
-        val resourcePath   = path.stripPrefix("resource:")
-        val classResPath   = if (resourcePath.startsWith("/")) resourcePath else "/" + resourcePath
+        val resourcePath = path.stripPrefix("resource:")
+        val classResPath = if (resourcePath.startsWith("/")) resourcePath else "/" + resourcePath
 
         Try(getClass.getResourceAsStream(classResPath))
           .recoverWith(error =>

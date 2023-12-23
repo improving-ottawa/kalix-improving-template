@@ -20,7 +20,7 @@ class OrdersService(creationContext: ActionCreationContext) extends AbstractOrde
       for {
         nextOrdNumber <- components.orderNumbersService.getNextOrderNumber(Empty.defaultInstance).execute()
         shoppingCart  <- components.cartService.getCart(GetShoppingCart(req.cartId)).execute()
-        orderNum = nextOrdNumber.orderNumber
+        orderNum       = nextOrdNumber.orderNumber
         order         <- createOrderAsync(shoppingCart, orderNum)
         _             <- components.cartService.completeCheckout(CompleteCheckout(req.cartId)).execute()
       } yield {

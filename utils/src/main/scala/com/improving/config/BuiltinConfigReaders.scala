@@ -43,9 +43,9 @@ abstract private[config] class BuiltinConfigReaders { self: readers.type =>
   }
 
   final val getKeyedConfigMap = pathInputReader { path => cfg =>
-    val cfgObject = cfg.getObject(path).asScala
-    val cfgMapView = cfgObject.view.collect {
-      case (key, cfgObject: ConfigObject) => (key, cfgObject.toConfig)
+    val cfgObject  = cfg.getObject(path).asScala
+    val cfgMapView = cfgObject.view.collect { case (key, cfgObject: ConfigObject) =>
+      (key, cfgObject.toConfig)
     }
     cfgMapView.toMap
   }

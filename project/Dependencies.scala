@@ -41,6 +41,7 @@ object Dependencies {
     val lang3           = "3.13.0"
     val scodec          = "1.1.38"
     val scopt           = "4.1.0"
+    val shapeless       = "2.3.10"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
     val lightbendGrpc   = "2.1.6"
@@ -85,6 +86,7 @@ object Dependencies {
   lazy val slf4j      = "org.slf4j"              % "slf4j-nop"       % Versions.slf4j
   lazy val slf4jCats  = "org.typelevel"         %% "log4cats-slf4j"  % Versions.slf4jCats
   lazy val scodecBits = "org.scodec"            %% "scodec-bits"     % Versions.scodec
+  lazy val shapeless  = "com.chuusai"           %% "shapeless"       % Versions.shapeless
 
   lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 

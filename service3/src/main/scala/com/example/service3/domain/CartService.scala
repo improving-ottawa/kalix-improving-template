@@ -33,7 +33,10 @@ class CartService(context: EventSourcedEntityContext) extends AbstractCartServic
   override def startCheckout(currentState: Cart, req: StartCheckout): EventSourcedEntity.Effect[CheckoutStarted] =
     effects.error("The command handler for `StartCheckout` is not implemented, yet")
 
-  override def completeCheckout(currentState: Cart, req: CompleteCheckout): EventSourcedEntity.Effect[CheckoutCompleted] =
+  override def completeCheckout(
+    currentState: Cart,
+    req: CompleteCheckout
+  ): EventSourcedEntity.Effect[CheckoutCompleted] =
     effects.error("The command handler for `CompleteCheckout` is not implemented, yet")
 
   /* Event Handlers */

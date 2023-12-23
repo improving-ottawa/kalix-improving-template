@@ -34,7 +34,8 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
   // instructions in the corresponding `Test-Setup-Instructions.md`
   private val keycloakProvider: OIDCClientConfig = {
     val baseKeysPath = "com.example.gateway.identity.providers.local_keycloak"
-    val config = ConfigLoader.loadOptionalFileSystemConfig("gateway/src/user-local.conf", includeDefaultConfig = false)
+    val config       = ConfigLoader
+      .loadOptionalFileSystemConfig("gateway/src/user-local.conf", includeDefaultConfig = false)
       .fold(throw _, identity)
 
     if (config.hasPath(baseKeysPath)) {
@@ -50,7 +51,8 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
 
   // DO NOT change these
   private val localPrefix: String = "http://localhost:9000"
-  private val callbackUri =
+
+  private val callbackUri         =
     if (testingFromBrowser) "http://localhost:3000/oidc/callback"
     else s"$localPrefix/oidc/callback"
 
@@ -161,7 +163,7 @@ sealed abstract class OIDCIdentityTest { self: OIDCIdentityTest.type =>
   private val tryCreateGateway: IO[KalixService] = IO.delay {
     log.info("Creating `gateway` service Kalix instance...")
     val kalixProxyPort = Uri.unsafeParse(localPrefix).authority.flatMap(_.port).getOrElse(9000)
-    val kalix = com.example.gateway.Main.createKalix(keyLoaderConfig, identityServiceConfig, jwtIssuerConfig)
+    val kalix          = com.example.gateway.Main.createKalix(keyLoaderConfig, identityServiceConfig, jwtIssuerConfig)
     KalixService(
       serviceName = "gateway",
       kalix,

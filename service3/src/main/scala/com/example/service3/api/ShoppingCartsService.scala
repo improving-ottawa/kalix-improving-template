@@ -26,7 +26,9 @@ class ShoppingCartsService(creationContext: ActionCreationContext) extends Abstr
 
   override def createCart(createShoppingCart: CreateShoppingCart): Action.Effect[ShoppingCartId] =
     effects.asyncReply(
-      components.cartService.createCart(createShoppingCart).execute()
+      components.cartService
+        .createCart(createShoppingCart)
+        .execute()
         .map { created =>
           // Shopping carts are automatically "abandoned" after 30 minutes"
           timers.startSingleTimer(
@@ -41,25 +43,33 @@ class ShoppingCartsService(creationContext: ActionCreationContext) extends Abstr
 
   override def addItemToCart(request: AddLineItem): Action.Effect[Empty] =
     effects.asyncReply(
-      components.cartService.addLineItem(request).execute()
+      components.cartService
+        .addLineItem(request)
+        .execute()
         .map(_ => renewAbandonedTimer(request.cartId))
     )
 
   override def removeItemFromCart(request: RemoveLineItem): Action.Effect[Empty] =
     effects.asyncReply(
-      components.cartService.removeLineItem(request).execute()
+      components.cartService
+        .removeLineItem(request)
+        .execute()
         .map(_ => renewAbandonedTimer(request.cartId))
     )
 
   override def startCartCheckout(request: StartCheckout): Action.Effect[Empty] =
     effects.asyncReply(
-      components.cartService.startCheckout(request).execute()
+      components.cartService
+        .startCheckout(request)
+        .execute()
         .map(_ => renewAbandonedTimer(request.cartId))
     )
 
   override def completeCartCheckout(request: CompleteCheckout): Action.Effect[Empty] =
     effects.asyncReply(
-      components.cartService.completeCheckout(request).execute()
+      components.cartService
+        .completeCheckout(request)
+        .execute()
         .map { _ =>
           timers.cancel(s"${request.cartId}-cart")
           Empty.defaultInstance
