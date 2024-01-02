@@ -16,3 +16,16 @@ message LineItem {
     (validate.rules).uint32.lte = 100
   ];
 }
+
+message CartLineItem {
+  common.domain.ProductInCart product = 1 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  uint32 quantity = 2 [
+    (validate.rules).uint32.gt = 0,
+    (validate.rules).uint32.lte = 100
+  ];
+}

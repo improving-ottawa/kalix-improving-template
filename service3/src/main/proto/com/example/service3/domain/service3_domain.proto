@@ -14,10 +14,6 @@ option (scalapb.options) = {
 
 // Records
 
-message Product {
-
-}
-
 message DoNothingCommand3 {
     DoNothing3 nothing = 1;
 }

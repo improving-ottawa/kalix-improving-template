@@ -1,7 +1,6 @@
 package com.improving.extensions.email
 
-import com.example.common.domain.address.Address
-import com.example.common.common.domain._
+import com.example.common.domain._
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers

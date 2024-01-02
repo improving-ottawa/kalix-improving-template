@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package com.example.service3.domain;
 
+import "com/example/common/money.proto";
 import "com/example/common/timestamp.proto";
 import "com/example/common/domain/line_item.proto";
 import "google/protobuf/empty.proto";
@@ -93,4 +94,29 @@ message Cart {
   bool checkout_started = 4;
 
   bool cart_abandoned = 5;
+
+  common.Timestamp when_checkout_started = 6;
+
+  bool checkout_completed = 7;
+}
+
+// The shopping cart, with additional product details
+message CartDetails {
+  string user_id = 1;
+
+  repeated common.domain.CartLineItem cart_items = 2 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
+
+  // Reserved for shipping fee
+  reserved 3;
+
+  // Reserved for tax(es)
+  reserved 4;
+
+  // Total price
+  common.Money cart_total = 5 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
 }

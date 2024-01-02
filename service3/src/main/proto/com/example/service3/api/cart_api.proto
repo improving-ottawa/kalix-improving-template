@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package com.example.service3.api;
 
+import "com/example/common/money.proto";
 import "com/example/common/timestamp.proto";
 import "com/example/common/domain/line_item.proto";
 import "com/example/service3/domain/cart_domain.proto";
@@ -64,13 +65,15 @@ service ShoppingCarts {
 
   rpc GetCart(GetShoppingCart) returns (domain.Cart);
 
+  rpc GetCartDetails(GetShoppingCart) returns (domain.CartDetails);
+
   rpc CreateCart(CreateShoppingCart) returns (ShoppingCartId);
 
   rpc AddItemToCart(AddLineItem) returns (google.protobuf.Empty);
 
   rpc RemoveItemFromCart(RemoveLineItem) returns (google.protobuf.Empty);
 
-  rpc StartCartCheckout(StartCheckout) returns (google.protobuf.Empty);
+  rpc StartCartCheckout(StartCheckout) returns (domain.CartDetails);
 
   rpc CompleteCartCheckout(CompleteCheckout) returns (google.protobuf.Empty);
 }

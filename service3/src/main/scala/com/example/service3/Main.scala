@@ -21,12 +21,13 @@ object Main {
     KalixBuilder.emptyBuilder
       .autoWire[CartService]
       .autoWire[OrderNumberIssuerService]
-      .autoWire[Service3Entity]
       .autoWire[OrderNumbersService]
-      .autoWire[PingPong]
       .autoWire[ProductsService]
       .autoWire[ShoppingCartsService]
       .autoWire[OrderService]
+      .autoWire[OrdersService]
+      .autoWire[PingPong]
+      .autoWire[Service3Entity]
       .registerView(new NoData3Service(_), NoData3ServiceProvider.apply)
 
   }

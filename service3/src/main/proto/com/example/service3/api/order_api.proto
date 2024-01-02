@@ -54,7 +54,12 @@ message OrderConfirmation {
 }
 
 message OrderById {
-  string order_id = 1 [(validate.rules).string.uuid = true];
+
+  string order_id = 1 [
+    (validate.rules).string.uuid = true,
+    (kalix.field).entity_key = true
+  ];
+
 }
 
 message GetOrderByNumber {

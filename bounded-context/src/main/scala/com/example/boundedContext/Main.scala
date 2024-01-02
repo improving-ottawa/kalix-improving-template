@@ -16,19 +16,15 @@ object Main {
 
   private val log = LoggerFactory.getLogger("com.example.boundedContext.Main")
 
-  def createKalix(): Kalix = {
-    val service3Builder = Service3.kalixBuilder
-
-    val boundedContextBuilder = KalixBuilder.emptyBuilder
+  def createKalix(): Kalix =
+    KalixBuilder.emptyBuilder
       .registerProvider(Service1EntityProvider(new Service1Entity(_)))
       .registerView(new NoData1View(_), NoData1ViewProvider.apply)
       .registerProvider(PingPongProvider(new PingPong(_)))
       .registerProvider(Service1ImplProvider(new Service1Impl(_)))
       .registerProvider(Service2ImplProvider(new Service2Impl(_)))
-      .mergeWith(service3Builder)
-
-    boundedContextBuilder.build
-  }
+      .mergeWith(Service3.kalixBuilder)
+      .build
 
   def main(args: Array[String]): Unit = {
     log.info("Starting the Kalix service")
