@@ -1,6 +1,7 @@
 package com.example.gateway
 
 import com.improving.iam._
+import com.improving.config._
 import com.improving.extensions.oidc._
 import com.improving.testkit._
 import com.improving.utils._
@@ -26,6 +27,29 @@ import scala.concurrent.duration._
 
 /** Test configuration */
 object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
+  // Change this if you are (`Some("...")`) or are not (`None`) running with a local CORS proxy
+  private val localProxy: Option[String] = Some("http://localhost:8010")
+
+  // We test against a local instance of RedHat's Keycloak identity server. It must be setup according to the
+  // instructions in the corresponding `Test-Setup-Instructions.md`
+  private val keycloakProvider: OIDCClientConfig = {
+    val baseKeysPath = "com.example.gateway.identity.providers.local_keycloak"
+    val config = ConfigLoader.loadOptionalFileSystemConfig("gateway/src/user-local.conf", includeDefaultConfig = false)
+      .fold(throw _, identity)
+
+    if (config.hasPath(baseKeysPath)) {
+      OIDCClientConfig(
+        clientId = config.getString(baseKeysPath + ".client-id"),
+        clientSecret = config.getString(baseKeysPath + ".client-secret"),
+        discoveryUri = config.getString(baseKeysPath + ".discovery-uri")
+      )
+    } else {
+      throw new RuntimeException("You have not configured your `user-local.conf`! Follow the setup instructions!")
+    }
+  }
+
+  // DO NOT change this!
+  private val localPrefix: String = localProxy.getOrElse("http://localhost:9000")
 
   // The `KeyLoader` configuration, which will load the test ECDSA public/private keypair contained in `resources`.
   // Should not need to change this!
@@ -36,29 +60,16 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
     privateKeyPassword = Some("test")
   )
 
-  // We test against a local instance of RedHat's Keycloak identity server. It must be setup according to the
-  // instructions in the corresponding `Test-Setup-Instructions.md`
-  private val keycloakProvider = OIDCClientConfig(
-    // Should match what was set when configuring Keycloak (if instructions were followed, it should be `test-client`)
-    clientId = "test-client",
-    // Must be set after configuring Keycloak
-    clientSecret = "js0fqM4oflEMaXgqcoWimaNbUAWpGYKD",
-    // This is fixed if you follow the Keycloak instructions in the `Test-Setup-Instructions.md`.
-    // Otherwise you will have to adapt the Docker port and/or `realm` to match your docker instance and
-    // configured Keycloak realm name.
-    discoveryUri = "http://localhost:8080/realms/master/.well-known/openid-configuration",
-  )
-
   private val identityServiceConfig = OIDCIdentityServiceConfig(
     // Assuming no changes to `docker-compose.yml`
-    providerCallback = Uri.unsafeParse("http://localhost:9000/oidc/callback"),
+    providerCallback = Uri.unsafeParse(s"$localPrefix/oidc/callback"),
     // Single registered OIDC provider for local Keycloak running in Docker
     providers = Map("local_keycloak" -> keycloakProvider)
   )
 
   private val jwtIssuerConfig = JwtIssuerConfig(
     // Note: this will need to change if you change your Kalix proxy configuration!
-    tokenIssuerUrl = "http://localhost:9000",
+    tokenIssuerUrl = localPrefix,
     tokenValidDuration = FiniteDuration(1, "hour"),
     defaultUserRole = "Test"
   )
@@ -95,8 +106,8 @@ sealed abstract class OIDCIdentityTest { self: OIDCIdentityTest.type =>
     val keycloakEndpointUri = Uri.unsafeParse(keycloakProvider.discoveryUri).withPath("")
 
     val beginAuthUri = {
-      val base        = Uri.unsafeParse("http://localhost:9000")
-      val redirectUri = base.withPath("oidc", "check")
+      val base        = Uri.unsafeParse(localPrefix)
+      val redirectUri = base.addPath("oidc", "check")
       base
         .withPath("oidc", "auth")
         .addQuerySegment(Uri.QuerySegment.KeyValue("provider_id", identityServiceConfig.providers.head._1))
