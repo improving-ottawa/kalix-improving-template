@@ -12,5 +12,6 @@ application ExampleApp is {
   include "pages/fragments/checkoutStepper"
 }
 
-include "userStories/userDefinitions"
-include "userStories/createUser"
+include "epics/userDefinitions"
+include "epics/createUser"
+include "epics/checkout"

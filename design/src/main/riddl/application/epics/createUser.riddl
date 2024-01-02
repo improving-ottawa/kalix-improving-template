@@ -1,12 +1,10 @@
-
-user AppUser is "Somebody who wants to use the application"
-
 epic CreateUserEpic {
   case CreateUserManually {
     user AnonUser wants to "sign up as a registered user in the application" so "they can interact with the demo application"
     step take form NewUserForm from user AnonUser,
-    step focus user AuthedUser on group PricingPage
-  } // FIXME: add this before step focus: step send SignupParameters to SignupGateway,
+    step send command CreateUser from application ExampleApp to context ExampleAppGateway,
+    step focus user AuthedUser on page PricingPage
+  }
 
   case CreateUserFacebook { ??? }
   case CreateUserGitHub { ??? }
