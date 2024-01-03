@@ -1,7 +1,7 @@
 lazy val appName: String = "example"
 ThisBuild / organization := s"com.$appName"
 
-Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / onChangedBuildSource        := ReloadOnSourceChanges
 ThisBuild / Test / parallelExecution := false
 
 name := "kalix-improving-template"
