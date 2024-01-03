@@ -1,8 +1,11 @@
 lazy val appName: String = "example"
 ThisBuild / organization := s"com.$appName"
 
-Global / onChangedBuildSource        := ReloadOnSourceChanges
-ThisBuild / Test / parallelExecution := false
+Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / parallelExecution    := false // Because of scoverage and how terrible it is
+
+// Exclude specific files from scoverage
+ThisBuild / coverageExcludedFiles := """.*/hashing/.*;.*/akka-grpc/.*;.*/src_managed/.*;.*/kalix/scalasdk/.*"""
 
 name := "kalix-improving-template"
 
@@ -58,6 +61,7 @@ lazy val utils: Project = project
   .configure(Testing.scalaTest)
   .configure(Config.withDeps(Dependencies.kalixScalaSdk, Dependencies.scodecBits, Dependencies.shapeless))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
+  .settings(coverageEnabled := false)
 
 lazy val common: Project = project
   .in(file("common"))
