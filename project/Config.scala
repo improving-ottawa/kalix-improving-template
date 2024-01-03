@@ -64,7 +64,6 @@ object Config {
 
     lazy val scala_2_options: Seq[String] =
       Seq(
-        "-deprecation",
         "-feature",
         // "-new-syntax",
         "-release:11",
@@ -74,6 +73,7 @@ object Config {
         // "-explain",
         // "-explain-types",
         // "-Werror",
+        "-Wconf:src=src_managed/.*:s,src=akka-grpc/.*:s",
       )
 
     lazy val java_options: Seq[String] = Seq(
@@ -323,14 +323,14 @@ object Config {
         )
         .settings(
           exportJars          := true,
+          run / fork          := true,
+          Global / cancelable := false, // ctrl-c
           run / envVars += ("HOST", "0.0.0.0"),
           // needed for the proxy to access the user function on all platforms
           run / javaOptions ++= Seq(
             "-Dkalix.user-function-interface=0.0.0.0",
             "-Dlogback.configurationFile=logback-dev-mode.xml"
           ),
-          run / fork          := true,
-          Global / cancelable := false, // ctrl-c
           libraryDependencies ++= (Dependencies.akkaDepsPackage ++
             Dependencies.akkaKalixServiceDepsPackage ++
             Dependencies.scalaPbGoogleCommonProtos ++
@@ -340,7 +340,6 @@ object Config {
             Dependencies.integrationTestDependencies),
           Compile / scalacOptions ++= Seq(
             "-target:11",
-            "-deprecation",
             "-feature",
             "-unchecked",
             "-Xlog-reflective-calls",
