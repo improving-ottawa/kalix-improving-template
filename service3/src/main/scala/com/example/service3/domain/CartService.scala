@@ -87,8 +87,7 @@ class CartService(context: EventSourcedEntityContext) extends AbstractCartServic
   override def lineItemRemoved(currentState: Cart, event: LineItemRemoved): Cart = {
     val remItem = event.item
     currentState.copy(
-      items =
-        currentState.items.filterNot(li => li.productSku == remItem.productSku && li.quantity == remItem.quantity)
+      items = currentState.items.filterNot(li => li.productSku == remItem.productSku && li.quantity == remItem.quantity)
     )
   }
 

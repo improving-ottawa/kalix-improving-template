@@ -162,13 +162,13 @@ object Dependencies {
 
   lazy val integrationTestDependencies: Seq[ModuleID] = Seq(
     testContainers,
-    "com.typesafe.akka"  %% "akka-testkit"                                  % akka      % Test,
-    "com.typesafe.akka"  %% "akka-actor-testkit-typed"                      % akka      % Test,
-    "com.typesafe.akka"  %% "akka-stream"                                   % akka      % Test,
+    "com.typesafe.akka" %% "akka-testkit"             % akka      % Test,
+    "com.typesafe.akka" %% "akka-actor-testkit-typed" % akka      % Test,
+    "com.typesafe.akka" %% "akka-stream"              % akka      % Test,
     // "com.lightbend.akka" %% "akka-stream-alpakka-google-cloud-pub-sub-grpc" % alpakka   % Test,
-    "com.typesafe.akka"  %% "akka-stream-kafka"                             % akkaKafka % Test,
-    "com.typesafe.akka"  %% "akka-http"                                     % akkaHttp  % Test,
-    "com.typesafe.akka"  %% "akka-http2-support"                            % akkaHttp  % Test
+    "com.typesafe.akka" %% "akka-stream-kafka"        % akkaKafka % Test,
+    "com.typesafe.akka" %% "akka-http"                % akkaHttp  % Test,
+    "com.typesafe.akka" %% "akka-http2-support"       % akkaHttp  % Test
   )
 
   lazy val testContainers = "org.testcontainers" % "testcontainers" % testcontainers % Test
@@ -195,7 +195,7 @@ object Dependencies {
   )
 
   val scalaPbGoogleCommonProtos: Seq[ModuleID] = Seq(
-    google_grpc intransitive()
+    google_grpc.intransitive()
   )
 
   val iamDepsPackage: Seq[ModuleID] = Seq(
@@ -203,8 +203,8 @@ object Dependencies {
   ) ++ jwtSupportPackage
 
   val cachingDependencies: Seq[ModuleID] = Seq(
-    "com.github.cb372" %% "scalacache-core"         % scalaCache,
-    "com.github.cb372" %% "scalacache-caffeine"     % scalaCache,
+    "com.github.cb372" %% "scalacache-core"     % scalaCache,
+    "com.github.cb372" %% "scalacache-caffeine" % scalaCache,
   )
 
 }

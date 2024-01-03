@@ -186,12 +186,12 @@ object Config {
     proj
       .enablePlugins(DockerPlugin)
       .settings(
-        dockerBaseImage      := "docker.io/library/adoptopenjdk:11-jre-hotspot",
-        dockerUsername       := sys.props.get("docker.username"),
-        dockerRepository     := sys.props.get("docker.registry"),
+        dockerBaseImage    := "docker.io/library/adoptopenjdk:11-jre-hotspot",
+        dockerUsername     := sys.props.get("docker.username"),
+        dockerRepository   := sys.props.get("docker.registry"),
         dockerUpdateLatest := true,
         dockerExposedPorts ++= Seq(8080),
-        dockerBuildCommand   := {
+        dockerBuildCommand := {
           val arch = sys.props("os.arch")
           if (arch != "amd64" && !arch.contains("x86")) {
             // use buildx with platform to build supported amd64 images on other CPU architectures
@@ -255,10 +255,10 @@ object Config {
           resolvers += "Sonatype OSS Release Repository".at("https://oss.sonatype.org/content/repositories/releases/"),
           libraryDependencies ++=
             akkaDepsPackage ++
-            testingDeps ++
-            bouncyCastleCryptoPackage ++
-            functionalDepsPackage ++
-            httpDepsPackage
+              testingDeps ++
+              bouncyCastleCryptoPackage ++
+              functionalDepsPackage ++
+              httpDepsPackage
         )
 
     // Extends `basicLibrary` to include the ability to generate code based on protobuf definitions
@@ -279,7 +279,8 @@ object Config {
 
     // Defines a Kalix component library, which is also a `AsProjectType.basicLibrary`, but customized for Kalix
     def library(proj: Project): Project = {
-      AsProjectType.basicLibrary(proj)
+      AsProjectType
+        .basicLibrary(proj)
         .enablePlugins(KalixPlugin)
         .configure(Config.ScalaPB.protoGenValidate)
         .settings(
@@ -295,7 +296,8 @@ object Config {
     }
 
     def service(proj: Project): Project = {
-      AsProjectType.basicLibrary(proj)
+      AsProjectType
+        .basicLibrary(proj)
         .enablePlugins(KalixPlugin, JavaAppPackaging, DockerPlugin)
         .configure(Config.ScalaPB.protoGenValidate)
         .configure(Config.withDocker)
@@ -320,7 +322,7 @@ object Config {
           }
         )
         .settings(
-          exportJars := true,
+          exportJars          := true,
           run / envVars += ("HOST", "0.0.0.0"),
           // needed for the proxy to access the user function on all platforms
           run / javaOptions ++= Seq(
@@ -335,8 +337,7 @@ object Config {
             Dependencies.kalixScalaPbDependencies ++
             Dependencies.grpc ++
             Dependencies.loggingDependencies ++
-            Dependencies.integrationTestDependencies
-          ),
+            Dependencies.integrationTestDependencies),
           Compile / scalacOptions ++= Seq(
             "-target:11",
             "-deprecation",

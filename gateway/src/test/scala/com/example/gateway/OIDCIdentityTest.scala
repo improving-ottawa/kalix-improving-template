@@ -52,7 +52,7 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
   // DO NOT change these
   private val localPrefix: String = "http://localhost:9000"
 
-  private val callbackUri         =
+  private val callbackUri =
     if (testingFromBrowser) "http://localhost:3000/oidc/callback"
     else s"$localPrefix/oidc/callback"
 

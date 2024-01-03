@@ -12,7 +12,7 @@ import java.util.Currency
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
 private object AllProducts {
-  private final val USD = Currency.getInstance("USD")
+  final private val USD = Currency.getInstance("USD")
 
   final val catalog = List[Product](
     // (Demo) Product 1
@@ -53,8 +53,8 @@ private object AllProducts {
       name = "QuantumSound Wireless Earbuds",
       price = Money(USD, 99.99),
       shortDescription =
-      """Experience superior wireless audio with QuantumSound Earbuds. These sleek earbuds offer a comfortable fit,
-        |touch controls, and premium sound quality for on-the-go listening pleasure.""".stripMargin,
+        """Experience superior wireless audio with QuantumSound Earbuds. These sleek earbuds offer a comfortable fit,
+          |touch controls, and premium sound quality for on-the-go listening pleasure.""".stripMargin,
       description =
         """Immerse yourself in premium audio with QuantumSound Wireless Earbuds. These sleek and lightweight earbuds
           |deliver an unparalleled listening experience, combining crisp highs and deep bass for a full-range sound
@@ -65,6 +65,7 @@ private object AllProducts {
           |excellence.""".stripMargin
     )
   )
+
 }
 
 class ProductsService(creationContext: ActionCreationContext) extends AbstractProductsService {
@@ -73,7 +74,8 @@ class ProductsService(creationContext: ActionCreationContext) extends AbstractPr
     effects.reply(ProductList(AllProducts.catalog))
 
   def getProductBySKU(req: SingleProductRequest): Action.Effect[Product] =
-    AllProducts.catalog.find(_.sku == req.productSku)
+    AllProducts.catalog
+      .find(_.sku == req.productSku)
       .map(effects.reply(_))
       .getOrElse(effects.error("No product found matching the provided SKU.", io.grpc.Status.Code.NOT_FOUND))
 

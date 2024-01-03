@@ -9,13 +9,9 @@ import kalix.scalasdk.action.Action
 trait OrderProxy extends GatewayProxyBase with AuthenticatedAction with AuthorizedAction {
 
   def createOrderFromCart(request: OrderFromCart): Action.Effect[OrderConfirmation] =
-    authenticatedEffect(_ =>
-      effects.asyncReply(ordersService.createOrderFromCart(request))
-    )
+    authenticatedEffect(_ => effects.asyncReply(ordersService.createOrderFromCart(request)))
 
   def getOrderById(request: OrderById): Action.Effect[Order] =
-    authenticatedEffect(_ =>
-      effects.asyncReply(ordersService.getOrderById(request))
-    )
+    authenticatedEffect(_ => effects.asyncReply(ordersService.getOrderById(request)))
 
 }
