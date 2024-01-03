@@ -67,15 +67,14 @@ final class BloomFilter[@specialized A] private[utils] (
     val bv    = hashBits.toByteVector
     while (index < bv.length) {
       val b = bv(index)
-      acc +=
-        (b >> 0 & 1) +
-          (b >> 1 & 1) +
-          (b >> 2 & 1) +
-          (b >> 3 & 1) +
-          (b >> 4 & 1) +
-          (b >> 5 & 1) +
-          (b >> 6 & 1) +
-          (b >> 7 & 1)
+      acc += (b >> 0 & 1) +
+        (b >> 1 & 1) +
+        (b >> 2 & 1) +
+        (b >> 3 & 1) +
+        (b >> 4 & 1) +
+        (b >> 5 & 1) +
+        (b >> 6 & 1) +
+        (b >> 7 & 1)
 
       index += 1
     }

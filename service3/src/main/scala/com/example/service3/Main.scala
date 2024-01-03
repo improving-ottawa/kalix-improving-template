@@ -13,11 +13,9 @@ import org.slf4j.LoggerFactory
 // or delete it so it is regenerated as needed.
 
 object Main {
-  import AutoWireTypes.ContextFactory._
-
   private val log = LoggerFactory.getLogger("com.example.service3.Main")
 
-  lazy val kalixBuilder = {
+  lazy val kalixBuilder =
     KalixBuilder.emptyBuilder
       .autoWire[CartService]
       .autoWire[OrderNumberIssuerService]
@@ -29,8 +27,6 @@ object Main {
       .autoWire[PingPong]
       .autoWire[Service3Entity]
       .registerView(new NoData3Service(_), NoData3ServiceProvider.apply)
-
-  }
 
   def createKalix(): Kalix = kalixBuilder.build
 
