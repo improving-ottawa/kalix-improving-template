@@ -1,0 +1,18 @@
+epic CheckoutEpic {
+  case NavigateCheckoutStepperToShippingDetails is {
+    user AuthedUser wants to "change the active step in the stepper" so "they can visit previous pages in the checkout flow"
+    step "from user AuthedUser" "clicks on" "ShipStep",
+    step focus user AuthedUser on page ShippingAddressPage 
+    /* step change ActiveStep to SHIP_STEP */
+  }
+  case NavigateContinueShoppingLink is {???}
+  case UseShippingAddressForBillingAddress is {???}
+  case NavigateBack is {???}
+  case EditShippingInfo is {???}
+  case EditPaymentInfo is {???}
+  case UserProvidesShippingInformation is {???}
+  case UserProvidesBillingInformation is {???}
+  case UserPlacesOrder is {???}
+  case UserReceivesOrderConfirmation is {???}
+}
+

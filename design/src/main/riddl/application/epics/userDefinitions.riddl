@@ -1,0 +1,3 @@
+user AnonUser is "Somebody who wants to use the application"
+user AuthedUser is "A logged in user of the app"
+user SystemUser is "The application itself"

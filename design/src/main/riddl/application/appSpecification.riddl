@@ -1,4 +1,4 @@
-application exampleApp is {
+application ExampleApp is {
   include "pages/blogEntry"
   include "pages/blogHome"
   include "pages/dashboard"
@@ -12,4 +12,6 @@ application exampleApp is {
   include "pages/fragments/checkoutStepper"
 }
 
-include "userStories/createUser"
+include "epics/userDefinitions"
+include "epics/createUser"
+include "epics/checkout"

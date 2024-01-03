@@ -1,0 +1,6 @@
+epic LoginUser is {
+  story ManualLogin is {???}
+  story FacebookLogin is {???}
+  story GoogleLogin is {???}
+  story GitHubLogin is {???}
+}
