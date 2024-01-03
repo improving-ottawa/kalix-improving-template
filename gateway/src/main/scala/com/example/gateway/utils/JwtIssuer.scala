@@ -71,10 +71,6 @@ object JwtIssuer {
 
 final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: AlgorithmWithKeys) {
   private val authTokenService = AuthTokenService(algorithmWithKeys)
-  private val jwtCookieDomain = Uri.unsafeParse(config.tokenIssuerUrl)
-    .authority
-    .map(_.host)
-    .getOrElse("localhost")
 
   private val jwtCookieDomain = Uri
     .unsafeParse(config.tokenIssuerUrl)

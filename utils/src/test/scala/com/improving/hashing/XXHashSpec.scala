@@ -12,8 +12,8 @@ class XXHashSpec extends AnyWordSpec with Matchers {
 
   private def timeHashBlock(block: Array[Byte]): (Duration, Long) = {
     val start = System.nanoTime()
-    val hash = XXHash.hashByteArray(block)
-    val end = System.nanoTime()
+    val hash  = XXHash.hashByteArray(block)
+    val end   = System.nanoTime()
 
     val elapsed = Duration.ofNanos(end - start)
     (elapsed, hash)
@@ -25,7 +25,7 @@ class XXHashSpec extends AnyWordSpec with Matchers {
 
       // 64MB block of random data
       val blockSizeMB = 64
-      val largeBlock = Array.ofDim[Byte](blockSizeMB * 1024 * 1024)
+      val largeBlock  = Array.ofDim[Byte](blockSizeMB * 1024 * 1024)
       secureRng.nextBytes(largeBlock)
 
       // Warm-up
@@ -46,7 +46,7 @@ class XXHashSpec extends AnyWordSpec with Matchers {
 
       // Calculate percentiles/avg
       val avgThrpt = thrptSamples.sum / 100.0
-      val ordered = thrptSamples.sorted
+      val ordered  = thrptSamples.sorted
 
       info(f"XXHash (5th):  ${ordered(4)}%,.03f MB/sec")
       info(f"XXHash (Med):  ${ordered(49)}%,.03f MB/sec")
@@ -59,13 +59,13 @@ class XXHashSpec extends AnyWordSpec with Matchers {
     "be very sensitive to input data" in {
       // 128MB block of random data
       val blockSizeMB = 128
-      val largeBlock = Array.ofDim[Byte](blockSizeMB * 1024 * 1024)
+      val largeBlock  = Array.ofDim[Byte](blockSizeMB * 1024 * 1024)
       secureRng.nextBytes(largeBlock)
 
       val h1 = XXHash.hashByteArray(largeBlock)
 
       // flip 8 bits in 128MB block
-      val b1 = largeBlock(1024 * 1024)
+      val b1    = largeBlock(1024 * 1024)
       // Ignore IntelliJ telling you that you don't need the `toByte` here, its stupid.
       val b1Inv = (~b1).toByte
 

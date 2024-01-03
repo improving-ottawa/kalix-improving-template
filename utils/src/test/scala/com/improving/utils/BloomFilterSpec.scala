@@ -22,9 +22,7 @@ class BloomFilterSpec extends AnyWordSpec with Matchers {
       val filledBloom = bloom.addAll((1 to testItems).map(_.toLong))
 
       // Check for any false negatives (should be zero)
-      val falseNegatives = (1 to testItems).foldLeft(0)((acc, i) =>
-        if (filledBloom.contains(i)) acc else acc + 1
-      )
+      val falseNegatives = (1 to testItems).foldLeft(0)((acc, i) => if (filledBloom.contains(i)) acc else acc + 1)
 
       falseNegatives mustBe 0
     }
@@ -39,7 +37,8 @@ class BloomFilterSpec extends AnyWordSpec with Matchers {
       val filledBloom = bloom.addAll((1 to testItems).map(_.toLong))
 
       val notContainedLongs =
-        LazyList.continually(secureRng.nextLong())
+        LazyList
+          .continually(secureRng.nextLong())
           .filter(n => n > testItems || n < 1)
           .take(testItems)
           .toArray
@@ -48,7 +47,7 @@ class BloomFilterSpec extends AnyWordSpec with Matchers {
       val falsePositives =
         notContainedLongs.foldLeft(0L)((acc, n) => if (filledBloom.contains(n)) acc + 1 else acc)
 
-      val actualErrorRate = falsePositives / testItems.toDouble
+      val actualErrorRate  = falsePositives / testItems.toDouble
       val errorRateCeiling = errorRate * 1.025 // Within 2.5%
 
       actualErrorRate must be < errorRateCeiling
@@ -62,10 +61,11 @@ class BloomFilterSpec extends AnyWordSpec with Matchers {
       val storedIds = (1 to 10000).map(_ => UUID.randomUUID).toList
 
       val (bloomFilter, notInId) = {
-        val emptyFilter = BloomFilter[UUID](250000, 0.1, uuidHashFunc)
+        val emptyFilter  = BloomFilter[UUID](250000, 0.1, uuidHashFunc)
         val filledFilter = emptyFilter.addAll(storedIds)
 
-        val notInId = LazyList.continually(UUID.randomUUID)
+        val notInId = LazyList
+          .continually(UUID.randomUUID)
           .filterNot(filledFilter.contains)
           .head
 

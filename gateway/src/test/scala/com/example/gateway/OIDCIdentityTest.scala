@@ -35,7 +35,8 @@ object OIDCIdentityTest extends OIDCIdentityTest with IOApp {
   private val keycloakProvider: OIDCClientConfig = {
     val baseKeysPath = "com.example.gateway.identity.providers.local_keycloak"
 
-    val config = ConfigLoader.loadOptionalFileSystemConfig("gateway/src/user-local.conf", includeDefaultConfig = false)
+    val config = ConfigLoader
+      .loadOptionalFileSystemConfig("gateway/src/user-local.conf", includeDefaultConfig = false)
       .fold(throw _, identity)
 
     if (config.hasPath(baseKeysPath)) {

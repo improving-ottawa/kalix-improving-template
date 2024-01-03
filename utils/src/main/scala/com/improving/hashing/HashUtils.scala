@@ -10,13 +10,13 @@ import sun.misc.Unsafe
 
 private[hashing] object HashUtils {
 
-  private[this] final val theUnsafe = {
+  final private[this] val theUnsafe = {
     val field: Field = classOf[Unsafe].getDeclaredField("theUnsafe")
     field.setAccessible(true)
     field.get(null).asInstanceOf[Unsafe]
   }
 
-  private[this] final val isLittleEndian = ByteOrder.nativeOrder == ByteOrder.LITTLE_ENDIAN
+  final private[this] val isLittleEndian = ByteOrder.nativeOrder == ByteOrder.LITTLE_ENDIAN
 
   final def readInt64(data: Array[Byte], index: Int): Long = {
     if (isLittleEndian) {
