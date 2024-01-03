@@ -88,7 +88,7 @@ object ConfigLoader {
       extends Error(s"Could not load required $resourceType configuration file from: $resourcePath")
 
   final private case class ConfigResourceLoadException(resourceType: String, cause: Throwable)
-      extends Error(s"Could not load required $resourceType configuration file due to an error:", cause)
+      extends Error(s"Could not load $resourceType configuration file due to an error:", cause)
 
   private lazy val workingDirectory: Path = {
     import java.nio.file._
@@ -118,6 +118,7 @@ object ConfigLoader {
         .flatTap(cfg => Try(log.info(s"Loaded $adjective configuration file: $pathString")))
         .map(cfg => Option(cfg))
         .onError { case _: Throwable => reportCouldNotLoad(adjective, "file-system", filePath) }
+        .handleErrorWith(err => if (required) Failure(err) else Success(None))
     }
 
     parseFile(filePath)
@@ -131,6 +132,7 @@ object ConfigLoader {
       .flatTap(cfg => Try(log.info(s"Loaded $adjective resource configuration file: $resourceFilename")))
       .map(cfg => Option(cfg))
       .onError { case _: Throwable => reportCouldNotLoad(adjective, "resource", resourceFilename) }
+      .handleErrorWith(err => if (required) Failure(err) else Success(None))
   }
 
   final private def reportCouldNotLoad(adjective: String, configType: String, resourcePath: String): Try[Unit] = {

@@ -44,6 +44,16 @@ final class BloomFilter[@specialized A] private[utils] (
     new BloomFilter[A](loop(numHashRounds, hashBits), hashFunction, numHashRounds)
   }
 
+  def addAll(items: IterableOnce[A]): BloomFilter[A] = {
+    @tailrec def loop(item: A, cnt: Int, bitVector: BitVector): BitVector =
+      if (cnt == 0) bitVector
+      else loop(item, cnt - 1, bitVector.set(computeHash(item, cnt)))
+
+    val updatedBitVector = items.iterator.foldLeft(hashBits)((bv, item) => loop(item, numHashRounds, bv))
+
+    new BloomFilter[A](updatedBitVector, hashFunction, numHashRounds)
+  }
+
   def toByteArray: Array[Byte] = {
     val baos   = new java.io.ByteArrayOutputStream()
     val writer = new java.io.DataOutputStream(baos)
@@ -92,7 +102,8 @@ object BloomFilter {
   // The default hashing functions
   object DefaultHashFunctions {
     final def murmur3Hash[A]: HashFunction[A] = (obj, seed) => Murmur3.hashLong(obj.hashCode(), seed)
-    final def xxHash[A]: HashFunction[A]      = (obj, seed) => XXHash.hashLong(obj.hashCode(), seed)
+
+    final def xxHash[A]: HashFunction[A] = (obj, seed) => XXHash.hashLong(obj.hashCode(), seed)
   }
 
   def apply[A](
@@ -105,7 +116,12 @@ object BloomFilter {
     apply(capacity, errorRate, hashFunction, computeBestK(capacity, errorRate))
   }
 
-  def apply[A](capacity: Int, errorRate: Double, hashFunction: HashFunction[A], numHashRounds: Int): BloomFilter[A] =
+  private def apply[A](
+    capacity: Int,
+    errorRate: Double,
+    hashFunction: HashFunction[A],
+    numHashRounds: Int
+  ): BloomFilter[A] =
     new BloomFilter[A](
       BitVector.low(computeBestM(capacity, errorRate)),
       hashFunction,
@@ -135,7 +151,7 @@ object BloomFilter {
   /* Private/Internal functions */
 
   final private val log2     = math.log(2.0)
-  final private val two_log2 = math.pow(2, log2)
+  final private val two_log2 = math.pow(log2, 2)
 
   final private def computeBestM(capacity: Int, errorRate: Double): Int = {
     val factor = -(capacity.toDouble * math.log(errorRate)) / two_log2
