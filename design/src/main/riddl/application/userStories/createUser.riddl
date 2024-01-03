@@ -1,6 +1,0 @@
-epic CreateUserEpic {
-  case CreateUserManual {}
-  case CreateUserFacebook {}
-  case CreateUserGitHub {}
-  case CreateUserGmail {}
-}

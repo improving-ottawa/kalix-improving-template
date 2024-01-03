@@ -2,4 +2,5 @@ domain ExampleDomain is {
   include "common/contact"
   include "common/product"
   include "application/appSpecification.riddl"
+  include "services/exampleAppGateway"
 } described in file "example.md"

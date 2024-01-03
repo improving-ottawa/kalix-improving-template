@@ -1,1 +1,12 @@
-page BlogEntryPage { ??? }
+include "fragments/header"
+
+type BlogHomeNav is String
+
+command GotoBlogHome is {???}
+
+page BlogEntryPage {
+  contains HeaderMenu as group Header
+  text BackToBlogHomeLink initiates command GotoBlogHome
+  output BlogContents shows BlogEntry
+  output RelatedPosts shows BlogList
+}
