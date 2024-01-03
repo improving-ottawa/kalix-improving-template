@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {sendBeginAuthenticationRequest, sendCompleteAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
+import {sendBeginAuthenticationRequest, sendGetUserRequest} from "../api/authApi";
 import {RootState} from "../store";
 import {GetUserRequest} from "../../../generated/com/example/gateway/domain/user_domain_pb";
 import {retrieveIdentity} from "../../identity";
@@ -30,7 +30,7 @@ export const getUser = createAsyncThunk(
     async () => {
         const identity = retrieveIdentity()
         let req = new GetUserRequest()
-        req = identity && identity.sub ? req.setUserId(identity.sub) : req
+        req = identity?.sub ? req.setUserId(identity.sub) : req
         return sendGetUserRequest(req);
     }
 );
@@ -59,7 +59,6 @@ export const authSlice = createSlice({
                 console.log(response.payload.getUserResponse.getUserInfo())
             })
 })
-
 
 //export reducer actions here
 

@@ -1,12 +1,7 @@
 import {getConfig} from "../../config";
 import {GetUserRequest, GetUserResponse} from "../../../generated/com/example/gateway/domain/user_domain_pb";
-import {getAuthClient, getCsrfToken, getGatewayClient} from "./clients";
-import {OIDCAccessCodeData} from "../../../generated/com/example/gateway/api/authentication_service_pb";
+import {getCsrfToken, getGatewayClient} from "./clients";
 import {CompleteLoginRequest} from "../../../generated/com/example/gateway/domain/gateway_commands_pb";
-import {AppIdentity} from "../../../generated/com/example/gateway/domain/gateway_responses_pb";
-import Cookies from "cookies-ts";
-import {CookiesOption} from "cookies-ts";
-import {jwtDecode} from "jwt-decode";
 import {storeIdentityToken} from "../../identity";
 
 export const sendBeginAuthenticationRequest = async () => {
@@ -21,22 +16,24 @@ export const sendCompleteAuthenticationRequest = async (code: string, state: str
     request.setCode(code)
     request.setState(state)
 
-    const response = await client.completeLogin(request)
+    const response = await client.completeLogin(request, null)
     const csrfToken = response.getCsrfToken()
     const expTime = response.getSessionExpiration()
     const redirectTo = response.getRedirectUri()
     const identity = response.getIdentity()
 
+    const errorHandler = (reject: (reason?: any) => void, name: string) => {
+        const error = `Did not receive '${name}'`
+        console.log(error)
+        reject(error)
+    }
     return new Promise<string>((resolve, reject) => {
         if (!csrfToken) {
-            console.log("Did not receive `csrfToken`")
-            reject()
+            errorHandler(reject, "csrfToken")
         } else if (!redirectTo) {
-            console.log("Did not receive `redirectTo`")
-            reject()
+            errorHandler(reject, "redirectTo")
         } else if (!identity) {
-            console.log("Did not receive `identity`")
-            reject()
+            errorHandler(reject, "identity")
         } else {
             // Store the App identity and session expiration time together
             storeIdentityToken(identity, expTime)
@@ -52,7 +49,7 @@ export const sendCompleteAuthenticationRequest = async (code: string, state: str
 }
 
 export function sendGetUserRequest(req: GetUserRequest) {
-    var deadline = new Date();
+    const deadline = new Date();
     deadline.setSeconds(deadline.getSeconds() + 30);
 
     return new Promise<{ getUserResponse: GetUserResponse }>((resolve, reject) => {
@@ -64,7 +61,7 @@ export function sendGetUserRequest(req: GetUserRequest) {
                 },
                 (err, response) => {
                     if (err) {
-                        console.error(`Unexpected error sending admin login link: code = ${err.code}` +
+                        console.error(`Unexpected error sending get user: code = ${err.code}` +
                             `, message = "${err.message}"`)
                         reject(err)
                     } else {

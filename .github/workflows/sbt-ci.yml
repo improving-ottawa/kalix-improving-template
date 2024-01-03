@@ -65,15 +65,6 @@ jobs:
         with:
           jvm: temurin:1.17
 
-      - name: Get riddl
-        uses: reactific/riddl/actions/get-riddlc@main
-
-      # TODO: Re-enable after riddl validation is working
-      #- name: Validate design
-      #  run: |
-      #    riddlc from "design/src/main/riddl/example.conf" validate
-
-      # TODO: Re-enable after a consistent version of .scalafmt.conf is available in main
       - name: Check ScalaFmt
         run: sbt scalafmtCheckAll scalafmtSbtCheck
 

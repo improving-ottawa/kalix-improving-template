@@ -3,8 +3,6 @@ import {
     AuthenticationServiceClient
 } from "../../../generated/com/example/gateway/api/Authentication_serviceServiceClientPb";
 import {GatewayClient} from "../../../generated/com/example/gateway/api/Gateway_actionServiceClientPb";
-import Cookies from "cookies-ts";
-import {AppIdentity} from "../../../generated/com/example/gateway/domain/gateway_responses_pb";
 
 let cachedGatewayClient: GatewayClient | undefined = undefined
 
