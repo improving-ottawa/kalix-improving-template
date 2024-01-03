@@ -10,7 +10,9 @@ import "com/example/gateway/domain/user_domain.proto";
 import "com/example/gateway/domain/login_token.proto";
 import "com/example/gateway/messages/online_check_messages.proto";
 import "com/example/service3/domain/service3_domain.proto";
+
 import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
@@ -41,12 +43,10 @@ service Gateway {
         };
     }
 
-    // TODO: uncomment if enabling email
-    // Creates a login token based on an admins email address and emails them a link to login to the app
-    // rpc SendAdminLoginLink (domain.SendLoginLinkRequest) returns (domain.SendLoginLinkResponse);
-
-    // Attempts to claim a previously created login token
-    rpc ClaimLoginToken (domain.ClaimTokenRequest) returns (domain.ClaimTokenResponse);
+    /***************
+     * Login Route *
+     ***************/
+    rpc CompleteLogin(domain.CompleteLoginRequest) returns (domain.CompleteLoginResponse);
 
     /**********************
      * User Entity routes *

@@ -1,6 +1,4 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
-import {sendDoNothingTwiceCommand} from "../api/exampleApi";
-import {DoNothingTwiceCommand} from "../../../generated/com/example/gateway/domain/gateway_commands_pb";
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {Address} from "../../../generated/com/example/common/domain/address_pb";
 import {Product} from "../../screens/productsFlow/ProductsDisplay";
 import {RootState} from "../store";
@@ -34,18 +32,8 @@ const initialState: PurchasingState = {
     paymentInfo: undefined
 }
 
-// A template for an async action to an external API
-export const postDoNothingTwice = createAsyncThunk(
-    // TypePrefix must be unique across all slices
-    'example/doNothingTwice',
-    async () => {
-        // The value we return becomes the `fulfilled` action payload
-        return await sendDoNothingTwiceCommand(new DoNothingTwiceCommand());
-    }
-);
-
 export const purchasingSlice = createSlice({
-    name: 'username',
+    name: 'purchasing',
     initialState,
     reducers: {
         addProduct: (state, action: PayloadAction<Product>) => {

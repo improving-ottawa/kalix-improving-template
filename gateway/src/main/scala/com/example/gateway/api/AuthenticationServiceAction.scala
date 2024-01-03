@@ -1,12 +1,13 @@
 package com.example.gateway.api
 
-import com.example.gateway.domain.UserInfo
+import com.example.gateway.domain._
 import com.example.gateway.utils.JwtIssuer
 import com.improving.extensions.oidc._
 import com.improving.utils.{FutureUtils, SecureRandomString}
 
 import com.google.api.HttpBody
-import com.google.protobuf.empty.Empty
+import io.circe.Json
+import io.circe.syntax._
 import io.grpc.Status.{Code => StatusCode}
 import kalix.scalasdk.Metadata
 import kalix.scalasdk.action.Action
@@ -17,33 +18,11 @@ import scala.concurrent.Future
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
-object AuthenticationServiceAction {
-
-  final private[this] lazy val htmlResponseTemplate = {
-    val reader = scala.io.Source.fromResource("post-login.html")
-    try reader.getLines().mkString("\n")
-    finally reader.close()
-  }
-
-  final private lazy val authTestHtmlResponse = {
-    val reader = scala.io.Source.fromResource("auth-test.html")
-    try reader.getLines().mkString("\n")
-    finally reader.close()
-  }
-
-  final private def formattedHtmlResponse(redirectUri: String): String = {
-    val template = htmlResponseTemplate
-    template.replace("{{redirectTo}}", redirectUri)
-  }
-
-}
-
 class AuthenticationServiceAction(
   identityService: OIDCIdentityService[Future],
   jwtIssuer: JwtIssuer,
   creationContext: ActionCreationContext
-) extends AbstractAuthenticationServiceAction
-    with FutureUtils {
+) extends AbstractAuthenticationServiceAction with FutureUtils {
 
   private val log = LoggerFactory.getLogger(classOf[AuthenticationServiceAction])
 
@@ -71,14 +50,22 @@ class AuthenticationServiceAction(
     effects.asyncEffect(asyncEffect)
   }
 
-  final def oidcCallback(accessCodeData: OIDCAccessCodeData): Action.Effect[HttpBody] =
-    if (accessCodeData.code.isEmpty) {
+  final def oidcCallback(acd: OIDCAccessCodeData): Action.Effect[HttpBody] =
+    oidcCallbackResponseInternal(acd.code, acd.state, generateCallbackResponse)
+
+  final def oidcCompleteLogin(request: CompleteLoginRequest): Action.Effect[CompleteLoginResponse] =
+    oidcCallbackResponseInternal(request.code, request.state, generateCompleteLoginResponse)
+
+  /* Internal Implementation */
+
+  private final type ResponseGen[T] = (String, String, Long, String, OIDCIdentity) => Action.Effect[T]
+
+  private def oidcCallbackResponseInternal[T](code: String, stateToken: String, genResp: ResponseGen[T]): Action.Effect[T] =
+    if (code.isEmpty) {
       effects.error("No access `code` in query string", StatusCode.INVALID_ARGUMENT)
-    } else if (accessCodeData.state.isEmpty) {
+    } else if (stateToken.isEmpty) {
       effects.error("No session `state` in query string", StatusCode.INVALID_ARGUMENT)
     } else {
-      val code       = accessCodeData.code
-      val stateToken = accessCodeData.state
       val csrfToken  = SecureRandomString(8)
 
       def syncUserIdentity(identity: OIDCIdentity, state: OIDCState) = {
@@ -98,38 +85,67 @@ class AuthenticationServiceAction(
       val redirectEffect =
         for {
           (identity, state) <- identityService.completeAuthorizationCodeFlow(code, stateToken)
-          jwtToken          <- Future.fromEither(jwtIssuer.createJwtFor(identity, csrfToken))
+          (jwtToken, exp)   <- Future.fromEither(jwtIssuer.createJwtFor(identity, csrfToken))
           _                 <- syncUserIdentity(identity, state)
-        } yield {
-          val csrfTokenCookie = s"csrfToken=${csrfToken.toString}; Path=/; SameSite=Lax"
-
-          val httpHeaders = Metadata.empty
-            .add("Cache-Control", "no-cache")
-            .add("Set-Cookie", jwtIssuer.jwtToHttpCookie(jwtToken))
-            .add("Set-Cookie", csrfTokenCookie)
-
-          val html = AuthenticationServiceAction.formattedHtmlResponse(state.redirectUri)
-
-          val body = HttpBody(
-            contentType = "text/html",
-            data = com.google.protobuf.ByteString.copyFromUtf8(html)
-          )
-
-          effects.reply(body, httpHeaders)
-        }
+        } yield genResp(state.redirectUri, jwtToken, exp, csrfToken.toString, identity)
 
       effects.asyncEffect(redirectEffect)
     }
 
-  final def oidcCheck(empty: Empty): Action.Effect[HttpBody] = {
-    val responseHtml = AuthenticationServiceAction.authTestHtmlResponse
-    val responseBody =
-      HttpBody(
-        contentType = "text/html",
-        data = com.google.protobuf.ByteString.copyFromUtf8(responseHtml)
-      )
+  private def generateCallbackResponse(
+    redirectUri: String,
+    jwt: String,
+    expEpoch: Long,
+    csrfToken: String,
+    identity: OIDCIdentity
+  ): Action.Effect[HttpBody] = {
+    val httpHeaders = Metadata.empty
+      .add("Cache-Control", "no-cache")
+      .add("Set-Cookie", jwtIssuer.jwtToHttpCookie(jwt))
 
-    effects.reply(responseBody)
+    val json = Json.obj(
+      "redirectUri" -> redirectUri.asJson,
+      "csrfToken" -> csrfToken.asJson,
+      "identity" -> identity.asJson
+    )
+
+    val body = HttpBody(
+      contentType = "application/json",
+      data = com.google.protobuf.ByteString.copyFromUtf8(json.noSpaces)
+    )
+
+    effects.reply(body, httpHeaders)
+  }
+
+  private def generateCompleteLoginResponse(
+    redirectUri: String,
+    jwt: String,
+    expEpoch: Long,
+    csrfToken: String,
+    identity: OIDCIdentity
+  ): Action.Effect[CompleteLoginResponse] = {
+    val httpHeaders = Metadata.empty
+      .add("Cache-Control", "no-cache")
+      .add("Set-Cookie", jwtIssuer.jwtToHttpCookie(jwt))
+
+    val appIdentity = AppIdentity(
+      identity.id.toString,
+      identity.name,
+      identity.preferredName.getOrElse(""),
+      identity.familyName.getOrElse(""),
+      identity.givenName.getOrElse(""),
+      identity.middleName.getOrElse(""),
+      identity.email.getOrElse("")
+    )
+
+    val response = CompleteLoginResponse(
+      redirectUri,
+      csrfToken,
+      expEpoch,
+      appIdentity
+    )
+
+    effects.reply(response, httpHeaders)
   }
 
 }

@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package com.example.gateway.api;
 
+import "com/example/gateway/domain/gateway_commands.proto";
+import "com/example/gateway/domain/gateway_responses.proto";
+
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
 import "google/protobuf/empty.proto";
@@ -51,11 +54,5 @@ service AuthenticationService {
     };
   }
 
-  // Dumps the JWT cookie
-  rpc oidcCheck (google.protobuf.Empty) returns (google.api.HttpBody) {
-    option (google.api.http) = {
-      get: "/oidc/check"
-    };
-  }
-
+  rpc oidcCompleteLogin (domain.CompleteLoginRequest) returns (domain.CompleteLoginResponse);
 }

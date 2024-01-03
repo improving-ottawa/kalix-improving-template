@@ -4,8 +4,8 @@ import com.improving.iam._
 import com.improving.config._
 import com.improving.extensions.oidc.OIDCIdentity
 import com.improving.utils.{Base64String, SystemClock}
-
 import cats.syntax.all._
+import sttp.model.Uri
 
 import scala.concurrent.duration.FiniteDuration
 import java.util.UUID
@@ -71,21 +71,28 @@ object JwtIssuer {
 
 final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: AlgorithmWithKeys) {
   private val authTokenService = AuthTokenService(algorithmWithKeys)
+  private val jwtCookieDomain = Uri.unsafeParse(config.tokenIssuerUrl)
+    .authority
+    .map(_.host)
+    .getOrElse("localhost")
 
   private val javaDuration = {
     val scalaDuration = config.tokenValidDuration
     java.time.Duration.of(scalaDuration.length, scalaDuration.unit.toChronoUnit)
   }
 
+  def jwtTokenValidDuration: Long = config.tokenValidDuration.toSeconds
+
   def jwtToHttpCookie(jwt: String): String = {
     val maxAge = config.tokenValidDuration.toSeconds
     val secure = if (config.tokenIssuerUrl.startsWith("https")) "; Secure" else ""
 
-    s"authToken=$jwt; Path=/; MaxAge=$maxAge$secure"
+    s"authToken=$jwt; Path=/; Domain=$jwtCookieDomain; SameSite=Lax; Max-Age=$maxAge$secure"
   }
 
-  def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, String] = {
+  def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, (String, Long)] = {
     val nowInstant       = SystemClock.currentInstant
+    val tokenExpiration  = nowInstant.plus(javaDuration)
     val additionalClaims = Map("csrf_token" -> csrfToken.toString)
 
     val authToken =
@@ -93,14 +100,14 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
         UUID.randomUUID,
         config.tokenIssuerUrl,
         identity.id.toString,
-        nowInstant.plus(javaDuration),
+        tokenExpiration,
         nowInstant,
         nowInstant,
         Set(config.defaultUserRole),
         additionalClaims = additionalClaims
       )
 
-    authTokenService.encodeToken(authToken)
+    authTokenService.encodeToken(authToken).map(jwt => (jwt, tokenExpiration.getEpochSecond))
   }
 
   def decodeJwtToken(token: String): Either[Throwable, AuthToken] =

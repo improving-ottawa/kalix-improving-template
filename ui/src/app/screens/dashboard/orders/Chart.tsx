@@ -3,7 +3,7 @@ import {useTheme} from '@mui/material/styles';
 import {BarChart, XAxis, YAxis, ResponsiveContainer, Tooltip, Bar, Rectangle} from 'recharts';
 import CardTitle from "../components";
 import {orderData} from "../fakeData";
-import * as _ from "lodash"
+import * as _ from 'lodash'
 
 export default function Chart() {
     const theme = useTheme();

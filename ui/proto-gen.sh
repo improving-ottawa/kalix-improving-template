@@ -13,10 +13,13 @@ function download_protoc-gen-grpc-web() {
     curl "$download_url" --output protoc-gen-grpc-web
     chmod a+x protoc-gen-grpc-web
     mv protoc-gen-grpc-web /usr/local/bin/protoc-gen-grpc-web
+    rm protoc-gen-grpc-web
 }
 
 # intended for CI/CD environments (which are Linux)
-if [[ ! -f "protoc-gen-grpc-web" && "$OSTYPE" == 'linux-gnu'* ]]; then
+found_protoc_gen="$(which protoc-gen-grpc-web)"
+
+if [[ -z "$found_protoc_gen" && "$OSTYPE" == 'linux-gnu'* ]]; then
   download_protoc-gen-grpc-web
 fi
 
@@ -24,7 +27,7 @@ fi
 protoc -I=protos $(find protos -iname "*.proto") \
   --js_out=import_style=commonjs,binary:src/generated \
   --grpc-web_out=import_style=typescript,mode=grpcweb:src/generated \
-  --experimental_allow_proto3_optional
+  --experimental_allow_proto3_optional=true
 
 exit_code="$?"
 popd

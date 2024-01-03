@@ -2,10 +2,12 @@
 
 import {Action, configureStore, ThunkAction} from '@reduxjs/toolkit'
 import purchasingReducer from './slices/purchasingSlice'
+import authReducer from './slices/authSlice'
 
 export const store = configureStore({
     reducer: {
-        purchasing: purchasingReducer
+        purchasing: purchasingReducer,
+        auth: authReducer
     }
 })
 

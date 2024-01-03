@@ -12,3 +12,8 @@ message SendLoginLinkRequest {
 message DoNothingTwiceCommand {
     DoNothingTwice nothing_twice = 1;
 }
+
+message CompleteLoginRequest {
+    string code = 1;
+    string state = 2;
+}

@@ -15,10 +15,16 @@ import Container from '@mui/material/Container';
 import {AppBar} from "@mui/material";
 import {TopNav} from "../../styledComponents/navBars";
 import {Products, productsDisplay} from "../ProductsDisplay";
-import {useNavigate} from "react-router-dom";
+import {NavigateFunction, useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {addProduct} from "../../../redux/slices/purchasingSlice";
+import {addProduct, PurchasingState} from "../../../redux/slices/purchasingSlice";
 import {Copyright} from "../../styledComponents/copyright";
+import Cookies from "cookies-ts";
+import {Dispatch, useEffect} from "react";
+import {AuthState, getUser} from "../../../redux/slices/authSlice";
+import {AppDispatch} from "../../../redux/store";
+import {retrieveIdentity} from "../../../identity";
+import {AnyAction, ThunkDispatch} from "@reduxjs/toolkit";
 
 const footers = [
     {
@@ -27,9 +33,53 @@ const footers = [
     },
 ];
 
+const initializeStorageForAuth = (
+    dispatch: ThunkDispatch<{ purchasing: PurchasingState, auth: AuthState }, undefined, AnyAction> & Dispatch<AnyAction>,
+    navigate: NavigateFunction) => {
+    const cookies = new Cookies()
+
+    const maybeExistingToken = sessionStorage.getItem('csrfToken')
+    const csrfTokenCookie = cookies.get('csrfToken')
+
+    let validCsrfToken = false
+
+    if (maybeExistingToken && maybeExistingToken.length !== 0) {
+        console.log("Using existing CSRF token in sessionStorage.")
+        validCsrfToken = true
+    } else if (csrfTokenCookie) {
+        console.log("Storing (and deleting) CSRF token...")
+        sessionStorage.setItem('csrfToken', csrfTokenCookie)
+        cookies.remove('csrfToken')
+        validCsrfToken = true
+    }
+
+    const identity = retrieveIdentity()
+    const epochSeconds = (new Date()).getUTCSeconds()
+
+    // Check that: we have a CSRF token, we have an identity, and the identity is not expired...
+    // Note: the `identity.exp`(iration) is in Unix epoch _seconds_ (not milliseconds!)
+    if (validCsrfToken && identity && identity.exp > epochSeconds) {
+        dispatch(getUser())
+    } else {
+        if (validCsrfToken && identity) {
+            const expiredDate = new Date(identity.exp)
+            console.log(`Expired Identity: ${identity} (expired at: ${expiredDate}).`)
+        } else if (validCsrfToken) {
+            console.log(`Invalid or missing Identity.`)
+        } else {
+            console.log(`Missing CSRF token.`)
+        }
+
+        // Send the user to the login page
+        navigate("/")
+    }
+}
+
 export default function Pricing() {
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
+
+    useEffect(() => initializeStorageForAuth(dispatch, navigate), [])
 
     return (
         <Box>

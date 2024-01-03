@@ -11,6 +11,7 @@ import OrdersPage from "./screens/dashboard/orders/OrdersPage";
 import CustomersPage from "./screens/dashboard/customers/CustomersPage";
 import Pricing from "./screens/productsFlow/pricing/Pricing";
 import Checkout from "./screens/productsFlow/checkout/Checkout";
+import OIDCCallback from "./screens/login/OIDCCallback";
 
 const theme = createTheme({
     palette: {
@@ -54,6 +55,10 @@ function App() {
                                         <Route index element={<CustomersPage/>}/>
                                     </Route>
                                 </Route>
+                                {
+                                    // OIDC Callback route
+                                }
+                                <Route path="oidc/callback" element={<OIDCCallback/>}/>
                             </Route>
                         </Routes>
                     </BrowserRouter>
