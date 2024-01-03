@@ -22,6 +22,7 @@ class XXHashSpec extends AnyWordSpec with Matchers {
   "XXHash" should {
 
     "have a high hashing throughput" in {
+      System.gc()
 
       // 64MB block of random data
       val blockSizeMB = 64
@@ -53,18 +54,21 @@ class XXHashSpec extends AnyWordSpec with Matchers {
       info(f"XXHash (95th): ${ordered(94)}%,.03f MB/sec")
       info(f"XXHash (Avg):  $avgThrpt%,.03f MB/sec")
 
+      System.gc()
       succeed
     }
 
     "be very sensitive to input data" in {
-      // 128MB block of random data
-      val blockSizeMB = 128
+      System.gc()
+
+      // 64MB block of random data
+      val blockSizeMB = 64
       val largeBlock  = Array.ofDim[Byte](blockSizeMB * 1024 * 1024)
       secureRng.nextBytes(largeBlock)
 
       val h1 = XXHash.hashByteArray(largeBlock)
 
-      // flip 8 bits in 128MB block
+      // flip 8 bits in 64MB block
       val b1    = largeBlock(1024 * 1024)
       // Ignore IntelliJ telling you that you don't need the `toByte` here, its stupid.
       val b1Inv = (~b1).toByte
@@ -72,6 +76,7 @@ class XXHashSpec extends AnyWordSpec with Matchers {
       largeBlock(1024 * 1024) = b1Inv
       val h2 = XXHash.hashByteArray(largeBlock)
 
+      System.gc()
       h1 must not be h2
     }
 

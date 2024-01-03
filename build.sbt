@@ -2,6 +2,7 @@ lazy val appName: String = "example"
 ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
+ThisBuild / Test / parallelExecution := false
 
 name := "kalix-improving-template"
 
@@ -54,6 +55,7 @@ lazy val root = project
 lazy val utils: Project = project
   .in(file("utils"))
   .configure(Config.AsProjectType.basicLibrary)
+  .configure(Testing.scalaTest)
   .configure(Config.withDeps(Dependencies.kalixScalaSdk, Dependencies.scodecBits, Dependencies.shapeless))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
 
@@ -111,4 +113,5 @@ lazy val `scheduled-tasks` = project
 lazy val `integration-testkit-tests`: Project = project
   .in(file("integration-testkit-tests"))
   .configure(Config.AsProjectType.basicLibrary)
+  .configure(Testing.scalaTest)
   .dependsOn(`integration-testkit`, `bounded-context`, gateway)
