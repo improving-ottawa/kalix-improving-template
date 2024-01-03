@@ -30,6 +30,11 @@ lazy val root = project
     // Publish containers + deploy services (combo command)
     KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
+  .settings(
+    // Prevent parallel execution of tests (because Github VM's are small)
+    Test / parallelExecution := false,
+    Test / logBuffered       := false,
+  )
   .aggregate(
     design,
     common,
