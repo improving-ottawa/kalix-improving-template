@@ -1,0 +1,28 @@
+epic HeaderEpics {
+  case UserClicksOnShopMenuItem is { 
+    user AuthedUser wants to "navigate to the pricing page" so that "they can continue shopping"
+    step user AuthedUser clicks on ShopMenuItem
+    step user AuthedUser focus on page PricingPage for user AuthedUser
+  }
+  case UserClicksOnUserDashboardMenuItem is {
+    user AuthedUser wants to "navigate to the user dashboard" so that "they can view a reports of user activity"
+    step user AuthedUser clicks on CustomerDashboardMenuItem
+    step user AuthedUser focus on page NewCustomersDashboardPage for user AuthedUser
+  }
+  case UserClicksOnOrderDashboardMenuItem is {
+    user AuthedUser wants to "navigate to the order dashboard" so that "they can view a reports of order activity"
+    step user AuthedUser clicks on OrderDashboardMenuItem
+    step user AuthedUser focus on page AOVDashboardPage for user AuthedUser
+  }
+  case UserClicksOnAboutUsMenuItem is {
+    user AuthedUser wants to "navigate to the about us page" so that "they can view information about who built the app and who is behind the MVP Service Offering"
+    step user AuthedUser clicks on AboutUsMenuItem
+    step user AuthedUser focus on page ShippingAddressPage for user AuthedUser /* FIXME: mising page definition for About Us link */
+  }
+  case UserClicksOnResourcesMenuItem is {
+    user AuthedUser wants to "navigate to the blog home page" so that "they can learn about Kalix, reactive architecture, and other relevant topics"
+    step user AuthedUser clicks on ResourcesMenuItem
+    step user AuthedUser focus on page BlogHomePage for user AuthedUser
+  }
+}
+

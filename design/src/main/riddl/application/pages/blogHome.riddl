@@ -1,1 +1,35 @@
-page BlogHomePage {???}
+include "fragments/header"
+
+record HelpfulResources is {
+  title: String,
+  content: String,
+  backgroundImage: URL
+}
+
+record BlogSummary is {
+  title: String,
+  intro: String,
+  image: URL
+}
+
+type BlogList is {
+  blogList: BlogSummary*
+}
+
+record BlogEntry is {
+  title: String,
+  heroImage: URL,
+  intro: String,
+  content: String
+}
+
+type BlogTopic is {topic: String}
+type BlogTopics is {topicList: BlogTopic*}
+
+page BlogHomePage {
+  contains HeaderMenu as group Header
+  output HelpfulResourcesHeader shows HelpfulResources
+  output BlogCarosel shows BlogList
+  output HighlightedBlog shows BlogEntry briefly "shows the blog we wish to highlight to the customer"
+  output BlogTopicLinks shows BlogTopics briefly "A list of the individual blog posts"
+}

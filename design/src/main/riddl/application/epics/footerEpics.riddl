@@ -1,0 +1,5 @@
+epic FooterEpics {
+  case UserClicksOnPrivacyPolicy is {???}
+  case UserClicksOnTermsOfUse is {???}
+  case UserClicksOnCompanyPayge is {???}
+}

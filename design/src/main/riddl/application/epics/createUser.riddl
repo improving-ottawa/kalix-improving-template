@@ -1,0 +1,12 @@
+epic CreateUserEpic {
+  case CreateUserManually {
+    user AnonUser wants to "sign up as a registered user in the application" so "they can interact with the demo application"
+    step take form NewUserForm from user AnonUser
+    step send command CreateUser from application ExampleApp to context ExampleAppGateway
+    step focus user AuthedUser on page PricingPage
+  }
+
+  case CreateUserFacebook { ??? }
+  case CreateUserGitHub { ??? }
+  case CreateUserGmail { ??? }
+}
