@@ -62,7 +62,6 @@ export const authSlice = createSlice({
 
 
 //export reducer actions here
-export const {} = authSlice.actions
 
 export const selectAuthState = (state: RootState) => state.auth
 
