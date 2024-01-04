@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package com.example.service3.domain;
+
+import "com/example/service3/api/cart_api.proto";
+import "com/example/service3/domain/cart_domain.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+// The shopping cart entity
+service CartEntity {
+  option (kalix.codegen) = {
+    event_sourced_entity: {
+      name: "com.example.service3.domain.CartService"
+      entity_type: "shopping-cart"
+      state: "com.example.service3.domain.Cart"
+      events: [
+        "com.example.service3.domain.CartCreated",
+        "com.example.service3.domain.LineItemAdded",
+        "com.example.service3.domain.LineItemRemoved",
+        "com.example.service3.domain.CartAbandoned",
+        "com.example.service3.domain.CheckoutStarted",
+        "com.example.service3.domain.CheckoutCompleted"
+      ]
+    }
+  };
+
+  rpc CreateCart (api.CreateShoppingCart) returns (domain.CartCreated) {
+    option (kalix.method).entity.key_generator = VERSION_4_UUID;
+  }
+
+  rpc AddLineItem (api.AddLineItem) returns (domain.LineItemAdded) { }
+
+  rpc RemoveLineItem (api.RemoveLineItem) returns (domain.LineItemRemoved) { }
+
+  rpc GetCart (api.GetShoppingCart) returns (domain.Cart) { }
+
+  rpc AbandonCart (api.AbandonShoppingCart) returns (domain.CartAbandoned) { }
+
+  rpc StartCheckout (api.StartCheckout) returns (domain.CheckoutStarted) { }
+
+  rpc CompleteCheckout (api.CompleteCheckout) returns (domain.CheckoutCompleted) { }
+}

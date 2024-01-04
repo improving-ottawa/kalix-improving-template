@@ -7,11 +7,13 @@ import {retrieveIdentity} from "../../identity";
 export interface AuthState {
     beginAuthStatus: string
     getUserStatus: string
+    authHeaders: Uint8Array | string
 }
 
 const initialState: AuthState = {
     getUserStatus: "none",
     beginAuthStatus: "none",
+    authHeaders: ""
 }
 
 export const beginAuth = createAsyncThunk(
@@ -57,7 +59,6 @@ export const authSlice = createSlice({
                 console.log(response.payload.getUserResponse.getUserInfo())
             })
 })
-
 
 //export reducer actions here
 

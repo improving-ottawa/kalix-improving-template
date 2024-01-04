@@ -1,7 +1,6 @@
 addSbtPlugin("io.kalix"         % "sbt-kalix"             % "1.3.5")
 addSbtPlugin("io.gatling"       % "gatling-sbt"           % "4.5.0")
 addSbtPlugin("com.github.sbt"   % "sbt-native-packager"   % "1.9.16")
-addSbtPlugin("org.scalastyle"  %% "scalastyle-sbt-plugin" % "1.0.0")
 addSbtPlugin("com.github.sbt"   % "sbt-dynver"            % "5.0.1")
 addSbtPlugin("org.scalameta"    % "sbt-scalafmt"          % "2.5.2")
 addSbtPlugin("com.github.sbt"   % "sbt-git"               % "2.0.1")

@@ -1,9 +1,10 @@
 package com.example.service3
 
-import com.example.service3.api.NoData3Service
-import com.example.service3.api.PingPong
-import com.example.service3.entity.Service3Entity
-import kalix.scalasdk.Kalix
+import com.example.service3.api._
+import com.example.service3.domain._
+import com.example.service3.entity._
+
+import kalix.scalasdk._
 import org.slf4j.LoggerFactory
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
@@ -12,20 +13,21 @@ import org.slf4j.LoggerFactory
 // or delete it so it is regenerated as needed.
 
 object Main {
-
   private val log = LoggerFactory.getLogger("com.example.service3.Main")
 
-  def createKalix(): Kalix = {
-    // The KalixFactory automatically registers any generated Actions, Views or Entities,
-    // and is kept up-to-date with any changes in your protobuf definitions.
-    // If you prefer, you may remove this and manually register these components in a
-    // `Kalix()` instance.
-    KalixFactory.withComponents(new Service3Entity(_), new NoData3Service(_), new PingPong(_))
-  }
+  lazy val kalixBuilder =
+    KalixBuilder.emptyBuilder
+      .autoWire[CartService]
+      .autoWire[OrderNumberIssuerService]
+      .autoWire[OrderNumbersService]
+      .autoWire[ProductsService]
+      .autoWire[ShoppingCartsService]
+      .autoWire[OrderService]
+      .autoWire[OrdersService]
+      .autoWire[PingPong]
+      .autoWire[Service3Entity]
+      .registerView(new NoData3Service(_), NoData3ServiceProvider.apply)
 
-  def main(args: Array[String]): Unit = {
-    log.info("starting the Kalix service")
-    createKalix().start()
-  }
+  def createKalix(): Kalix = kalixBuilder.build
 
 }

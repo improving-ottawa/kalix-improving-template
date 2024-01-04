@@ -39,7 +39,9 @@ object Dependencies {
     val google_grpc     = "2.9.0"
     val kalixSDK        = "1.3.5"
     val lang3           = "3.13.0"
+    val scodec          = "1.1.38"
     val scopt           = "4.1.0"
+    val shapeless       = "2.3.10"
     val slf4j           = "2.0.5"
     val slf4jCats       = "2.5.0"
     val lightbendGrpc   = "2.1.6"
@@ -83,6 +85,8 @@ object Dependencies {
   lazy val scalacheck = "org.scalacheck"        %% "scalacheck"      % Versions.scalacheck % Test
   lazy val slf4j      = "org.slf4j"              % "slf4j-nop"       % Versions.slf4j
   lazy val slf4jCats  = "org.typelevel"         %% "log4cats-slf4j"  % Versions.slf4jCats
+  lazy val scodecBits = "org.scodec"            %% "scodec-bits"     % Versions.scodec
+  lazy val shapeless  = "com.chuusai"           %% "shapeless"       % Versions.shapeless
 
   lazy val scalatestCore = "org.scalatest" %% "scalatest-core" % Versions.scalatest
 
@@ -158,13 +162,13 @@ object Dependencies {
 
   lazy val integrationTestDependencies: Seq[ModuleID] = Seq(
     testContainers,
-    "com.typesafe.akka"  %% "akka-testkit"                                  % akka      % Test,
-    "com.typesafe.akka"  %% "akka-actor-testkit-typed"                      % akka      % Test,
-    "com.typesafe.akka"  %% "akka-stream"                                   % akka      % Test,
+    "com.typesafe.akka" %% "akka-testkit"             % akka      % Test,
+    "com.typesafe.akka" %% "akka-actor-testkit-typed" % akka      % Test,
+    "com.typesafe.akka" %% "akka-stream"              % akka      % Test,
     // "com.lightbend.akka" %% "akka-stream-alpakka-google-cloud-pub-sub-grpc" % alpakka   % Test,
-    "com.typesafe.akka"  %% "akka-stream-kafka"                             % akkaKafka % Test,
-    "com.typesafe.akka"  %% "akka-http"                                     % akkaHttp  % Test,
-    "com.typesafe.akka"  %% "akka-http2-support"                            % akkaHttp  % Test
+    "com.typesafe.akka" %% "akka-stream-kafka"        % akkaKafka % Test,
+    "com.typesafe.akka" %% "akka-http"                % akkaHttp  % Test,
+    "com.typesafe.akka" %% "akka-http2-support"       % akkaHttp  % Test
   )
 
   lazy val testContainers = "org.testcontainers" % "testcontainers" % testcontainers % Test
@@ -191,7 +195,7 @@ object Dependencies {
   )
 
   val scalaPbGoogleCommonProtos: Seq[ModuleID] = Seq(
-    google_grpc intransitive()
+    google_grpc.intransitive()
   )
 
   val iamDepsPackage: Seq[ModuleID] = Seq(
@@ -199,8 +203,8 @@ object Dependencies {
   ) ++ jwtSupportPackage
 
   val cachingDependencies: Seq[ModuleID] = Seq(
-    "com.github.cb372" %% "scalacache-core"         % scalaCache,
-    "com.github.cb372" %% "scalacache-caffeine"     % scalaCache,
+    "com.github.cb372" %% "scalacache-core"     % scalaCache,
+    "com.github.cb372" %% "scalacache-caffeine" % scalaCache,
   )
 
 }

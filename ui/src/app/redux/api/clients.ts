@@ -30,9 +30,3 @@ export const getCsrfToken = () => {
     const token = sessionStorage.getItem('csrfToken')
     return token ?? ""
 }
-
-//export const decodedJwtToken = () => {
-//    const cookies = new Cookies()
-//    const cookie = cookies.get('authToken')
-//    return cookie ? jwtDecode(cookie) : null
-//}

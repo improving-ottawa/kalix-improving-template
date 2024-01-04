@@ -14,8 +14,6 @@ on:
       - '**.proto'
       - '**.conf'
       - '**.sbt'
-      - '**.yml'
-      - '**.sh'
 
   push:
     branches:
@@ -26,8 +24,6 @@ on:
       - '**.proto'
       - '**.conf'
       - '**.sbt'
-      - '**.yml'
-      - '**.sh'
 
 permissions:
   contents: read
@@ -69,21 +65,19 @@ jobs:
         with:
           jvm: temurin:1.17
 
-      # TODO: Re-enable after a consistent version of .scalafmt.conf is available in main
-      #- name: Run scalafmt
-      #  run: sbt scalafmtCheckAll scalafmtSbtCheck
+      - name: Check ScalaFmt
+        run: sbt scalafmtCheckAll scalafmtSbtCheck
 
       - name: Running unit tests
         run: sbt -v clean coverage Test/compile test coverageAggregate coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report
           path: target/scala-2.12/scoverage-report
-
 
       # TODO: uncomment when integration tests are complete
       # - name: Running integration tests

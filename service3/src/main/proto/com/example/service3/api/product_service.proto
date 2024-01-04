@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package com.example.service3.api;
+
+import "com/example/common/timestamp.proto";
+import "com/example/common/domain/product.proto";
+import "com/example/common/domain/line_item.proto";
+import "com/example/service3/domain/order_domain.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+message ProductList {
+  repeated common.domain.Product products = 1 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
+}
+
+message SingleProductRequest {
+  string product_sku = 1 [(validate.rules).string.min_len = 5];
+}
+
+message MultipleProductsRequest {
+  repeated string product_skus = 1 [(validate.rules).repeated.min_items = 1];
+}
+
+service Products {
+  option (kalix.codegen) = {
+    action: {
+      name: "com.example.service3.api.ProductsService"
+    }
+  };
+
+  rpc GetProducts(google.protobuf.Empty) returns (ProductList);
+
+  rpc GetProductBySKU(SingleProductRequest) returns (common.domain.Product);
+
+  rpc GetProductsBySKU(MultipleProductsRequest) returns (ProductList);
+}

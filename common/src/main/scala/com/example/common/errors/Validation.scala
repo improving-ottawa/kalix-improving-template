@@ -1,6 +1,6 @@
 package com.example.common.errors
 
-import com.example.common.domain.address.EditableAddress
+import com.example.common.domain.EditableAddress
 
 object Validation {
 

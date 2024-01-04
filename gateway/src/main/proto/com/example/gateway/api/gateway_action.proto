@@ -2,14 +2,19 @@ syntax = "proto3";
 
 package com.example.gateway.api;
 
+import "com/example/common/domain/product.proto";
 import "com/example/bounded-context/domain/service1_domain.proto";
 import "com/example/bounded-context/domain/service2_domain.proto";
 import "com/example/gateway/domain/gateway_commands.proto";
 import "com/example/gateway/domain/gateway_responses.proto";
 import "com/example/gateway/domain/user_domain.proto";
-import "com/example/gateway/domain/login_token.proto";
 import "com/example/gateway/messages/online_check_messages.proto";
 import "com/example/service3/domain/service3_domain.proto";
+import "com/example/service3/api/cart_api.proto";
+import "com/example/service3/domain/cart_domain.proto";
+import "com/example/service3/api/order_api.proto";
+import "com/example/service3/domain/order_domain.proto";
+import "com/example/service3/api/product_service.proto";
 
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
@@ -46,7 +51,8 @@ service Gateway {
     /***************
      * Login Route *
      ***************/
-    rpc CompleteLogin(domain.CompleteLoginRequest) returns (domain.CompleteLoginResponse);
+
+    rpc CompleteLogin (domain.CompleteLoginRequest) returns (domain.CompleteLoginResponse);
 
     /**********************
      * User Entity routes *
@@ -61,47 +67,38 @@ service Gateway {
     // Update the roles assigned to a `User`
     rpc UpdateUserRoles(domain.UpdateUserRolesRequest) returns (domain.UserInfo);
 
-    /*************************
-     * JWT/Admin Info routes *
-     *************************/
+    /************************
+     * Shopping Cart Routes *
+     ************************/
 
-    // Validates the provided JWT token
-    rpc ValidateJwt (domain.JwtValidationRequest) returns (domain.JwtValidationResponse) {
-        option (kalix.method).jwt = {
-            validate: BEARER_TOKEN
-            bearer_token_issuer: "example.io"
-        };
-    }
+    rpc CreateCart(service3.api.CreateShoppingCart) returns (service3.api.ShoppingCartId);
 
-    rpc DoNothingTwice (domain.DoNothingTwiceCommand) returns (domain.DoNothingTwiceResponse) {
-        option (kalix.method).jwt = {
-            validate: BEARER_TOKEN
-            bearer_token_issuer: "example.io"
-        };
-    }
+    rpc GetCart(service3.api.GetShoppingCart) returns (service3.domain.Cart);
 
-    // **************************
-    // * Bounded Context Routes *
-    // **************************
+    rpc AddItemToCart(service3.api.AddLineItem) returns (google.protobuf.Empty);
 
-    rpc DoNothing1 (boundedContext.domain.DoNothingCommand1) returns (boundedContext.domain.DoNothingResponse1) {
-        option (kalix.method).jwt = {
-            validate: BEARER_TOKEN
-            bearer_token_issuer: "example.io"
-        };
-    }
+    rpc RemoveItemFromCart(service3.api.RemoveLineItem) returns (google.protobuf.Empty);
 
-    rpc DoNothing2 (boundedContext.domain.DoNothingCommand2) returns (boundedContext.domain.DoNothingResponse2) {
-        option (kalix.method).jwt = {
-            validate: BEARER_TOKEN
-            bearer_token_issuer: "example.io"
-        };
-    }
+    rpc StartCartCheckout(service3.api.StartCheckout) returns (service3.domain.CartDetails);
 
-    rpc DoNothing3 (service3.domain.DoNothingCommand3) returns (service3.domain.DoNothingResponse3) {
-        option (kalix.method).jwt = {
-            validate: BEARER_TOKEN
-            bearer_token_issuer: "example.io"
-        };
-    }
+    rpc CompleteCartCheckout(service3.api.CompleteCheckout) returns (google.protobuf.Empty);
+
+    /****************
+     * Order Routes *
+     ****************/
+
+    rpc CreateOrderFromCart(service3.api.OrderFromCart) returns (service3.api.OrderConfirmation);
+
+    rpc GetOrderById(service3.api.OrderById) returns (service3.domain.Order);
+
+    /******************
+     * Product Routes *
+     ******************/
+
+    rpc GetProducts(google.protobuf.Empty) returns (service3.api.ProductList);
+
+    rpc GetProductBySKU(service3.api.SingleProductRequest) returns (common.domain.Product);
+
+    rpc GetProductsBySKU(service3.api.MultipleProductsRequest) returns (service3.api.ProductList);
+
 }

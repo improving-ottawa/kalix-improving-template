@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package com.example.service3.api;
+
+import "com/example/common/timestamp.proto";
+import "com/example/common/domain/address.proto";
+import "com/example/common/domain/line_item.proto";
+import "com/example/service3/domain/order_domain.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+message IssueNextOrderNumber {
+  string global_id = 1 [(kalix.field).entity_key = true];
+}
+
+message NextOrderNumber {
+  uint64 order_number = 1;
+}
+
+service OrderNumbers {
+  option (kalix.codegen) = {
+    action: {
+      name: "com.example.service3.api.OrderNumbersService"
+    }
+  };
+
+  rpc GetNextOrderNumber(google.protobuf.Empty) returns (NextOrderNumber);
+}

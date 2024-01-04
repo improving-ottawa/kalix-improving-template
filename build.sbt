@@ -2,6 +2,10 @@ lazy val appName: String = "example"
 ThisBuild / organization := s"com.$appName"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / parallelExecution    := false // Because of scoverage and how terrible it is
+
+// Exclude specific files from scoverage
+ThisBuild / coverageExcludedFiles := """.*/hashing/.*;.*/akka-grpc/.*;.*/src_managed/.*;.*/kalix/scalasdk/.*"""
 
 name := "kalix-improving-template"
 
@@ -30,6 +34,11 @@ lazy val root = project
     // Publish containers + deploy services (combo command)
     KalixEnv.publishAndDeploy  := { KalixEnv.deployServices.dependsOn(KalixEnv.publishContainers).value }
   )
+  .settings(
+    // Prevent parallel execution of tests (because Github VM's are small)
+    Test / parallelExecution := false,
+    Test / logBuffered       := false,
+  )
   .aggregate(
     design,
     common,
@@ -49,8 +58,10 @@ lazy val root = project
 lazy val utils: Project = project
   .in(file("utils"))
   .configure(Config.AsProjectType.basicLibrary)
-  .configure(Config.withDeps(Dependencies.kalixScalaSdk))
+  .configure(Testing.scalaTest)
+  .configure(Config.withDeps(Dependencies.kalixScalaSdk, Dependencies.scodecBits, Dependencies.shapeless))
   .configure(Config.withDepsPackage(Dependencies.jwtSupportPackage))
+  .settings(coverageEnabled := false)
 
 lazy val common: Project = project
   .in(file("common"))
@@ -85,7 +96,7 @@ lazy val design: Project = project
 lazy val service3 = project
   .in(file("service3"))
   .configure(Config.AsKalix.library)
-  .dependsOn(common, utils)
+  .dependsOn(utils, common, extensions)
 
 lazy val `bounded-context` = project
   .in(file("bounded-context"))
@@ -106,4 +117,5 @@ lazy val `scheduled-tasks` = project
 lazy val `integration-testkit-tests`: Project = project
   .in(file("integration-testkit-tests"))
   .configure(Config.AsProjectType.basicLibrary)
+  .configure(Testing.scalaTest)
   .dependsOn(`integration-testkit`, `bounded-context`, gateway)

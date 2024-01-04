@@ -47,7 +47,6 @@ object Main {
     val identityService = OIDCIdentityService[Future](blankIdentityConfig, algorithmWithKeys)
 
     KalixFactory.withComponents(
-      new LoginTokenService(_, algorithmWithKeys),
       new UserEntity(_),
       new AuthenticationServiceAction(identityService, jwtIssuer, _),
       new GatewayProxy(_, jwtIssuer)
@@ -86,7 +85,6 @@ object Main {
     Kalix()
       .register(authServiceProvider)
       .register(gatewayAuthedProvider)
-      .register(LoginTokenServiceProvider(new LoginTokenService(_, algorithmWithKeys)))
       .register(UserEntityProvider(new UserEntity(_)))
   }
 

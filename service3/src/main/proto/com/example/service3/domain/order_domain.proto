@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package com.example.service3.domain;
+
+import "com/example/common/timestamp.proto";
+import "com/example/common/domain/address.proto";
+import "com/example/common/domain/line_item.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+// Create a new order
+message CreateOrder {
+  // The user (identity by ID) who is placing the order
+  string user_id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The (shopping) cart which the order is from
+  string cart_id = 2 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  uint64 order_number = 3;
+
+  // The buyer's shipping address
+  common.domain.Address shipping_address = 4 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The line items (from the cart) in this order
+  repeated common.domain.LineItem items = 5 [
+    (validate.rules).repeated.min_items = 1,
+    (scalapb.field).collection_type = "scala.collection.immutable.List"
+  ];
+
+  // The payment information for this order
+  domain.PaymentInfo payment_info = 6 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+}
+
+// Payment information (record)
+message PaymentInfo {
+  // The name on the credit-card used in in `creditCardNumber`
+  string name_on_card = 1 [
+    (validate.rules).string.min_len = 3,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The credit card number
+  string credit_card_number = 2 [
+    // Regex matches all Visa, MasterCard, American Express, Diners Club, Discover, and JCB cards
+    (validate.rules).string.pattern = "^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$",
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // When the credit card expires
+  common.Timestamp expiration_date = 3 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The billing address for the credit card
+  common.domain.Address billing_address = 4 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
+// The state of an order
+message Order {
+  // The unique ID for this order
+  string order_id = 1;
+
+  // The user (identity by ID) who is placing the order
+  string user_id = 2;
+
+  // The (shopping) cart which the order is from
+  string cart_id = 3;
+
+  // The order number assigned to this order
+  string order_number = 4;
+
+  // When the order was created/placed
+  common.Timestamp when_created = 5;
+
+  // The buyer's shipping address
+  common.domain.Address shipping_address = 6;
+
+  // The line items in this order
+  repeated common.domain.LineItem items = 7 [(scalapb.field).collection_type = "scala.collection.immutable.List"];
+
+  // The payment information for this order
+  domain.PaymentInfo payment_info = 8;
+}

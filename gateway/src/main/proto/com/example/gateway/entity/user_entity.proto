@@ -11,6 +11,7 @@ import "validate/validate.proto";
 
 /* (Value) Entity (Kalix) Service */
 
+// Note: This service is not exposed to the internet or public. It is only available to the gateway(proxy) service.
 service User {
   option (kalix.service).acl.allow = {service: "gateway"};
   option (kalix.codegen) = {

@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package common;
 
-
 import "com/example/common/frequency.proto";
 import "com/example/common/weekday_num.proto";
+
 import "google/type/date.proto";
 import "google/type/month.proto";
 import "scalapb/scalapb.proto";

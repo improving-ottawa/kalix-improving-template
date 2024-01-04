@@ -15,7 +15,7 @@ object CompilerPlugins {
   }
 
   // Compiler Plugins
-  val betterForComp  = "com.olegpy"           %% "better-monadic-for" % V.betterForComp
-  val kindProjector  = ("org.typelevel"       %% "kind-projector"     % V.kindProjector).cross(CrossVersion.full)
+  val betterForComp = "com.olegpy"     %% "better-monadic-for" % V.betterForComp
+  val kindProjector = ("org.typelevel" %% "kind-projector"     % V.kindProjector).cross(CrossVersion.full)
 
 }

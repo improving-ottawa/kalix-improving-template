@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package common;
+
+import "com/example/common/decimal.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option java_package = "com.example.common";
+
+// Represents an amount of money with its currency type.
+message Money {
+  option (scalapb.message).extends = "com.example.common.MoneyImpl";
+  option (scalapb.message).companion_extends = "com.example.common.MoneyCompanion";
+
+  // The three-letter currency code defined in ISO 4217.
+  string currency_code = 1 [
+    (validate.rules).string.len = 3,
+    (scalapb.field).type = "java.util.Currency",
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  // The amount of the given currency.
+  Decimal amount = 2 [
+    (validate.rules).message.required = true,
+    (scalapb.field).no_box = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
