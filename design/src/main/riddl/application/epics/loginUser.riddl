@@ -1,6 +1,20 @@
 epic LoginUser is {
-  story ManualLogin is {???}
-  story FacebookLogin is {???}
-  story GoogleLogin is {???}
-  story GitHubLogin is {???}
+  case ManualLogin is {
+    user AnonUser wants to "log in to the template app" so that "they can interact with the application"
+    step take form SigninForm from user AnonUser
+    //TODO: remove these comments
+    //step "user" "clicks" "login button"
+    //in vague definitions ("quoted steps") you need three strings as you see above
+    step take button SignInButton from user AnonUser
+    step focus user AnonUser on page PricingPage
+  }
+  case FailedLoginAttempt is {
+    user AnonUser wants to "log in to the template app" so that "they can interact with the application"
+    step take form SigninForm from user AnonUser
+    step take button SignInButton from user AnonUser
+    step show output InvalidCredentials to user AnonUser
+  }
+  case FacebookLogin is {???}
+  case GoogleLogin is {???}
+  case GitHubLogin is {???}
 }

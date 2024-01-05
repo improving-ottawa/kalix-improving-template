@@ -24,4 +24,6 @@ page SigninPage {
   button SignInWithGmailButton initiates command LoginWithGmail
   text ForgotPasswordLink initiates command RemindUserOfPassword
   text SignupLink initiates command RedirectUserToSignupPage
+  output InvalidCredentials displays "Invalid user name or password. Please try again."
 }
+

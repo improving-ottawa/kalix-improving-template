@@ -1,7 +1,7 @@
 epic AddToCartEpic {
   case UserAddsItemToCart is {
     user AuthedUser wants to "Add an item to their cart" so "they can purchase it when ready"
-    step user AuthedUser clicks on BuyProductButton
-    step user AuthedUser focus on page ShippingAddressPage for user AuthedUser
+    step take button BuyProductButton from user AuthedUser
+    step focus user AuthedUser on page ShippingAddressPage
   }
 }

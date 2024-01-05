@@ -15,3 +15,5 @@ application ExampleApp is {
 include "epics/userDefinitions"
 include "epics/createUser"
 include "epics/checkout"
+include "epics/loginUser"
+include "epics/addToCart"

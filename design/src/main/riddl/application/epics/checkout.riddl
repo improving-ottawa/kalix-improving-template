@@ -1,4 +1,27 @@
 epic CheckoutEpic {
+  case UserProvidesShippingInformation is {
+    user AuthedUser wants to "provide their shipping address" so "they can get their product delivered"
+    step take form OrderShippingAddressForm from user AuthedUser
+    step take button SaveShippingAddressButton from user AuthedUser
+    step focus user AuthedUser on page PaymentPage
+  }
+  case UserProvidesBillingInformation is {
+    user AuthedUser wants to "provide their payment information" so "they can pay for their product"
+    step take form PaymentInfoForm from user AuthedUser
+    step take button SavePaymentInfoToOrderButton from user AuthedUser
+    step focus user AuthedUser on page OrderReviewPage
+  }
+  case UserPlacesOrder is {
+    user AuthedUser wants to "review their order" so "they can confirm that it is correct before placing it"
+    step show output OrderReviewPage to user AuthedUser
+    step take button PlaceOrderButton from user AuthedUser
+    step focus user AuthedUser on page OrderConfirmationPage
+  }
+  case UserReceivesOrderConfirmation is {
+    user AuthedUser wants to "get their order number" so "they can follow order progress"
+    step show output OrderConfirmationPage to user AuthedUser
+    step "AuthedUser" "receives" "order confirmation email" 
+  }
   case NavigateCheckoutStepperToShippingDetails is {
     user AuthedUser wants to "change the active step in the stepper" so "they can visit previous pages in the checkout flow"
     step "from user AuthedUser" "clicks on" "ShipStep"
@@ -8,11 +31,12 @@ epic CheckoutEpic {
   case NavigateContinueShoppingLink is {???}
   case UseShippingAddressForBillingAddress is {???}
   case NavigateBack is {???}
-  case EditShippingInfo is {???}
-  case EditPaymentInfo is {???}
-  case UserProvidesShippingInformation is {???}
-  case UserProvidesBillingInformation is {???}
-  case UserPlacesOrder is {???}
-  case UserReceivesOrderConfirmation is {???}
+  case EditShippingAddress is {
+    ???
+  }
+  case EditPaymentInfo is {
+    ???
+  }
+  
 }
 

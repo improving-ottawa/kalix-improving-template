@@ -22,7 +22,7 @@ page ShippingAddressPage {
     input postalCode accepts PostalCode
     selector copyAddressToPayment accepts CopyAddressToPayment
   }
-  button SaveShippingInfoButton initiates command SaveShippingInfoToOrder
+  button SaveShippingAddressButton initiates command SaveShippingInfoToOrder
 }
 
 //FEATURE: I wish we could capture a sequence of commands as a function. i.e.
