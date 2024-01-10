@@ -4,6 +4,9 @@ package com.example.gateway.entity;
 
 import "com/example/common/timestamp.proto";
 import "com/example/gateway/domain/user_domain.proto";
+import "com/example/gateway/api/user_api.proto";
+import "extensions/identity.proto";
+
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 import "scalapb/scalapb.proto";
@@ -18,16 +21,29 @@ service User {
     value_entity: {
       name: "com.example.gateway.entity.UserEntity"
       entity_type: "user"
-      state: "com.example.gateway.domain.UserInfo"
+      state: "extensions.UserIdentity"
     }
   };
 
   // Get an existing `User` if they exist
-  rpc GetUser(domain.GetUserRequest) returns (domain.GetUserResponse) {}
+  rpc GetUser(api.GetUserRequest) returns (extensions.UserIdentity) {}
 
-  // Create (or update/sync) a `User` from identity provider information
-  rpc CreateOrUpdateUserInfo(domain.UserInfo) returns (google.protobuf.Empty) {}
+  // Register a new OIDC identity as a user
+  rpc RegisterOIDCIdentity(domain.OIDCIdentityRegistration) returns (extensions.UserIdentity) {
+    option (kalix.method).entity.key_generator = VERSION_4_UUID;
+  }
+
+  // Synchronize an existing OIDC identity
+  rpc SynchronizeOIDCIdentity(domain.OIDCIdentityInformation) returns (domain.UserInfo) {}
+
+  // Register a new local identity as a user
+  rpc RegisterLocalIdentity(domain.LocalIdentityRegistration) returns (domain.UserInfo) {
+    option (kalix.method).entity.key_generator = VERSION_4_UUID;
+  }
+
+  // Update an existing user's local identity
+  rpc UpdateLocalIdentity(api.UpdateLocalIdentityRequest) returns (domain.UserInfo);
 
   // Update the roles assigned to a `User`
-  rpc UpdateUserRoles(domain.UpdateUserRolesRequest) returns (domain.UserInfo) {}
+  rpc UpdateUserRoles(api.UpdateUserRolesRequest) returns (domain.UserInfo) {}
 }

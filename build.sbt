@@ -78,7 +78,7 @@ lazy val `integration-testkit`: Project = project
 
 lazy val extensions: Project = project
   .in(file("extensions"))
-  .configure(Config.AsProjectType.basicLibrary)
+  .configure(Config.AsProjectType.protobufLibrary)
   .configure(Config.withDeps(Dependencies.pencilSmtp, Dependencies.slf4jCats, Dependencies.testContainers))
   .configure(Config.withDepsPackage(Dependencies.iamDepsPackage))
   .configure(Config.withDepsPackage(Dependencies.cachingDependencies))

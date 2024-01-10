@@ -5,6 +5,7 @@ import com.improving.config._
 import com.improving.extensions.oidc.OIDCIdentity
 import com.improving.utils.{Base64String, SystemClock}
 import cats.syntax.all._
+import com.improving.extensions.identity.UserIdentity
 import sttp.model.Uri
 
 import scala.concurrent.duration.FiniteDuration
@@ -92,7 +93,7 @@ final class JwtIssuer private (config: JwtIssuerConfig, algorithmWithKeys: Algor
     s"authToken=$jwt; Path=/; Domain=$jwtCookieDomain; SameSite=Lax; Max-Age=$maxAge$secure"
   }
 
-  def createJwtFor(identity: OIDCIdentity, csrfToken: Base64String): Either[Throwable, (String, Long)] = {
+  def createJwtFor(identity: UserIdentity, csrfToken: Base64String): Either[Throwable, (String, Long)] = {
     val nowInstant       = SystemClock.currentInstant
     val tokenExpiration  = nowInstant.plus(javaDuration)
     val additionalClaims = Map("csrf_token" -> csrfToken.toString)

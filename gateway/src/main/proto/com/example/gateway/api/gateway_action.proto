@@ -5,16 +5,17 @@ package com.example.gateway.api;
 import "com/example/common/domain/product.proto";
 import "com/example/bounded-context/domain/service1_domain.proto";
 import "com/example/bounded-context/domain/service2_domain.proto";
-import "com/example/gateway/domain/gateway_commands.proto";
-import "com/example/gateway/domain/gateway_responses.proto";
-import "com/example/gateway/domain/user_domain.proto";
-import "com/example/gateway/messages/online_check_messages.proto";
 import "com/example/service3/domain/service3_domain.proto";
 import "com/example/service3/api/cart_api.proto";
 import "com/example/service3/domain/cart_domain.proto";
 import "com/example/service3/api/order_api.proto";
 import "com/example/service3/domain/order_domain.proto";
 import "com/example/service3/api/product_service.proto";
+
+import "com/example/gateway/api/authentication_service.proto";
+import "com/example/gateway/api/user_api.proto";
+import "com/example/gateway/domain/user_domain.proto";
+import "com/example/gateway/messages/online_check_messages.proto";
 
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
@@ -48,28 +49,31 @@ service Gateway {
         };
     }
 
-    /***************
-     * Login Route *
-     ***************/
+    // Login related routes
 
-    rpc CompleteLogin (domain.CompleteLoginRequest) returns (domain.CompleteLoginResponse);
+    rpc CompleteOIDCLogin(api.CompleteOIDCLoginRequest) returns (api.LoginResponse);
 
-    /**********************
-     * User Entity routes *
-     **********************/
+    rpc PasswordLogin(api.PasswordAuthenticationRequest) returns (api.LoginResponse);
 
-    rpc GetUser (domain.GetUserRequest) returns (domain.GetUserResponse) {
-        option (google.api.http) = {
-            get: "/user/{user_id}"
-        };
-    }
+    // User related routes
 
-    // Update the roles assigned to a `User`
-    rpc UpdateUserRoles(domain.UpdateUserRolesRequest) returns (domain.UserInfo);
+    rpc GetUserLoginInfo(api.UserEmailRequest) returns (api.UserLoginInfoResponse);
+
+    rpc RegisterNewLocalUser(api.RegisterLocalUserRequest) returns (api.UserResponse);
 
     /************************
-     * Shopping Cart Routes *
+     * Authenticated routes *
      ************************/
+
+    // User related routes
+
+    rpc GetUserInfo(api.GetUserRequest) returns (api.UserResponse);
+
+    rpc UpdateLocalUserIdentity(api.UpdateLocalIdentityRequest) returns (api.UserResponse);
+
+    rpc UpdateUserRoles(api.UpdateUserRolesRequest) returns (api.UserResponse);
+
+    // Shopping cart routes
 
     rpc CreateCart(service3.api.CreateShoppingCart) returns (service3.api.ShoppingCartId);
 
@@ -83,17 +87,13 @@ service Gateway {
 
     rpc CompleteCartCheckout(service3.api.CompleteCheckout) returns (google.protobuf.Empty);
 
-    /****************
-     * Order Routes *
-     ****************/
+    // Order routes
 
     rpc CreateOrderFromCart(service3.api.OrderFromCart) returns (service3.api.OrderConfirmation);
 
     rpc GetOrderById(service3.api.OrderById) returns (service3.domain.Order);
 
-    /******************
-     * Product Routes *
-     ******************/
+    // Product routes
 
     rpc GetProducts(google.protobuf.Empty) returns (service3.api.ProductList);
 

@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package com.example.gateway.api;
+
+import "com/example/gateway/domain/user_domain.proto";
+import "extensions/identity.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+message UserEmailRequest {
+  string email_address = 1 [
+    (validate.rules).string.email = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
+message UserLoginInfoResponse {
+  // Will be empty (None) if there is no identity which matches the request.
+  optional domain.UserLoginInfo login_information = 1;
+}
+
+message GetUserRequest {
+  // The unique user identifier (UUID)
+  string user_id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+}
+
+message UpdateUserRolesRequest {
+  // The unique user identifier (UUID)
+  string user_id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+
+  // The (new/updated) application roles for the user
+  repeated string updated_user_roles = 2 [
+    (scalapb.field).collection_type = "scala.collection.immutable.Set",
+    (validate.rules).repeated.min_items = 1
+  ];
+}
+
+message UserResponse {
+  optional domain.UserInfo user_info = 1;
+}
+
+message UserId {
+  string user_id = 1 [(kalix.field).entity_key = true];
+}
+
+message UpdateLocalIdentityRequest {
+  string id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+
+  optional string updated_name = 2 [(validate.rules).string.min_len = 3];
+
+  optional string updated_user_email = 3 [(validate.rules).string.email = true];
+
+  optional string updated_first_name = 4 [(validate.rules).string.min_len = 3];
+
+  optional string updated_last_name = 5 [(validate.rules).string.min_len = 3];
+
+  optional string updated_plaintext_password = 6 [(validate.rules).string.min_len = 12];
+}
+
+message RegisterLocalUserRequest {
+  domain.LocalIdentityRegistration registration = 1 [
+    (validate.rules).message.required = true,
+    (scalapb.field).required = true
+  ];
+}
+
+message ForeignIdentityRequest {
+  string provider_id = 1;
+  string subject = 2;
+}
+
+message ForeignIdentityResponse {
+  optional string user_id = 1;
+}
+
+service UserService {
+  option (kalix.service).acl.allow = {service: "gateway"};
+  option (kalix.codegen) = {action: {name: "com.example.gateway.api.UserService"}};
+
+  rpc GetUserLoginInfo(UserEmailRequest) returns (UserLoginInfoResponse);
+
+  rpc RegisterNewLocalUser(domain.LocalIdentityRegistration) returns (UserResponse);
+
+  rpc GetUserIdBySubject(ForeignIdentityRequest) returns (ForeignIdentityResponse);
+
+  rpc GetUserInfo(GetUserRequest) returns (UserResponse);
+
+  rpc UpdateLocalUserIdentity(UpdateLocalIdentityRequest) returns (UserResponse);
+
+  // Not exposed via the gateway!
+  rpc RegisterOIDCIdentity(domain.OIDCIdentityRegistration) returns (extensions.UserIdentity);
+}

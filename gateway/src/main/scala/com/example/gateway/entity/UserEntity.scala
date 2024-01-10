@@ -1,48 +1,130 @@
 package com.example.gateway.entity
 
+import com.improving.extensions.identity._
 import com.improving.utils.SystemClock
+
+import com.example.gateway.api._
 import com.example.gateway.domain._
 
-import com.google.protobuf.empty.Empty
 import kalix.scalasdk.valueentity.ValueEntity
 import kalix.scalasdk.valueentity.ValueEntityContext
 
+import java.util.UUID
+
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
-class UserEntity(context: ValueEntityContext) extends AbstractUserEntity {
-  override def emptyState: UserInfo = UserInfo(id = context.entityId)
+final class UserEntity(passwordUtility: PasswordUtility, context: ValueEntityContext) extends AbstractUserEntity {
+  private def isUserInfoPopulated(state: UserIdentity): Boolean =
+    state.credentialType != CredentialType.None
 
-  private def isUserInfoPopulated(state: UserInfo): Boolean =
-    state.providerId.nonEmpty
+  private def optionalize(str: String): Option[String] =
+    if (str.isBlank) None else Some(str)
 
-  override def getUser(state: UserInfo, getUserRequest: GetUserRequest): ValueEntity.Effect[GetUserResponse] =
-    if (isUserInfoPopulated(state))
-      effects.reply(GetUserResponse(Some(state)))
-    else
-      effects.reply(GetUserResponse.defaultInstance)
+  private def stateToInfo(state: UserIdentity): UserInfo = {
+    val loginType = state.credentialType match {
+      case CredentialType.OIDC(_, _) => LoginType.Oidc
+      case _                         => LoginType.Password
+    }
 
-  override def createOrUpdateUserInfo(state: UserInfo, userInfo: UserInfo): ValueEntity.Effect[Empty] = {
-    val updatedState =
-      state.copy(
-        providerId = userInfo.providerId,
-        emailAddress = userInfo.emailAddress,
-        lastSynced = Some(SystemClock.currentInstant),
-        givenName = userInfo.givenName,
-        familyName = userInfo.familyName,
-        preferredDisplayName = userInfo.preferredDisplayName,
-        userRoles = userInfo.userRoles
-      )
-
-    effects
-      .updateState(updatedState)
-      .thenReply(Empty.defaultInstance)
+    UserInfo(
+      id = state.id.toString,
+      loginType = loginType,
+      loginEmail = state.emailAddress,
+      name = state.name,
+      givenName = state.givenName.getOrElse(""),
+      familyName = state.familyName.getOrElse(""),
+      userRoles = state.roles
+    )
   }
 
-  override def updateUserRoles(state: UserInfo, request: UpdateUserRolesRequest): ValueEntity.Effect[UserInfo] =
+  override def emptyState: UserIdentity =
+    UserIdentity(
+      id = UUID.fromString(context.entityId),
+      name = "",
+      credentialType = CredentialType.None
+    )
+
+  override def getUser(state: UserIdentity, request: GetUserRequest): ValueEntity.Effect[UserIdentity] =
+    if (isUserInfoPopulated(state))
+      effects.reply(state)
+    else
+      effects.error(s"User for ID `${state.id}` not found.", io.grpc.Status.Code.NOT_FOUND)
+
+  override def registerOIDCIdentity(state: UserIdentity, registration: OIDCIdentityRegistration) =
+    if (isUserInfoPopulated(state))
+      effects.error(s"Tried to register an OIDC identity on top of an already existing user (${state.id})")
+    else {
+      val credentials = CredentialType.OIDC(registration.providerId, registration.subject)
+      val newState = state.copy(
+        name = registration.name,
+        credentialType = credentials,
+        emailAddress = registration.email,
+        givenName = optionalize(registration.givenName),
+        familyName = optionalize(registration.familyName),
+        lastUpdatedTimestamp = Some(SystemClock.currentInstant)
+      )
+
+      effects.updateState(newState).thenReply(newState)
+    }
+
+  override def synchronizeOIDCIdentity(state: UserIdentity, identity: OIDCIdentityInformation) = {
+      val newState = state.copy(
+        name = identity.name,
+        emailAddress = identity.email,
+        givenName = optionalize(identity.givenName),
+        familyName = optionalize(identity.familyName),
+        lastUpdatedTimestamp = Some(SystemClock.currentInstant)
+      )
+
+      effects.updateState(newState).thenReply(stateToInfo(newState))
+    }
+
+  override def registerLocalIdentity(state: UserIdentity, registration: LocalIdentityRegistration) =
+    if (isUserInfoPopulated(state))
+      effects.error(s"Tried to register a local identity on top of an already existing user (${state.id})")
+    else {
+      val PasswordUtility.Result(salt, hashedPassword) = passwordUtility.hashForStorage(registration.plaintextPassword)
+      val credentials = CredentialType.Password(salt, hashedPassword)
+      val newState = state.copy(
+        name = s"${registration.givenName} ${registration.familyName}",
+        credentialType = credentials,
+        emailAddress = registration.emailAddress,
+        givenName = optionalize(registration.givenName),
+        familyName = optionalize(registration.familyName),
+        lastUpdatedTimestamp = Some(SystemClock.currentInstant)
+      )
+
+      effects.updateState(newState).thenReply(stateToInfo(newState))
+    }
+
+  override def updateLocalIdentity(state: UserIdentity, request: UpdateLocalIdentityRequest) =
+    if (!isUserInfoPopulated(state))
+      effects.error(s"User for ID `${request.id}` not found.", io.grpc.Status.Code.NOT_FOUND)
+    else {
+      val credentials = request.updatedPlaintextPassword.fold(
+        state.credentialType)(
+        text => {
+          val PasswordUtility.Result(salt, hashedPassword) = passwordUtility.hashForStorage(text)
+          CredentialType.Password(salt, hashedPassword)
+        }
+      )
+
+      val newState = state.copy(
+        name = request.updatedName.getOrElse(state.name),
+        emailAddress = request.updatedUserEmail.getOrElse(state.emailAddress),
+        givenName = request.updatedFirstName.orElse(state.givenName),
+        familyName = request.updatedLastName.orElse(state.familyName),
+        lastUpdatedTimestamp = Some(SystemClock.currentInstant)
+      )
+
+      effects.updateState(newState).thenReply(stateToInfo(newState))
+    }
+
+  override def updateUserRoles(state: UserIdentity, request: UpdateUserRolesRequest) =
     if (!isUserInfoPopulated(state))
       effects.error(s"User for ID `${request.userId}` not found.", io.grpc.Status.Code.NOT_FOUND)
     else {
-      val updatedState = state.copy(userRoles = request.updatedUserRoles)
+      val updatedState = state.copy(roles = request.updatedUserRoles)
       effects
         .updateState(updatedState)
         .thenReply(updatedState)

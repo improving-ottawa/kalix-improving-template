@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package com.example.gateway.entity;
+
+import "com/example/common/timestamp.proto";
+import "com/example/gateway/domain/user_domain.proto";
+import "com/example/gateway/api/user_api.proto";
+import "extensions/identity.proto";
+
+import "google/protobuf/empty.proto";
+import "kalix/annotations.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+/* UserId by foreign (OIDC) subject */
+
+service UserIdByOIDCSubject {
+  option (kalix.service).acl.allow = {service: "gateway"};
+  option (kalix.codegen) = {view: {}};
+
+  rpc RegisterRelation(domain.ForeignIdentityUserIdRelation) returns (domain.ForeignIdentityUserIdRelation) {
+    option (kalix.method).view.update = {
+      table: "user-by-subject"
+      transform_updates: true
+    };
+  }
+
+  rpc GetUserIdBySubject(api.ForeignIdentityRequest) returns (api.UserId) {
+    option (kalix.method).view.query = {
+      query: "SELECT user_id FROM user-by-subject WHERE provider = :provider AND subject = :subject"
+    };
+  }
+
+}
+
+/* UserLoginInfo by email address */
+
+service UserIdByEmailAddress {
+  option (kalix.service).acl.allow = {service: "gateway"};
+  option (kalix.codegen) = {view: {}};
+
+  rpc RegisterRelation(domain.UserLoginInfo) returns (domain.UserLoginInfo) {
+    option (kalix.method).view.update = {
+      table: "user-by-email"
+      transform_updates: true
+    };
+  }
+
+  rpc GetUserLoginByEmailAddress(api.UserEmailRequest) returns (domain.UserLoginInfo) {
+    option (kalix.method).view.query = {
+      query: "SELECT * FROM user-by-email WHERE email_address = :email_address "
+    };
+  }
+}

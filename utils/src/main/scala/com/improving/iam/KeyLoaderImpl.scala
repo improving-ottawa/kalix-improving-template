@@ -1,7 +1,6 @@
 package com.improving.iam
 
 import org.bouncycastle.asn1.pkcs.EncryptedPrivateKeyInfo
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.jcajce._
 import org.bouncycastle.openssl._
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo
@@ -11,17 +10,17 @@ import scala.util._
 
 import java.io._
 import java.nio.file.Paths
-import java.security.{Provider, Security}
+import java.security.Provider
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 
 private object KeyLoaderImpl {
   /* Cryptographic stuff (BouncyCastle) */
   final private type Password = Option[String]
 
-  final private val bcProvider = new BouncyCastleProvider
+  final private val bcProvider = com.improving.utils.BouncyCastle.bcProviderInstance
 
   // Load the BouncyCastle provider on class instantiation
-  Security.addProvider(bcProvider)
+  com.improving.utils.BouncyCastle.register()
 }
 
 abstract class KeyLoaderImpl { self: KeyLoader[_ <: AlgorithmWithKeys] =>

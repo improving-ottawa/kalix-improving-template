@@ -2,57 +2,64 @@ syntax = "proto3";
 
 package com.example.gateway.api;
 
-import "com/example/gateway/domain/gateway_commands.proto";
-import "com/example/gateway/domain/gateway_responses.proto";
+import "com/example/gateway/domain/authentication_domain.proto";
 
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
+import "validate/validate.proto";
 
-message BeginAuthenticationRequest {
+message BeginOIDCAuthenticationRequest {
   // The `providerId` to use when selecting the OIDC client / which OIDC provider to use
-  string provider_id = 1;
+  string provider_id = 1 [(validate.rules).string.min_len = 1];
 
-  // The client (UI) URI that the user will be redirected to after the OIDC authorization code flow is complete
+  // The client (UI) URI that the user will be redirected to after authentication is complete
   string redirect_uri = 2;
 }
 
-message OIDCAccessCodeData {
-  // The access code
+message PasswordAuthenticationRequest {
+  // The unique user identifier (UUID)
+  string user_id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+
+  // The plain-text user password
+  string plaintext_password = 2 [(validate.rules).string.min_len = 12];
+
+  // The client (UI) URI that the user will be redirected to after authentication is complete
+  string redirect_uri = 3;
+}
+
+message CompleteOIDCLoginRequest {
+  // The OIDC access code
   string code = 1;
 
-  // The state
+  // The OIDC state parameter
   string state = 2;
+}
 
-  // Additional query string params we might receive (will need to be expanded to handle new / additional OIDC providers)
-  string session_state = 3;
-  string iss = 4;
+message LoginResponse {
+  bool was_successful = 1;
+
+  domain.LoginData login_data = 2;
 }
 
 service AuthenticationService {
-  option (kalix.codegen) = { action: {} };
+  option (kalix.codegen) = {action: {name: "com.example.gateway.api.AuthenticationService"}};
 
   // Begin authentication, which will redirect the client (web-browser) to the OIDC provider's login page
   // starting the authorization code flow
-  rpc oidcAuthentication (BeginAuthenticationRequest) returns (google.api.HttpBody) {
+  rpc oidcBeginLogin (BeginOIDCAuthenticationRequest) returns (google.api.HttpBody) {
     option (google.api.http) = {
       // Note: According to this specification:
       // https://cloud.google.com/apis/design/standard_methods#get
-      // the query parameters should populate the `OIDCAccessCodeData` record.
+      // the query parameters should populate the `BeginOIDCAuthenticationRequest` record.
       get: "/oidc/auth"
     };
   }
 
-  // OpenID Connect (OIDC) callback endpoint
-  rpc oidcCallback (OIDCAccessCodeData) returns (google.api.HttpBody) {
-    option (google.api.http) = {
-      // Note: According to this specification:
-      // https://cloud.google.com/apis/design/standard_methods#get
-      // the query parameters should populate the `OIDCAccessCodeData` record.
-      get: "/oidc/callback"
-    };
-  }
+  // Complete OIDC login via `CompleteLoginRequest`
+  rpc oidcCompleteLogin (CompleteOIDCLoginRequest) returns (domain.LoginData);
 
-  rpc oidcCompleteLogin (domain.CompleteLoginRequest) returns (domain.CompleteLoginResponse);
+  // Perform a Password based login
+  rpc passwordLogin (PasswordAuthenticationRequest) returns (domain.LoginData);
 }

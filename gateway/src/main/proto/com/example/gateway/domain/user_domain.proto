@@ -3,53 +3,119 @@ syntax = "proto3";
 package com.example.gateway.domain;
 
 import "com/example/common/timestamp.proto";
+import "extensions/identity.proto";
+
 import "kalix/annotations.proto";
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";
 
-/* Entity Requests / Responses */
-
-message GetUserRequest {
-  // The unique user identifier (UUID)
-  string user_id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+// How a particular user authenticates (either: OIDC or Password)
+enum LoginType {
+  OIDC = 0;
+  Password = 1;
 }
 
-message UpdateUserRolesRequest {
-  // The unique user identifier (UUID)
-  string user_id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
-  // The (new/updated) application roles for the user
-  repeated string updated_user_roles = 2 [
-    (scalapb.field).collection_type = "scala.collection.immutable.Set",
-    (validate.rules).repeated.min_items = 1
+message UserLoginInfo {
+  string id = 1 [
+    (validate.rules).string.uuid = true,
+    (scalapb.field).no_default_value_in_constructor = true
   ];
+
+  string email_address = 2 [(kalix.field).entity_key = true];
+
+  LoginType login_type = 3;
+
+  optional string provider_id = 4;
 }
 
-message GetUserResponse {
-  optional domain.UserInfo user_info = 1;
+message ForeignIdentityUserIdRelation {
+  // The provider identifier
+  string provider_id = 1 [(scalapb.field).no_default_value_in_constructor = true];
+
+  // The foreign OIDC subject for the identity
+  string subject = 2 [(kalix.field).entity_key = true, (scalapb.field).no_default_value_in_constructor = true];
+
+  // The unique (local) user identifier (UUID) for the corresponding user
+  string user_id = 3 [(validate.rules).string.uuid = true];
 }
 
-/* Entity Info / State */
+message OIDCIdentityRegistration {
+  string provider_id = 1 [(scalapb.field).no_default_value_in_constructor = true];
 
-message UserInfo {
-  // The unique user identifier (UUID)
-  string id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
-  // The OIDC identity provider this user is synchronized to
-  string provider_id = 2 [(validate.rules).string.min_len = 1];
-  // The user's email address
-  optional string email_address = 3 [(validate.rules).string.email = true];
-  // The last date/time (instant) this was synchronized with the source identity provider
-  optional common.Timestamp last_synced = 4;
+  string subject = 2 [(scalapb.field).no_default_value_in_constructor = true];
+
+  string name = 3 [(scalapb.field).no_default_value_in_constructor = true];
+
+  string email = 4;
 
   // The user's given name ("first name")
   string given_name = 5;
+
   // The user's family name ("last name")
   string family_name = 6;
-  // The user's preferred display name
-  string preferred_display_name = 7 [(validate.rules).string.min_len = 1];
+}
 
-  // Reserved for future data
-  reserved 8, 9;
+message LocalIdentityRegistration {
+  string email_address = 1 [
+    (validate.rules).string.email = true,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  string given_name = 2 [
+    (validate.rules).string.min_len = 3,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  string family_name = 3 [
+    (validate.rules).string.min_len = 3,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+
+  string plaintext_password = 4 [
+    (validate.rules).string.min_len = 12,
+    (scalapb.field).no_default_value_in_constructor = true
+  ];
+}
+
+message OIDCIdentityInformation {
+  string id = 1 [(kalix.field).entity_key = true, (validate.rules).string.uuid = true];
+
+  string provider_id = 2 [(scalapb.field).no_default_value_in_constructor = true];
+
+  string subject = 3 [(scalapb.field).no_default_value_in_constructor = true];
+
+  string name = 4 [(scalapb.field).no_default_value_in_constructor = true];
+
+  string family_name = 5;
+
+  string given_name = 6;
+
+  string middle_name = 7;
+
+  string email = 8;
+}
+
+/* User info */
+
+message UserInfo {
+  // The unique user identifier (UUID)
+  string id = 1;
+
+  // How this user logs in (either: OIDC or password)
+  LoginType login_type = 2;
+
+  // The user's email address (that they will login with)
+  string login_email = 3;
+
+  // The user's display name
+  string name = 4;
+
+  // The user's given name ("first name")
+  string given_name = 5;
+
+  // The user's family name ("last name")
+  string family_name = 6;
 
   // The roles that are assigned to this user
-  repeated string user_roles = 10 [(scalapb.field).collection_type = "scala.collection.immutable.Set"];
+  repeated string user_roles = 7 [(scalapb.field).collection_type = "scala.collection.immutable.Set"];
 }
