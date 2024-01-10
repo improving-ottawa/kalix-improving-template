@@ -16,8 +16,9 @@ class UserIdByOIDCSubjectView(context: ViewContext) extends AbstractUserIdByOIDC
     throw new UnsupportedOperationException("Not implemented yet, replace with your empty view state")
 
   override def registerRelation(
-      state: ForeignIdentityUserIdRelation,
-      foreignIdentityUserIdRelation: ForeignIdentityUserIdRelation): UpdateEffect[ForeignIdentityUserIdRelation] =
+    state: ForeignIdentityUserIdRelation,
+    foreignIdentityUserIdRelation: ForeignIdentityUserIdRelation
+  ): UpdateEffect[ForeignIdentityUserIdRelation] =
     throw new UnsupportedOperationException("Update handler for 'RegisterRelation' not implemented yet")
 
 }

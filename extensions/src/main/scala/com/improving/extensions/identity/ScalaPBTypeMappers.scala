@@ -18,9 +18,6 @@ object ScalaPBTypeMappers {
     TypeMapper[String, UUID](str => UUID.fromString(str))(uuid => uuid.toString)
 
   implicit final val typeMapperLongInstant: TypeMapper[Long, Instant] =
-    TypeMapper[Long, Instant](
-      epochMillis => Instant.ofEpochMilli(epochMillis))(
-      instant => instant.toEpochMilli
-    )
+    TypeMapper[Long, Instant](epochMillis => Instant.ofEpochMilli(epochMillis))(instant => instant.toEpochMilli)
 
 }

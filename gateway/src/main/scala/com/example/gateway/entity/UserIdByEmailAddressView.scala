@@ -15,9 +15,7 @@ class UserIdByEmailAddressView(context: ViewContext) extends AbstractUserIdByEma
   override def emptyState: UserLoginInfo =
     throw new UnsupportedOperationException("Not implemented yet, replace with your empty view state")
 
-  override def registerRelation(
-      state: UserLoginInfo,
-      userLoginInfo: UserLoginInfo): UpdateEffect[UserLoginInfo] =
+  override def registerRelation(state: UserLoginInfo, userLoginInfo: UserLoginInfo): UpdateEffect[UserLoginInfo] =
     throw new UnsupportedOperationException("Update handler for 'RegisterRelation' not implemented yet")
 
 }

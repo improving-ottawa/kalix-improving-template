@@ -17,9 +17,9 @@ object PasswordUtility {
 
     // DO NOT change these unless you know what you are doing. They were sourced directly from OWASP, here:
     // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-    private final val iterations = 2
-    private final val memLimit = 19456
-    private final val parallelism = 1
+    final private val iterations  = 2
+    final private val memLimit    = 19456
+    final private val parallelism = 1
 
     def usingSalt(salt: Array[Byte]) =
       new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
@@ -34,23 +34,23 @@ object PasswordUtility {
 
 }
 
-final class PasswordUtility private(settings: PepperingSettings, secureRNG: java.util.Random) {
+final class PasswordUtility private (settings: PepperingSettings, secureRNG: java.util.Random) {
   import PasswordUtility._
 
   private type ByteArray = Array[Byte]
 
   def hashForStorage(plainTextPassword: String): Result = {
     val uniqueSalt = generateNewSalt()
-    val peppering = createPeppering()
-    val redText = plainTextPassword.getBytes(java.nio.charset.StandardCharsets.UTF_8)
-    val blackText = hashPasswordInternal(uniqueSalt, redText, peppering)
+    val peppering  = createPeppering()
+    val redText    = plainTextPassword.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+    val blackText  = hashPasswordInternal(uniqueSalt, redText, peppering)
 
     Result(uniqueSalt, blackText)
   }
 
   def verify(plainTextPassword: String, salt: Array[Byte], hashedPassword: Array[Byte]): Boolean = {
     val peppering = createPeppering()
-    val redText = plainTextPassword.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+    val redText   = plainTextPassword.getBytes(java.nio.charset.StandardCharsets.UTF_8)
     val blackText = hashPasswordInternal(salt, redText, peppering)
 
     java.util.Arrays.equals(blackText, hashedPassword)
@@ -58,10 +58,10 @@ final class PasswordUtility private(settings: PepperingSettings, secureRNG: java
 
   private def createPeppering(): Option[Mac] =
     settings match {
-      case PepperingSettings.Disabled => None
-      case enabled@PepperingSettings.Enabled(algorithm, key) =>
+      case PepperingSettings.Disabled                          => None
+      case enabled @ PepperingSettings.Enabled(algorithm, key) =>
         val secretKey = new SecretKeySpec(key.rawBytes, algorithm)
-        val mac = enabled.tryGetMac.fold(throw _, identity)
+        val mac       = enabled.tryGetMac.fold(throw _, identity)
         mac.init(secretKey)
         Some(mac)
     }
@@ -76,7 +76,7 @@ final class PasswordUtility private(settings: PepperingSettings, secureRNG: java
     // Hash the password
     val generator = new Argon2BytesGenerator
     generator.init(argon2Params)
-    val result = new Array[Byte](Argon2Params.hashLength)
+    val result    = new Array[Byte](Argon2Params.hashLength)
     generator.generateBytes(redText, result, 0, result.length)
 
     // If we are not peppering, return the result, otherwise pepper the result

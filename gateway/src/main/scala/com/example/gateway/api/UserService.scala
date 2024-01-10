@@ -14,17 +14,27 @@ class UserService(creationContext: ActionCreationContext) extends AbstractUserSe
   override def getUserLoginInfo(userEmailRequest: UserEmailRequest): Action.Effect[UserLoginInfoResponse] = {
     throw new RuntimeException("The command handler for `GetUserLoginInfo` is not implemented, yet")
   }
-  override def registerNewLocalUser(localIdentityRegistration: LocalIdentityRegistration): Action.Effect[UserResponse] = {
+
+  override def registerNewLocalUser(
+    localIdentityRegistration: LocalIdentityRegistration
+  ): Action.Effect[UserResponse] = {
     throw new RuntimeException("The command handler for `RegisterNewLocalUser` is not implemented, yet")
   }
-  override def getUserIdBySubject(foreignIdentityRequest: ForeignIdentityRequest): Action.Effect[ForeignIdentityResponse] = {
+
+  override def getUserIdBySubject(
+    foreignIdentityRequest: ForeignIdentityRequest
+  ): Action.Effect[ForeignIdentityResponse] = {
     throw new RuntimeException("The command handler for `GetUserIdBySubject` is not implemented, yet")
   }
-  override def getUserInfo(getUserRequest: GetUserRequest): Action.Effect[UserResponse] = {
+
+  override def getUserInfo(getUserRequest: GetUserRequest): Action.Effect[UserResponse]                   = {
     throw new RuntimeException("The command handler for `GetUserInfo` is not implemented, yet")
   }
-  override def updateLocalUserIdentity(updateLocalIdentityRequest: UpdateLocalIdentityRequest): Action.Effect[UserResponse] = {
+
+  override def updateLocalUserIdentity(
+    updateLocalIdentityRequest: UpdateLocalIdentityRequest
+  ): Action.Effect[UserResponse] = {
     throw new RuntimeException("The command handler for `UpdateLocalUserIdentity` is not implemented, yet")
   }
-}
 
+}

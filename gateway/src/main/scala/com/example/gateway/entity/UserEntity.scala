@@ -14,6 +14,7 @@ import java.util.UUID
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
 final class UserEntity(passwordUtility: PasswordUtility, context: ValueEntityContext) extends AbstractUserEntity {
+
   private def isUserInfoPopulated(state: UserIdentity): Boolean =
     state.credentialType != CredentialType.None
 
@@ -55,7 +56,7 @@ final class UserEntity(passwordUtility: PasswordUtility, context: ValueEntityCon
       effects.error(s"Tried to register an OIDC identity on top of an already existing user (${state.id})")
     else {
       val credentials = CredentialType.OIDC(registration.providerId, registration.subject)
-      val newState = state.copy(
+      val newState    = state.copy(
         name = registration.name,
         credentialType = credentials,
         emailAddress = registration.email,
@@ -68,24 +69,24 @@ final class UserEntity(passwordUtility: PasswordUtility, context: ValueEntityCon
     }
 
   override def synchronizeOIDCIdentity(state: UserIdentity, identity: OIDCIdentityInformation) = {
-      val newState = state.copy(
-        name = identity.name,
-        emailAddress = identity.email,
-        givenName = optionalize(identity.givenName),
-        familyName = optionalize(identity.familyName),
-        lastUpdatedTimestamp = Some(SystemClock.currentInstant)
-      )
+    val newState = state.copy(
+      name = identity.name,
+      emailAddress = identity.email,
+      givenName = optionalize(identity.givenName),
+      familyName = optionalize(identity.familyName),
+      lastUpdatedTimestamp = Some(SystemClock.currentInstant)
+    )
 
-      effects.updateState(newState).thenReply(stateToInfo(newState))
-    }
+    effects.updateState(newState).thenReply(stateToInfo(newState))
+  }
 
   override def registerLocalIdentity(state: UserIdentity, registration: LocalIdentityRegistration) =
     if (isUserInfoPopulated(state))
       effects.error(s"Tried to register a local identity on top of an already existing user (${state.id})")
     else {
       val PasswordUtility.Result(salt, hashedPassword) = passwordUtility.hashForStorage(registration.plaintextPassword)
-      val credentials = CredentialType.Password(salt, hashedPassword)
-      val newState = state.copy(
+      val credentials                                  = CredentialType.Password(salt, hashedPassword)
+      val newState                                     = state.copy(
         name = s"${registration.givenName} ${registration.familyName}",
         credentialType = credentials,
         emailAddress = registration.emailAddress,
@@ -101,13 +102,10 @@ final class UserEntity(passwordUtility: PasswordUtility, context: ValueEntityCon
     if (!isUserInfoPopulated(state))
       effects.error(s"User for ID `${request.id}` not found.", io.grpc.Status.Code.NOT_FOUND)
     else {
-      val credentials = request.updatedPlaintextPassword.fold(
-        state.credentialType)(
-        text => {
-          val PasswordUtility.Result(salt, hashedPassword) = passwordUtility.hashForStorage(text)
-          CredentialType.Password(salt, hashedPassword)
-        }
-      )
+      val credentials = request.updatedPlaintextPassword.fold(state.credentialType)(text => {
+        val PasswordUtility.Result(salt, hashedPassword) = passwordUtility.hashForStorage(text)
+        CredentialType.Password(salt, hashedPassword)
+      })
 
       val newState = state.copy(
         name = request.updatedName.getOrElse(state.name),

@@ -11,9 +11,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class UserServiceSpec
-    extends AnyWordSpec
-    with Matchers {
+class UserServiceSpec extends AnyWordSpec with Matchers {
 
   "UserService" must {
 
@@ -29,31 +27,31 @@ class UserServiceSpec
 
     "handle command GetUserLoginInfo" in {
       val service = UserServiceTestKit(new UserService(_))
-          pending
+      pending
       // val result = service.getUserLoginInfo(UserEmailRequest(...))
     }
 
     "handle command RegisterNewLocalUser" in {
       val service = UserServiceTestKit(new UserService(_))
-          pending
+      pending
       // val result = service.registerNewLocalUser(LocalIdentityRegistration(...))
     }
 
     "handle command GetUserIdBySubject" in {
       val service = UserServiceTestKit(new UserService(_))
-          pending
+      pending
       // val result = service.getUserIdBySubject(ForeignIdentityRequest(...))
     }
 
     "handle command GetUserInfo" in {
       val service = UserServiceTestKit(new UserService(_))
-          pending
+      pending
       // val result = service.getUserInfo(GetUserRequest(...))
     }
 
     "handle command UpdateLocalUserIdentity" in {
       val service = UserServiceTestKit(new UserService(_))
-          pending
+      pending
       // val result = service.updateLocalUserIdentity(UpdateLocalIdentityRequest(...))
     }
 

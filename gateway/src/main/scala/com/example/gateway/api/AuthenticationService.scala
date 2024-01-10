@@ -18,18 +18,19 @@ import scala.concurrent.Future
 
 // This class was initially generated based on the .proto definition by Kalix tooling.
 
-sealed abstract class AuthenticationServiceBase(protected final val jwtIssuer: JwtIssuer)
-  extends AbstractAuthenticationService with FutureUtils {
+sealed abstract class AuthenticationServiceBase(final protected val jwtIssuer: JwtIssuer)
+    extends AbstractAuthenticationService
+    with FutureUtils {
 
-  protected final val log = LoggerFactory.getLogger("com.example.gateway.api.AuthenticationService")
+  final protected val log = LoggerFactory.getLogger("com.example.gateway.api.AuthenticationService")
 
   protected def identityService: OIDCIdentityService[Future]
 
   protected def passwordUtility: PasswordUtility
 
-  protected final type DataAndToken = (LoginData, String)
+  final protected type DataAndToken = (LoginData, String)
 
-  protected final def createLoginDataAndToken(userIdentity: UserIdentity, redirect: String): Future[DataAndToken] = {
+  final protected def createLoginDataAndToken(userIdentity: UserIdentity, redirect: String): Future[DataAndToken] = {
     val csrfToken = SecureRandomString(8)
 
     val resultEither = jwtIssuer
@@ -48,7 +49,7 @@ sealed abstract class AuthenticationServiceBase(protected final val jwtIssuer: J
     Future.fromEither(resultEither)
   }
 
-  private final def identityToInfo(state: UserIdentity): UserInfo = {
+  final private def identityToInfo(state: UserIdentity): UserInfo = {
     val loginType = state.credentialType match {
       case CredentialType.OIDC(_, _) => LoginType.Oidc
       case _                         => LoginType.Password
@@ -64,6 +65,7 @@ sealed abstract class AuthenticationServiceBase(protected final val jwtIssuer: J
       userRoles = state.roles
     )
   }
+
 }
 
 sealed trait PasswordAuthenticationPart extends AuthenticationServiceBase {
@@ -71,10 +73,11 @@ sealed trait PasswordAuthenticationPart extends AuthenticationServiceBase {
   override def passwordLogin(request: PasswordAuthenticationRequest): Action.Effect[LoginData] = {
     def verifyPassword(userIdentity: UserIdentity): Future[Unit] =
       userIdentity.credentialType match {
-        case CredentialType.Password(salt, hashedPassword) => Future {
-          if (!passwordUtility.verify(request.plaintextPassword, salt, hashedPassword))
-            throw new Exception("Password verification failed.")
-        }
+        case CredentialType.Password(salt, hashedPassword) =>
+          Future {
+            if (!passwordUtility.verify(request.plaintextPassword, salt, hashedPassword))
+              throw new Exception("Password verification failed.")
+          }
 
         case _ =>
           val credentials = userIdentity.credentialType.toString
@@ -135,7 +138,7 @@ sealed trait OIDCAuthenticationPart extends AuthenticationServiceBase {
     } else if (request.state.isBlank) {
       effects.error("No session `state` in query string", StatusCode.INVALID_ARGUMENT)
     } else {
-      val code = request.code
+      val code       = request.code
       val stateToken = request.state
 
       val futureEffect =
@@ -153,13 +156,14 @@ sealed trait OIDCAuthenticationPart extends AuthenticationServiceBase {
 
       effects.asyncEffect(
         futureEffect
-          .onError(error => Future.successful(log.error(s"Login failed due to an error:", error)))
+          .onError(error => Future.successful(log.error(s"OIDC login failed due to an error:", error)))
           .recover(_ => effects.error("Login failed."))
       )
     }
 
-  private final def getUserIdentityBySubject(providerId: String, identity: OIDCIdentity) =
-    components.userService.getUserIdBySubject(ForeignIdentityRequest(providerId, identity.id.toString))
+  final private def getUserIdentityBySubject(providerId: String, identity: OIDCIdentity) =
+    components.userService
+      .getUserIdBySubject(ForeignIdentityRequest(providerId, identity.id.toString))
       .execute()
       .flatMap {
         case ForeignIdentityResponse(Some(userId), _) =>
@@ -171,28 +175,29 @@ sealed trait OIDCAuthenticationPart extends AuthenticationServiceBase {
         case _ => registerIdentityAsUser(providerId, identity)
       }
 
-  private final def syncIdentityToUser(userId: String, providerId: String, identity: OIDCIdentity): Future[Unit] = {
+  final private def syncIdentityToUser(userId: String, providerId: String, identity: OIDCIdentity): Future[Unit] = {
     val userInformation = OIDCIdentityInformation(
       id = userId,
       providerId = providerId,
       subject = identity.id.toString,
-      name = identity.name,
+      name = identity.preferredName.getOrElse(identity.name),
       familyName = identity.familyName.getOrElse(""),
       givenName = identity.givenName.getOrElse(""),
       middleName = identity.middleName.getOrElse(""),
       email = identity.email.getOrElse("")
     )
 
-    components.userEntity.synchronizeOIDCIdentity(userInformation)
+    components.userEntity
+      .synchronizeOIDCIdentity(userInformation)
       .execute()
       .map(_ => ())
   }
 
-  private final def registerIdentityAsUser(providerId: String, identity: OIDCIdentity): Future[UserIdentity] = {
+  final private def registerIdentityAsUser(providerId: String, identity: OIDCIdentity): Future[UserIdentity] = {
     val registration = OIDCIdentityRegistration(
       providerId = providerId,
       subject = identity.id.toString,
-      name = identity.name,
+      name = identity.preferredName.getOrElse(identity.name),
       email = identity.email.getOrElse(""),
       givenName = identity.givenName.getOrElse(""),
       familyName = identity.familyName.getOrElse("")
@@ -208,5 +213,5 @@ final class AuthenticationService(
   jwtIssuer: JwtIssuer,
   protected val passwordUtility: PasswordUtility
 ) extends AuthenticationServiceBase(jwtIssuer)
-  with PasswordAuthenticationPart
-  with OIDCAuthenticationPart
+    with PasswordAuthenticationPart
+    with OIDCAuthenticationPart

@@ -8,15 +8,17 @@ import org.scalatest.wordspec.AnyWordSpec
 class PasswordUtilitySpec extends AnyWordSpec with Matchers {
   import PasswordUtility.Result
 
-  private val testStorage = scala.collection.mutable.Map.empty[String, Result]
-  private val secureRandom = new scala.util.Random(new java.security.SecureRandom)
+  private val testStorage                                             = scala.collection.mutable.Map.empty[String, Result]
+  private val secureRandom                                            = new scala.util.Random(new java.security.SecureRandom)
+
   private def randomString(minLen: Int = 3, maxLen: Int = 20): String =
     secureRandom.nextString(minLen + secureRandom.nextInt(maxLen - minLen))
 
   private def randomBytes(minLen: Int = 3, maxLen: Int = 20): Array[Byte] =
     randomString(minLen, maxLen).getBytes
 
-  private val testPasswords = (1 to 128).map(_ => randomString()).toList
+  private val testPasswords      = (1 to 128).map(_ => randomString()).toList
+
   private val testConfigurations = List(
     PepperingSettings.Disabled,
     PepperingSettings.Enabled("HmacSHA256", Base64String(randomBytes())),
@@ -67,7 +69,7 @@ class PasswordUtilitySpec extends AnyWordSpec with Matchers {
 
   def testHashing(settings: PepperingSettings, passwords: List[String]) = {
     val utility = PasswordUtility(settings)
-    for(password <- passwords) yield {
+    for (password <- passwords) yield {
       val result = utility.hashForStorage(password)
       addResult(password, result)
 

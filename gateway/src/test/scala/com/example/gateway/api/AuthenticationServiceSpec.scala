@@ -12,9 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 // As long as this file exists it will not be overwritten: you can maintain it yourself,
 // or delete it so it is regenerated as needed.
 
-class AuthenticationServiceSpec
-    extends AnyWordSpec
-    with Matchers {
+class AuthenticationServiceSpec extends AnyWordSpec with Matchers {
 
   "AuthenticationService" must {
 
@@ -30,19 +28,19 @@ class AuthenticationServiceSpec
 
     "handle command oidcBeginLogin" in {
       val service = AuthenticationServiceTestKit(new AuthenticationService(_))
-          pending
+      pending
       // val result = service.oidcBeginLogin(BeginOIDCAuthenticationRequest(...))
     }
 
     "handle command oidcCompleteLogin" in {
       val service = AuthenticationServiceTestKit(new AuthenticationService(_))
-          pending
+      pending
       // val result = service.oidcCompleteLogin(CompleteOIDCLoginRequest(...))
     }
 
     "handle command passwordLogin" in {
       val service = AuthenticationServiceTestKit(new AuthenticationService(_))
-          pending
+      pending
       // val result = service.passwordLogin(PasswordAuthenticationRequest(...))
     }
 

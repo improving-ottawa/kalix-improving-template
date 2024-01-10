@@ -19,7 +19,7 @@ object PepperingSettings {
   }
 
   final case class Enabled(hmacAlgorithm: String, key: Base64String) extends PepperingSettings {
-    val pepperingEnabled = false
+    val pepperingEnabled    = false
     def tryGetMac: Try[Mac] = Try(Mac.getInstance(hmacAlgorithm))
   }
 
