@@ -19,7 +19,7 @@ object CredentialType {
     final val isOIDC     = false
   }
 
-  final case class OIDC(providerName: String, linkedIdentityId: String) extends CredentialType {
+  final case class OIDC(providerName: String, linkedIdentitySubject: String) extends CredentialType {
     final val isPassword = false
     final val isOIDC     = true
   }
@@ -32,9 +32,9 @@ object CredentialType {
   final def toProto(credentialType: CredentialType): CredentialTypeProto = {
     val innerRecord: ProtoInnerType =
       credentialType match {
-        case None                               => ProtoInnerType.Empty
-        case OIDC(providerId, linkedIdentityId) => ProtoInnerType.Oidc(CredentialsOIDC(providerId, linkedIdentityId))
-        case Password(salt, password)           =>
+        case None                      => ProtoInnerType.Empty
+        case OIDC(providerId, subject) => ProtoInnerType.Oidc(CredentialsOIDC(providerId, subject))
+        case Password(salt, password)  =>
           ProtoInnerType.Password(CredentialsPassword(ByteString.copyFrom(salt), ByteString.copyFrom(password)))
       }
 

@@ -2,10 +2,10 @@ package com.example.gateway.utils
 
 import com.improving.iam._
 import com.improving.config._
-import com.improving.extensions.oidc.OIDCIdentity
 import com.improving.utils.{Base64String, SystemClock}
 import cats.syntax.all._
 import com.improving.extensions.identity.UserIdentity
+import com.improving.extensions.identity.oidc.OIDCIdentity
 import sttp.model.Uri
 
 import scala.concurrent.duration.FiniteDuration

@@ -3,12 +3,12 @@ package com.example.gateway.api
 import com.improving.extensions.identity._
 import com.improving.extensions.oidc._
 import com.improving.utils._
-
 import com.example.gateway.domain._
 import com.example.gateway.utils.JwtIssuer
-
 import cats.syntax.all._
 import com.google.api.HttpBody
+import com.improving.extensions.identity.oidc.{OIDCIdentity, OIDCIdentityService, OIDCState}
+import com.improving.extensions.identity.password.PasswordService
 import io.grpc.Status.{Code => StatusCode}
 import kalix.scalasdk.Metadata
 import kalix.scalasdk.action.Action
@@ -26,7 +26,7 @@ sealed abstract class AuthenticationServiceBase(final protected val jwtIssuer: J
 
   protected def identityService: OIDCIdentityService[Future]
 
-  protected def passwordUtility: PasswordUtility
+  protected def passwordUtility: PasswordService
 
   final protected type DataAndToken = (LoginData, String)
 
@@ -211,7 +211,7 @@ sealed trait OIDCAuthenticationPart extends AuthenticationServiceBase {
 final class AuthenticationService(
   protected val identityService: OIDCIdentityService[Future],
   jwtIssuer: JwtIssuer,
-  protected val passwordUtility: PasswordUtility
+  protected val passwordUtility: PasswordService
 ) extends AuthenticationServiceBase(jwtIssuer)
     with PasswordAuthenticationPart
     with OIDCAuthenticationPart

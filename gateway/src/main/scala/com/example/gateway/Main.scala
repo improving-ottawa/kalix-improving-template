@@ -6,9 +6,9 @@ import com.example.gateway.middleware._
 import com.example.gateway.utils._
 import com.improving.iam._
 import com.improving.config._
+import com.improving.extensions.identity.oidc.{OIDCClient, OIDCIdentityService, OIDCIdentityServiceConfig}
 import com.improving.extensions.oidc._
 import com.improving.utils.{AsyncContext, StringPrinter}
-
 import kalix.javasdk._
 import kalix.scalasdk.action.ActionOptions
 import kalix.scalasdk.{Kalix, WrappedKalix}

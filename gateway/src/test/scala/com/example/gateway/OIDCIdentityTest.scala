@@ -6,9 +6,9 @@ import com.improving.extensions.oidc._
 import com.improving.testkit._
 import com.improving.utils._
 import com.example.gateway.utils._
-
 import cats.effect._
 import cats.effect.unsafe.IORuntime
+import com.improving.extensions.identity.oidc.{OIDCClientConfig, OIDCIdentityServiceConfig}
 import org.typelevel.log4cats.slf4j.Slf4jFactory
 import pdi.jwt.JwtAlgorithm
 import sttp.client3._
