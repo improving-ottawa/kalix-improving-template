@@ -1,4 +1,4 @@
-include "fragments/header"
+
 
 record HelpfulResources is {
   title: String,
@@ -27,7 +27,7 @@ type BlogTopic is {topic: String}
 type BlogTopics is {topicList: BlogTopic*}
 
 page BlogHomePage {
-  contains HeaderMenu as group Header
+  contains HeaderMenu as group ExampleApp.Header
   output HelpfulResourcesHeader shows HelpfulResources
   output BlogCarosel shows BlogList
   output HighlightedBlog shows BlogEntry briefly "shows the blog we wish to highlight to the customer"

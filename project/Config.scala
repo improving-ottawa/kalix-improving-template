@@ -1,6 +1,7 @@
 import akka.grpc.sbt.AkkaGrpcPlugin
 import akka.grpc.sbt.AkkaGrpcPlugin.autoImport.akkaGrpcCodeGeneratorSettings
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin
+import com.ossuminc.riddl.sbt.plugin.RiddlSbtPlugin
+import com.ossuminc.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.*
@@ -27,7 +28,6 @@ import sbtbuildinfo.BuildInfoPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import scalapb.GeneratorOption
 import scalapb.GeneratorOption.{FlatPackage, _}
-import com.reactific.riddl.sbt.plugin.RiddlSbtPlugin.autoImport.*
 import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsToken
 
 import java.util.Calendar
@@ -374,8 +374,8 @@ object Config {
       .enablePlugins(RiddlSbtPlugin)
       .settings(
         scalaVersion     := "3.3.1",
-        riddlcMinVersion := "0.27.7",
-        riddlcConf       := file("design/src/main/riddl/ksoapp.conf"),
+        riddlcMinVersion := "0.34.1",
+        riddlcConf       := file("design/src/main/riddl/example.conf"),
         riddlcOptions    := Seq("--show-times", "--verbose"),
       )
   }

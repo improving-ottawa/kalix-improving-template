@@ -13,14 +13,14 @@ epic CheckoutEpic {
   }
   case UserPlacesOrder is {
     user AuthedUser wants to "review their order" so "they can confirm that it is correct before placing it"
-    step show output OrderReviewPage to user AuthedUser
+    step focus user AuthedUser on page OrderReviewPage
     step take button PlaceOrderButton from user AuthedUser
     step focus user AuthedUser on page OrderConfirmationPage
   }
   case UserReceivesOrderConfirmation is {
     user AuthedUser wants to "get their order number" so "they can follow order progress"
-    step show output OrderConfirmationPage to user AuthedUser
-    step "AuthedUser" "receives" "order confirmation email" 
+    step focus user AuthedUser on page OrderConfirmationPage
+    step "AuthedUser" "receives" "order confirmation email"
   }
   case NavigateCheckoutStepperToShippingDetails is {
     user AuthedUser wants to "change the active step in the stepper" so "they can visit previous pages in the checkout flow"
@@ -37,6 +37,6 @@ epic CheckoutEpic {
   case EditPaymentInfo is {
     ???
   }
-  
+
 }
 
