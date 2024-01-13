@@ -65,7 +65,7 @@ final class PasswordService private(settings: PepperingSettings) {
   private def createPeppering(): Option[HMAC] =
     settings match {
       case PepperingSettings.Disabled         => None
-      case enabled: PepperingSettings.Enabled => enabled.tryGetMac.toOption
+      case enabled: PepperingSettings.Enabled => enabled.tryGetMac.fold(throw _, Some(_))
     }
 
   private def hashPasswordInternal(salt: ByteArray, redText: ByteArray, peppering: Option[HMAC]): ByteArray = {

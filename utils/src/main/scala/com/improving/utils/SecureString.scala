@@ -49,4 +49,12 @@ object SecureString {
     if (text == null || text.isBlank) Empty
     else new SecureString(text.toCharArray)
 
+  /** Only intended for tests / test use cases! */
+  def random(textLength: Int): SecureString = {
+    require(textLength > 0, "The number of characters in the secure string must be >= 0")
+    require(textLength <= 4096, "Too many characters requested for secure string (max: 4096)")
+
+    val secureRNG = new scala.util.Random(new java.security.SecureRandom)
+    apply(secureRNG.nextString(textLength))
+  }
 }

@@ -10,6 +10,7 @@ object Dependencies {
     val alpakka         = "5.0.0"
     val avro4s          = "5.0.7"
     val auth0           = "2.6.1"
+    val bouncyCastle    = "1.77"
     val chimney         = "0.6.2"
     val commonsCodec    = "1.15"
     val jsoniterScala   = "2.21.3"
@@ -66,8 +67,8 @@ object Dependencies {
   )
 
   lazy val bouncyCastleCryptoPackage = Seq(
-    "org.bouncycastle" % "bcprov-jdk15on" % "1.70",
-    "org.bouncycastle" % "bcpkix-jdk15on" % "1.70"
+    "org.bouncycastle" % "bcprov-jdk15to18" % bouncyCastle,
+    "org.bouncycastle" % "bcpkix-jdk15to18" % bouncyCastle
   )
 
   lazy val akkaGrpc = "com.lightbend.akka.grpc" %% "akka-grpc-runtime" % lightbendGrpc

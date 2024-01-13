@@ -23,14 +23,14 @@ class PasswordServiceSpec extends AnyWordSpec with Matchers {
   private val testConfigurations = List(
     PepperingSettings.Disabled,
     PepperingSettings(SecureString(randomString()), "HmacSHA256"),
-    PepperingSettings(SecureString(randomString()), "Blake3Mac")
+    PepperingSettings(SecureString(randomString()), "Blake3256")
   )
 
   private def addResult(plainText: String, result: Result): Unit = { testStorage.addOne((plainText, result)) }
 
   /* ScalaTest */
 
-  "Password Utility" when {
+  "PasswordService" when {
 
     "using no peppering" should {
       testStorage.clear()
@@ -46,22 +46,22 @@ class PasswordServiceSpec extends AnyWordSpec with Matchers {
       testStorage.clear()
       val settings = testConfigurations(1)
 
-      "be able to hash passwords" in testHashing(PepperingSettings.Disabled, testPasswords)
+      "be able to hash passwords" in testHashing(settings, testPasswords)
 
       "not produce any hash collisions" in testCollisions()
 
-      "be able to verify hashed passwords" in testVerification(PepperingSettings.Disabled)
+      "be able to verify hashed passwords" in testVerification(settings)
     }
 
     "using Blake3Mac peppering" should {
       testStorage.clear()
       val settings = testConfigurations(2)
 
-      "be able to hash passwords" in testHashing(PepperingSettings.Disabled, testPasswords)
+      "be able to hash passwords" in testHashing(settings, testPasswords)
 
       "not produce any hash collisions" in testCollisions()
 
-      "be able to verify hashed passwords" in testVerification(PepperingSettings.Disabled)
+      "be able to verify hashed passwords" in testVerification(settings)
     }
 
   }

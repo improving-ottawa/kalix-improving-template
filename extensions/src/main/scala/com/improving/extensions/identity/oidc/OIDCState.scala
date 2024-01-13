@@ -40,7 +40,8 @@ object OIDCState {
       s1 + s2 + s3 + s4 + s5
     }
 
-    val a            = new Array[Byte](size)
+    val a = new Array[Byte](size)
+
     val outputStream = CodedOutputStream.newInstance(a)
 
     if (providerId.nonEmpty) outputStream.writeString(1, providerId)
@@ -102,7 +103,7 @@ final class OIDCStateService private (algorithmWithKeys: AlgorithmWithKeys) {
     val header = Base64String(signature)
     val body   = Base64String(data)
 
-    header + "." + body
+    header.toString + "." + body.toString
   }
 
   def parseSessionToken(token: String): Either[Throwable, OIDCState] = {

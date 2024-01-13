@@ -9,6 +9,8 @@ object BouncyCastle {
   // Bouncy Castle provider instance
   final val bcProviderInstance: Provider = new BouncyCastleProvider
 
+  final def providerName: String = bcProviderInstance.getName
+
   /** Registers the BouncyCastle cryptographic provider (if not already registered) */
   final def register(): Unit =
     synchronized {

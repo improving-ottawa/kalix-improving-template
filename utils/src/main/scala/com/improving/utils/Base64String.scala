@@ -75,9 +75,8 @@ final class Base64String private(
 
   /* Internal Implementation */
 
-  import Base64String.getEncoder
-
-  private lazy val cachedBase64Text: String = getEncoder(urlSafe, !usePadding).encodeToString(rawBytes)
+  private lazy val cachedBase64Text: String =
+    Base64String.getEncoder(urlSafe, usePadding).encodeToString(rawBytes)
 
 }
 
@@ -86,31 +85,28 @@ object Base64String {
   def apply(data: Array[Byte], urlSafe: Boolean = true, usePadding: Boolean = false): Base64String =
     new Base64String(data, usePadding, urlSafe)
 
-  def fromBase64String(base64: String, urlSafe: Boolean = true): Either[Throwable, Base64String] =
-    try Right(unsafeFromBase64String(base64, urlSafe))
+  def fromBase64String(base64: String): Either[Throwable, Base64String] =
+    try Right(unsafeFromBase64String(base64))
     catch { case scala.util.control.NonFatal(error) => Left(error) }
 
-  def unsafeFromBase64String(base64: String, urlSafe: Boolean = true): Base64String = {
-    val decoder  = if (urlSafe) Base64.getUrlDecoder else Base64.getDecoder
-    val rawBytes = decoder.decode(base64)
+  def unsafeFromBase64String(base64: String): Base64String = {
+    val urlSafe = !(base64.contains('+') || base64.contains('/'))
+    val decoder = if (urlSafe) Base64.getUrlDecoder else Base64.getDecoder
 
-    val hasPadding = {
-      val encoder = if (urlSafe) Base64.getUrlEncoder.withoutPadding() else Base64.getEncoder.withoutPadding()
-      val encoded = encoder.encodeToString(rawBytes)
-      if (encoded == base64) false else true
-    }
+    val rawBytes = decoder.decode(base64)
+    val hasPadding = base64.contains('=')
 
     assert(rawBytes.length >= 0)
     new Base64String(rawBytes, hasPadding, urlSafe)
   }
 
   // Base64 Encoder selected from formatting arguments
-  final private[utils] def getEncoder(urlSafe: Boolean, withoutPadding: Boolean): Base64.Encoder =
-    (urlSafe, withoutPadding) match {
-      case (true, true)   => Base64.getUrlEncoder.withoutPadding()
-      case (true, false)  => Base64.getUrlEncoder
-      case (false, true)  => Base64.getEncoder.withoutPadding()
-      case (false, false) => Base64.getEncoder
+  private final def getEncoder(urlSafe: Boolean, usePadding: Boolean): Base64.Encoder =
+    (urlSafe, usePadding) match {
+      case (true, false)  => Base64.getUrlEncoder.withoutPadding()
+      case (true, true)   => Base64.getUrlEncoder
+      case (false, false) => Base64.getEncoder.withoutPadding()
+      case (false, true)  => Base64.getEncoder
     }
 
 }

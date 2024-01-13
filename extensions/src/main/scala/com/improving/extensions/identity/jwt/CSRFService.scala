@@ -12,39 +12,23 @@ import scala.util.Try
 object CSRFService {
   // Preferring Blake3 to SHA256.
   // See: https://peergos.org/posts/blake3
-  final val defaultHMACAlgorithm = "Blake3Mac"
+  final val defaultDigestAlgorithm = "Blake3-256"
 
-  // While 8 bytes of entropy may not seem like a lot, this is combined with the `AuthToken` jwtID (which is a `UUID`)
-  // creating a total of 128 + 64 = 192 bits of data which gets hashed for the CSRF token.
-  final val defaultEntropyLength = 8
+  // While 16 bytes of entropy may not seem like a lot, this is combined with the `AuthToken` jwtID (which is a `UUID`)
+  // creating a total of 128 + 128 = 256 bits of data which gets hashed for the CSRF token.
+  final val defaultEntropyLength = 16
 
   def apply(csrfSecretKey: SecureString,
             entropyBytes: Int = CSRFService.defaultEntropyLength,
-            hmacAlgorithm: String = CSRFService.defaultHMACAlgorithm
+            digestAlgorithm: String = CSRFService.defaultDigestAlgorithm
            ): CSRFService =
-    new CSRFService(csrfSecretKey, entropyBytes, hmacAlgorithm)
+    new CSRFService(csrfSecretKey, entropyBytes, digestAlgorithm)
 
   final case object CsrfTokenVerificationFailed extends scala.Error
 
   /* Internal stuff */
 
   private final val separator = '.'
-
-  private final def splitToken(token: String): (String, String) = {
-    @tailrec def loop(remChars: List[Char],
-                      first: StringBuilder = new StringBuilder,
-                      second: StringBuilder = new StringBuilder,
-                      writingSecond: Boolean = false): (String, String) =
-      remChars match {
-        case sep :: tail if sep == separator => loop(tail, first, second, writingSecond = true)
-        case head :: tail if writingSecond   => loop(tail, first, second.addOne(head), writingSecond)
-        case head :: tail                    => loop(tail, first.addOne(head), second, writingSecond)
-        case Nil                             => (first.toString(), second.toString())
-      }
-
-    loop(token.toList)
-  }
-
 }
 
 /**
@@ -53,12 +37,12 @@ object CSRFService {
  * Based directly on guidance from OWASP "Signed Double-Submit" Cookie implemenation.
  * @see [[https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#signed-double-submit-cookie-recommended]]
  */
-final class CSRFService private(csrfSecretKey: SecureString, entropyBytes: Int, hmacAlgorithm: String) {
+final class CSRFService private(csrfSecretKey: SecureString, entropyBytes: Int, digestAlgorithm: String) {
   import CSRFService._
 
   private val secureRNG = new SecureRandom
   private val entropyLength = Math.max(8, entropyBytes) // No *less* than 8 bytes!
-  private val hmacInstance = HMAC.create(csrfSecretKey, hmacAlgorithm)
+  private val hmacInstance = HMAC.create(csrfSecretKey, digestAlgorithm)
 
   def createCsrfTokenForAuthToken(authToken: AuthToken): String = {
     val sessionId = ByteVector.fromUUID(authToken.jwtId)
@@ -75,17 +59,19 @@ final class CSRFService private(csrfSecretKey: SecureString, entropyBytes: Int, 
     val hashPart = Base64String(hash, urlSafe = false)
     val messagePart = Base64String(messageBytes, urlSafe = false)
 
-    hashPart.toString + separator + messagePart
+    hashPart.toString + separator + messagePart.toString
   }
 
   def verifyCsrfTokenForAuthToken(authToken: AuthToken, csrfToken: String): Either[Throwable, Unit] = {
     val verification =
       Try {
-        val (hashPart, messagePart) = splitToken(csrfToken)
-        val sessionId = ByteVector.fromUUID(authToken.jwtId)
+        val tokenParts  = csrfToken.split(separator)
+        val sessionId   = ByteVector.fromUUID(authToken.jwtId)
+        val hashPart    = tokenParts.head
+        val messagePart = tokenParts.last
 
-        val csrfSignature = Base64String.unsafeFromBase64String(hashPart, urlSafe = false).rawBytes
-        val csrfMessage = ByteVector(Base64String.unsafeFromBase64String(messagePart, urlSafe = false).rawBytes)
+        val csrfSignature = Base64String.unsafeFromBase64String(hashPart).rawBytes
+        val csrfMessage = ByteVector(Base64String.unsafeFromBase64String(messagePart).rawBytes)
 
         val entropyVector = csrfMessage.takeRight(entropyLength)
         val messageBytes = (sessionId ++ entropyVector).toArray

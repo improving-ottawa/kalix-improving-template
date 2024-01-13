@@ -3,6 +3,7 @@ package com.improving.extensions.identity.password
 import com.improving.extensions.identity.crypto.HMAC
 import com.improving.utils.SecureString
 
+import org.bouncycastle.crypto.params.KeyParameter
 import scala.util.Try
 
 sealed trait PepperingSettings {
@@ -23,8 +24,10 @@ object PepperingSettings {
 
   final class Enabled(privateKey: SecureString, hmacAlgorithm: String) extends PepperingSettings {
     val pepperingEnabled = true
-    def tryGetMac: Try[HMAC] = HMAC.create(privateKey, hmacAlgorithm)
 
+    private val keyParam = new KeyParameter(privateKey.readOnce())
+
+    def tryGetMac: Try[HMAC] = HMAC.createFromKeyParam(keyParam, hmacAlgorithm)
   }
 
 }

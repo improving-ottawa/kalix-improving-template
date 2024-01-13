@@ -1,8 +1,12 @@
 package com.improving.extensions.identity.oidc
 
+import com.improving.extensions.identity.IdentityBase
 import cats.syntax.all._
 import io.circe._
 import io.circe.syntax._
+import scodec.bits._
+
+import java.util.UUID
 
 /**
   * An OpenID Connect user principal.
@@ -33,7 +37,27 @@ case class OIDCIdentity(
   givenName: Option[String],
   middleName: Option[String],
   email: Option[String]
-)
+) extends IdentityBase {
+
+  final lazy val id: UUID =
+    try UUID.fromString(subject)
+    catch { case _: IllegalArgumentException => UUID.nameUUIDFromBytes(subject.getBytes) }
+
+  def toByteArray: Array[Byte] = {
+    BinaryWriter.newWriter
+      .write(id)
+      .write(subject)
+      .write(name)
+      .writeOptionOf.string(preferredName)
+      .writeOptionOf.string(familyName)
+      .writeOptionOf.string(givenName)
+      .writeOptionOf.string(middleName)
+      .writeOptionOf.string(email)
+      .toByteArray
+  }
+
+
+}
 
 object OIDCIdentity {
 

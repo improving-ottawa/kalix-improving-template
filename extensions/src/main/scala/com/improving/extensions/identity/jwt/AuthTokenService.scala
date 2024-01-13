@@ -1,20 +1,26 @@
 package com.improving.extensions.identity.jwt
 
-import com.improving.extensions.identity.crypto.AlgorithmWithKeys
+import com.improving.extensions.identity.crypto._
 import com.improving.utils.SystemClock
 
 import cats.data.NonEmptySet
-import pdi.jwt.JwtCirce
+import pdi.jwt._
 
 import java.time._
 import java.util.UUID
 import scala.util.Try
 
-final class AuthTokenService private(cryptoData: AlgorithmWithKeys) {
+class AuthTokenService private[jwt](algorithmWithKeys: AlgorithmWithKeys) {
 
-  /**
-    * Create a new Json Web Token (JWT) string from an [[AuthToken authorization token]] for application authorization.
-    */
+  private final val decodeAlgorithms =
+    algorithmWithKeys match {
+      case ECKeyPair(_, _, _)  => JwtAlgorithm.allECDSA()
+      case RSAKeyPair(_, _, _) => JwtAlgorithm.allRSA()
+    }
+
+  private final val decodeJwt =
+    AuthTokenCirce.decodeAll(_: String, algorithmWithKeys.publicKey, decodeAlgorithms, JwtOptions.DEFAULT).map(_._2)
+
   def createToken(
     issuer: String,
     subject: String,
@@ -45,15 +51,14 @@ final class AuthTokenService private(cryptoData: AlgorithmWithKeys) {
   }
 
   /** Encode an [[AuthToken authorization token]] into a JWT string. */
-  def encodeToken(token: AuthToken): Either[Throwable, String] =
-    Try(JwtCirce.encode(token.toClaims, cryptoData.privateKey, cryptoData.algorithm)).toEither
+  final def encodeToken(token: AuthToken): Either[Throwable, String] =
+    Try(AuthTokenCirce.encode(token, algorithmWithKeys.privateKey, algorithmWithKeys.algorithm)).toEither
 
   /** Decode a JWT string into an [[AuthToken authorization token]]. */
-  def validateAndExtractToken(jwt: String): Either[Throwable, AuthToken] =
-    for {
-      claim <- JwtCirce.decode(jwt, cryptoData.publicKey).toEither
-      token <- AuthToken.fromClaim(claim)
-    } yield token
+  final def validateAndExtractToken(jwt: String): Either[Throwable, AuthToken] =
+    AuthTokenCirce.decodeAll(jwt, algorithmWithKeys.publicKey, decodeAlgorithms, JwtOptions.DEFAULT)
+      .map(_._2)
+      .toEither
 
 }
 
