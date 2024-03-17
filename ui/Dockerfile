@@ -13,7 +13,7 @@ COPY src /app/src
 RUN npm run build
 
 # production stage
-FROM nginx:stable-alpine as production-stage
+FROM nginx:1.24-alpine3.17 as production-stage
 COPY docker-resources/nginx.conf /etc/nginx/nginx.conf
 COPY docker-resources/env.json /
 COPY docker-resources/run.sh /
